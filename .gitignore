@@ -1,0 +1,66 @@
+### STS / Eclipse ###
+.project
+.classpath
+.springBeans
+.apt_generated
+.settings/
+bin/
+target/
+.mvn/
+.maven/
+
+### Maven ###
+/target/
+/pom.xml.tag
+/pom.xml.releaseBackup
+/pom.xml.versionsBackup
+/logs/
+!src/main/resources/
+/dependency-reduced-pom.xml
+/release.properties
+
+### IntelliJ IDEA ###
+.idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+### OS-specific ###
+# Windows
+Thumbs.db
+ehthumbs.db
+.DS_Store
+
+# Linux/macOS
+*~
+
+### Logs ###
+*.log
+
+### STS / Eclipse specific ###
+/.classpath
+/.project
+/.settings/
+/target/
+/.apt_generated/
+/spring-boot-devtools.properties
+
+### Lombok ###
+.lombok/
+
+### IDE metadata ###
+/*.iml
+/.idea/
+/.idea/
+.vscode/
+
+### Compiled bytecode ###
+*.class
+
+### Directory-based project format ###
+/.project
+/.classpath
+/.factorypath
+/.settings/
+.eclipse/
