@@ -2,6 +2,8 @@ package com.projetodevwevavancado.emprestimo.entity;
 
 import java.io.Serializable;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Column;
@@ -11,9 +13,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -33,9 +32,16 @@ public class UserEntity implements Serializable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
+	@JsonProperty("nome")
 	private String nome;
+	
+	@JsonProperty("email")
 	private String email;
+	
+	@JsonProperty("senha")
 	private String senha;
+	
+	@JsonProperty("role")
 	private String role;
 
 	public UserEntity(Long id, String nome, String email, String senha, String role) {

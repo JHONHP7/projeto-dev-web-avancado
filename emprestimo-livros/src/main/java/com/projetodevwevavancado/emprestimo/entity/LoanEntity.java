@@ -3,6 +3,8 @@ package com.projetodevwevavancado.emprestimo.entity;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Column;
@@ -44,8 +46,13 @@ public class LoanEntity implements Serializable {
 	@JoinColumn(name = "usuario_id")
 	private UserEntity usuario;
 
+	@JsonProperty("dataEmprestimo")
 	private Date dataEmprestimo;
+	
+	@JsonProperty("dataDevolucao")
 	private Date dataDevolucao;
+	
+	@JsonProperty("status")
 	private String status;
 
 	public LoanEntity(Long id, BookEntity livro, UserEntity usuario, Date dataEmprestimo, Date dataDevolucao,
