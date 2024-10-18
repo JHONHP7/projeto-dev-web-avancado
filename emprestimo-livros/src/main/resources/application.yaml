@@ -3,7 +3,7 @@ server:
     include-stacktrace: on-param
 spring:
   profiles:
-    active: des
+    active: test
   jpa:
     open-in-view: true
   jackson:
