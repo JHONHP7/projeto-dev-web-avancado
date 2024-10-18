@@ -1,0 +1,16 @@
+server:
+  error:
+    include-stacktrace: on-param
+spring:
+  profiles:
+    active: test
+  jpa:
+    open-in-view: true
+  jackson:
+    date-format: yyyy-MM-dd
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+

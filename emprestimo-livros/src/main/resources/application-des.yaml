@@ -1,0 +1,10 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/emprestimo-livros
+    username: postgres
+    password: 1996
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update  # Atualiza o esquema no PostgreSQL
+    show-sql: true  # Exibe as queries no console
