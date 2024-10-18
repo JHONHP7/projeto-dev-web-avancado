@@ -22,7 +22,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-@Table(name = "TB_USER")
+@Table(name = "TB_USER", schema = "emprestimo")
 @SequenceGenerator(sequenceName = "SE_USER", allocationSize = 1, name = "SEQ")
 @AttributeOverrides({ @AttributeOverride(name = "id", column = @Column(name = "SQ_USER")) })
 public class UserEntity implements Serializable {

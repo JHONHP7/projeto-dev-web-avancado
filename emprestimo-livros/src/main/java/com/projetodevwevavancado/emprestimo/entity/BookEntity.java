@@ -26,7 +26,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
-@Table(name = "TB_BOOK")
+@Table(name = "TB_BOOK", schema = "emprestimo")
 @SequenceGenerator(sequenceName = "SE_BOOK", allocationSize = 1, name = "SEQ")
 @AttributeOverrides({ @AttributeOverride(name = "id", column = @Column(name = "SQ_BOOK")) })
 public class BookEntity implements Serializable {

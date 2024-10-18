@@ -25,7 +25,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-@Table(name = "TB_LOAN")
+@Table(name = "TB_LOAN", schema = "emprestimo")
 @SequenceGenerator(sequenceName = "SE_LOAN", allocationSize = 1, name = "SEQ")
 @AttributeOverrides({ @AttributeOverride(name = "id", column = @Column(name = "SQ_LOAN")) })
 public class LoanEntity implements Serializable {

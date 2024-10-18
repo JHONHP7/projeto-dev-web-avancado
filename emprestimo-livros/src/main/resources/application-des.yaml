@@ -7,4 +7,5 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update  # Atualiza o esquema no PostgreSQL
+      default_schema: emprestimo  # Define o schema "emprestimo" como padrão
     show-sql: true  # Exibe as queries no console

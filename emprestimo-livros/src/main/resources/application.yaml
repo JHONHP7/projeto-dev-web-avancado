@@ -3,11 +3,11 @@ server:
     include-stacktrace: on-param
 spring:
   profiles:
-    active: test
+    active: des
   jpa:
     open-in-view: true
   jackson:
-    date-format: yyyy-MM-dd
+    date-format: dd-MM-yyyy
 springdoc:
   api-docs:
     path: /v3/api-docs
