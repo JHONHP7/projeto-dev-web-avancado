@@ -1,0 +1,4 @@
+1- Vá até o diretório onde está o arquivo 
+2- Abra o diretório no terminal e execute o comando
+	java -jar lombok.jar
+3- Procure sua ide e instale o lombok nela
