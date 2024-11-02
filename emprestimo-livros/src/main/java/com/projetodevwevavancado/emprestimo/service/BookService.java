@@ -64,6 +64,9 @@ public class BookService {
 			if (bookEntity.getIsbn() != null) {
 				existingBook.setIsbn(bookEntity.getIsbn());
 			}
+			if (bookEntity.getQuantidadeExemplares() != null) {
+				existingBook.setQuantidadeExemplares(bookEntity.getQuantidadeExemplares());
+			}
 
 			// Salva as alterações
 			return bookRepository.save(existingBook);

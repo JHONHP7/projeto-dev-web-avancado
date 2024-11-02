@@ -48,7 +48,7 @@ public class FavoriteResource implements FavoriteResourceApi {
 	}
 
 	@GetMapping
-	public ResponseEntity<List<FavoriteEntity>> findAll() {
+	public ResponseEntity<List<FavoriteEntity>> getAll() {
 		return ResponseEntity.ok(favoriteService.findAll());
 	}
 
