@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/emprestimo-livros
+    url: jdbc:postgresql://localhost:5432/emprestimo_livros
     username: postgres
     password: 1996
     driver-class-name: org.postgresql.Driver
