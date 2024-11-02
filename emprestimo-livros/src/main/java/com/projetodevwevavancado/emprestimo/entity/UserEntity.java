@@ -53,4 +53,11 @@ public class UserEntity implements Serializable {
 		this.role = role;
 	}
 
+	public UserEntity(Long id) {
+		super();
+		this.id = id;
+	}
+	
+	
+
 }
