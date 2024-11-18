@@ -6,6 +6,16 @@ spring:
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
-      ddl-auto: update  # Atualiza o esquema no PostgreSQL
+      ddl-auto: none  # Atualiza o esquema no PostgreSQL
       default_schema: emprestimo  # Define o schema "emprestimo" como padrão
     show-sql: true  # Exibe as queries no console
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    schemas: emprestimo
+    locations: classpath:db/migration
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
