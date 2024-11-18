@@ -1,8 +1,15 @@
 package com.projetodevwevavancado.emprestimo.entity;
 
 import java.io.Serializable;
+import java.util.Collection;
+import java.util.List;
+
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.projetodevwevavancado.emprestimo.commons.enums.UserRole;
 
 import jakarta.persistence.AttributeOverride;
 import jakarta.persistence.AttributeOverrides;
@@ -24,7 +31,7 @@ import lombok.Setter;
 @Table(name = "TB_USER", schema = "emprestimo")
 @SequenceGenerator(sequenceName = "SE_USER", allocationSize = 1, name = "SEQ")
 @AttributeOverrides({ @AttributeOverride(name = "id", column = @Column(name = "SQ_USER")) })
-public class UserEntity implements Serializable {
+public class UserEntity implements Serializable, UserDetails {
 
 	private static final long serialVersionUID = -391564656606632983L;
 
@@ -42,9 +49,9 @@ public class UserEntity implements Serializable {
 	private String senha;
 	
 	@JsonProperty("role")
-	private String role;
+	private UserRole role;
 
-	public UserEntity(Long id, String nome, String email, String senha, String role) {
+	public UserEntity(Long id, String nome, String email, String senha, UserRole role) {
 		super();
 		this.id = id;
 		this.nome = nome;
@@ -52,10 +59,44 @@ public class UserEntity implements Serializable {
 		this.senha = senha;
 		this.role = role;
 	}
+	
+	
 
 	public UserEntity(Long id) {
 		super();
 		this.id = id;
+	}
+
+	@Override
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		
+		if(this.role == UserRole.ADMIN) {
+			return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_USER"));
+		}else {
+			return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+		}
+		
+	}
+
+	@Override
+	public String getPassword() {
+
+		return senha;
+	}
+
+	@Override
+	public String getUsername() {
+		
+		return email;
+	}
+
+
+	public UserEntity(String nome, String email, String senha, UserRole role) {
+		super();
+		this.nome = nome;
+		this.email = email;
+		this.senha = senha;
+		this.role = role;
 	}
 	
 	
