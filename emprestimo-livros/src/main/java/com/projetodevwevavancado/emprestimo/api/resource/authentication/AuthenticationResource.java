@@ -17,10 +17,13 @@ import com.projetodevwevavancado.emprestimo.configuration.security.TokenService;
 import com.projetodevwevavancado.emprestimo.entity.UserEntity;
 import com.projetodevwevavancado.emprestimo.repository.UserRepository;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/auth")
+@Tag(name = "autenticação")
 public class AuthenticationResource {
 
 	@Autowired
@@ -32,6 +35,7 @@ public class AuthenticationResource {
 	@Autowired
 	private TokenService tokenService;
 
+	@Operation(summary = "Fazer login e receber token JWT")
 	@PostMapping("/login")
 	public ResponseEntity login(@RequestBody @Valid AuthenticationDTO data) {
 
@@ -43,6 +47,7 @@ public class AuthenticationResource {
 		return ResponseEntity.ok(new LoginResponseDTO(token));
 	}
 
+	@Operation(summary = "Criar novo usuário")
 	@PostMapping("/register")
 	public ResponseEntity register(@RequestBody @Valid RegisterDTO register) {
 
