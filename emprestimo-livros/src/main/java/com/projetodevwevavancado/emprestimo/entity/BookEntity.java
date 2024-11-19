@@ -50,8 +50,24 @@ public class BookEntity implements Serializable {
 	@JsonProperty("disponivel")
 	private Boolean disponivel;
 
+	@JsonProperty("quantidadeExemplares")
+	private Integer quantidadeExemplares; // Novo campo para gerenciar exemplares
+
 	@JsonProperty("dataPublicacao")
 	@Temporal(TemporalType.DATE)
 	private Date dataPublicacao;
+
+	// Método auxiliar para verificar se há exemplares disponíveis
+	public boolean temExemplaresDisponiveis() {
+		return this.quantidadeExemplares != null && this.quantidadeExemplares > 0;
+	}
+
+	// Método auxiliar para ajustar a quantidade de exemplares
+	public void ajustarQuantidadeExemplares(int ajuste) {
+		if (this.quantidadeExemplares != null) {
+			this.quantidadeExemplares += ajuste;
+			this.disponivel = this.quantidadeExemplares > 0;
+		}
+	}
 
 }

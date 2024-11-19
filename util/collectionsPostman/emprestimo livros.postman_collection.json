@@ -37,7 +37,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "",
+							"raw": "{\n    \"title\": \"O Senhor dos Anéis\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -45,15 +45,45 @@
 							}
 						},
 						"url": {
-							"raw": "localhost:8080/books/title/hp",
+							"raw": "localhost:8080/books/name",
 							"host": [
 								"localhost"
 							],
 							"port": "8080",
 							"path": [
 								"books",
-								"title",
-								"hp"
+								"name"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "buscar por author",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"title\": \"O Senhor dos Anéis\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/books/name",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"books",
+								"name"
 							]
 						}
 					},
@@ -94,7 +124,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"id\": 1,\r\n    \"title\": \"Harry potter\",\r\n    \"user\": {\r\n        \"id\": 2\r\n    }\r\n}",
+							"raw": "{\r\n    \"id\": 1,\r\n    \"titulo\": \"Harry potter\",\r\n    \"autor\": \"Jk Rowling\",\r\n    \"isbn\": \"41324234234\",\r\n    \"disponivel\": true,\r\n    \"quantidadeExemplares\": 10,\r\n    \"dataPublicacao\": \"2024-11-02T22:08:40.084Z\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -102,13 +132,14 @@
 							}
 						},
 						"url": {
-							"raw": "localhost:8080/books",
+							"raw": "localhost:8080/books/update",
 							"host": [
 								"localhost"
 							],
 							"port": "8080",
 							"path": [
-								"books"
+								"books",
+								"update"
 							]
 						}
 					},
@@ -121,7 +152,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"id\": 1\r\n}",
+							"raw": "{\r\n    \"id\": 6\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -163,6 +194,159 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "loan",
+			"item": [
+				{
+					"name": "loan fidall",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "devolver livro",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/loans/return/8",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"loans",
+								"return",
+								"8"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Att loan",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": 1,\r\n    \"dataDevolucao\": \"2025-11-02T20:47:45.102Z\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/loans/update",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"loans",
+								"update"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "loan find by book title",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"titulo\": \"Senhor\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/loans/search-by-book",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"loans",
+								"search-by-book"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "loan find by user name",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"nomeUsuario\": \"Jhonatan\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/loans/search-by-user",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"loans",
+								"search-by-user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "loan create",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"livro\": {\r\n        \"id\": 2\r\n    },\r\n    \"usuario\": {\r\n        \"id\":1\r\n    }\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/loans/create",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"loans",
+								"create"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "favorite",
+			"item": []
+		},
+		{
+			"name": "user",
+			"item": []
 		}
 	]
 }

@@ -1,9 +1,9 @@
 spring:
   datasource:
     driver-class-name: org.h2.Driver
-    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;INIT=CREATE SCHEMA IF NOT EXISTS emprestimo
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;INIT=CREATE SCHEMA IF NOT EXISTS emprestimo
     username: sa
-    password:
+    password: password
   h2:
     console:
       enabled: true
@@ -12,10 +12,12 @@ spring:
     database-platform: org.hibernate.dialect.H2Dialect
     defer-datasource-initialization: true
     show-sql: true
+    hibernate:
+      ddl-auto: update
     properties:
       hibernate:
         format_sql: true
-        
+
 server:
   error:
     whitelabel:
