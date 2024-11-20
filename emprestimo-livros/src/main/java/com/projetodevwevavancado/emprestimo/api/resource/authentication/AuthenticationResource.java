@@ -1,9 +1,11 @@
 package com.projetodevwevavancado.emprestimo.api.resource.authentication;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,6 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 import com.projetodevwevavancado.emprestimo.api.dto.request.authentication.AuthenticationDTO;
 import com.projetodevwevavancado.emprestimo.api.dto.request.authentication.LoginResponseDTO;
 import com.projetodevwevavancado.emprestimo.api.dto.request.authentication.RegisterDTO;
+import com.projetodevwevavancado.emprestimo.api.resource.handler.exceptions.AuthenticationFailedException;
+import com.projetodevwevavancado.emprestimo.api.resource.handler.exceptions.EmailAlreadyExistsException;
+import com.projetodevwevavancado.emprestimo.commons.util.ApiResponse;
 import com.projetodevwevavancado.emprestimo.configuration.security.TokenService;
 import com.projetodevwevavancado.emprestimo.entity.UserEntity;
 import com.projetodevwevavancado.emprestimo.repository.UserRepository;
@@ -37,28 +42,41 @@ public class AuthenticationResource {
 
 	@Operation(summary = "Fazer login e receber token JWT")
 	@PostMapping("/login")
-	public ResponseEntity login(@RequestBody @Valid AuthenticationDTO data) {
+	public ResponseEntity<?> login(@RequestBody @Valid AuthenticationDTO data) {
+	    try {
+	        var usernamePassword = new UsernamePasswordAuthenticationToken(data.email(), data.password());
+	        var auth = authenticationManager.authenticate(usernamePassword);
 
-		var usernamePassword = new UsernamePasswordAuthenticationToken(data.email(), data.password());
-		var auth = authenticationManager.authenticate(usernamePassword);
+	        var token = tokenService.generateToken((UserEntity) auth.getPrincipal());
+	        ApiResponse response = new ApiResponse("Login bem-sucedido", true);
+	        return ResponseEntity.ok(new LoginResponseDTO(token));
 
-		var token = tokenService.generateToken((UserEntity) auth.getPrincipal());
-
-		return ResponseEntity.ok(new LoginResponseDTO(token));
+	    } catch (AuthenticationException e) {
+	        throw new AuthenticationFailedException("Usuário ou senha inválidos!");
+	    }
 	}
+
 
 	@Operation(summary = "Criar novo usuário")
 	@PostMapping("/register")
-	public ResponseEntity register(@RequestBody @Valid RegisterDTO register) {
+	public ResponseEntity<ApiResponse> register(@RequestBody @Valid RegisterDTO register) {
 
-		if (this.repository.findByEmail(register.email()) != null) {
-			return ResponseEntity.badRequest().build();
-		}
+	    if (this.repository.findByEmail(register.email()) != null) {
+	        throw new EmailAlreadyExistsException("E-mail já está em uso!");
+	    }
 
-		String encryptedPassword = new BCryptPasswordEncoder().encode(register.senha());
-		UserEntity newUser = new UserEntity(register.nome(), register.email(), encryptedPassword, register.role());
+	    try {
+	        String encryptedPassword = new BCryptPasswordEncoder().encode(register.senha());
+	        UserEntity newUser = new UserEntity(register.nome(), register.email(), encryptedPassword, register.role());
 
-		this.repository.save(newUser);
-		return ResponseEntity.ok().build();
+	        this.repository.save(newUser);
+	        ApiResponse response = new ApiResponse("Usuário cadastrado com sucesso", true);  // success é true
+	        return ResponseEntity.ok(response);
+	    } catch (Exception e) {
+	        ApiResponse response = new ApiResponse("Erro ao cadastrar o usuário. Tente novamente mais tarde.", false);  // success é false
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+	    }
 	}
+
+
 }
