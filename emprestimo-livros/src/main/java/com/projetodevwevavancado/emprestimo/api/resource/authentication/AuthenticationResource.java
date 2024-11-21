@@ -48,7 +48,6 @@ public class AuthenticationResource {
 	        var auth = authenticationManager.authenticate(usernamePassword);
 
 	        var token = tokenService.generateToken((UserEntity) auth.getPrincipal());
-	        ApiResponse response = new ApiResponse("Login bem-sucedido", true);
 	        return ResponseEntity.ok(new LoginResponseDTO(token));
 
 	    } catch (AuthenticationException e) {
@@ -70,10 +69,10 @@ public class AuthenticationResource {
 	        UserEntity newUser = new UserEntity(register.nome(), register.email(), encryptedPassword, register.role());
 
 	        this.repository.save(newUser);
-	        ApiResponse response = new ApiResponse("Usuário cadastrado com sucesso", true);  // success é true
+	        ApiResponse response = new ApiResponse("Usuário cadastrado com sucesso", true);
 	        return ResponseEntity.ok(response);
 	    } catch (Exception e) {
-	        ApiResponse response = new ApiResponse("Erro ao cadastrar o usuário. Tente novamente mais tarde.", false);  // success é false
+	        ApiResponse response = new ApiResponse("Erro ao cadastrar o usuário. Tente novamente mais tarde.", false);
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 	    }
 	}
