@@ -4,18 +4,14 @@ import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 
-import com.projetodevwevavancado.emprestimo.api.dto.request.BookRequestDTO;
-import com.projetodevwevavancado.emprestimo.api.dto.response.BookResponseDTO;
 import com.projetodevwevavancado.emprestimo.entity.BookEntity;
-import com.projetodevwevavancado.emprestimo.repository.BookRepository;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 public interface BookResourceApi {
 
 	@Operation(summary = "Criar livro")
-	public ResponseEntity<BookEntity> save(@RequestBody BookEntity bookEntity);
+	public ResponseEntity<BookEntity> save(BookEntity bookEntity);
 
 	@Operation(summary = "Buscar lista de livros")
 	public ResponseEntity<List<BookEntity>> findAll();
