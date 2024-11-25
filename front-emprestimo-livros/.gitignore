@@ -1,0 +1,27 @@
+# .gitignore para o frontend (React)
+
+# Dependências do Node.js
+node_modules/        
+
+# Build do React
+dist/                
+build/               
+
+# Cache do ESLint
+.eslintcache         
+
+# Arquivos de log
+*.log                
+
+# Configurações da IDE
+.idea/               
+.vscode/             
+
+# Arquivos temporários do sistema operacional
+.DS_Store            
+Thumbs.db            
+
+# Arquivos de ambiente (variáveis de configuração)
+.env                  
+.env.local   
+.env.production       
