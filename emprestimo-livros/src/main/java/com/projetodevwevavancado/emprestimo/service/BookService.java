@@ -1,10 +1,13 @@
 package com.projetodevwevavancado.emprestimo.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.stereotype.Service;
 
-import com.projetodevwevavancado.emprestimo.commons.util.BookToDtoUtil;
 import com.projetodevwevavancado.emprestimo.entity.BookEntity;
 import com.projetodevwevavancado.emprestimo.repository.BookRepository;
 
@@ -43,44 +46,32 @@ public class BookService {
 	}
 
 	public BookEntity saveOrUpdate(BookEntity bookEntity) {
-		// Se o ID não for nulo, significa que estamos atualizando um registro existente
-		if (bookEntity.getId() != null) {
-			BookEntity existingBook = bookRepository.findById(bookEntity.getId()).orElseThrow(
-					() -> new IllegalArgumentException("Livro não encontrado para o id: " + bookEntity.getId()));
+	    if (bookEntity.getId() != null) {
+	        BookEntity existingBook = bookRepository.findById(bookEntity.getId()).orElseThrow(
+	                () -> new IllegalArgumentException("Livro não encontrado para o id: " + bookEntity.getId()));
 
-			// Atualiza apenas os campos que não são nulos na entidade recebida
-			if (bookEntity.getTitulo() != null) {
-				existingBook.setTitulo(bookEntity.getTitulo());
-			}
-			if (bookEntity.getAutor() != null) {
-				existingBook.setAutor(bookEntity.getAutor());
-			}
-			if (bookEntity.getDataPublicacao() != null) {
-				existingBook.setDataPublicacao(bookEntity.getDataPublicacao());
-			}
-			if (bookEntity.getDisponivel() != null) {
-				existingBook.setDisponivel(bookEntity.getDisponivel());
-			}
-			if (bookEntity.getIsbn() != null) {
-				existingBook.setIsbn(bookEntity.getIsbn());
-			}
-			if (bookEntity.getQuantidadeExemplares() != null) {
-				existingBook.setQuantidadeExemplares(bookEntity.getQuantidadeExemplares());
-			}
+	        BeanUtils.copyProperties(bookEntity, existingBook, getNullPropertyNames(bookEntity));
 
-			// Salva as alterações
-			return bookRepository.save(existingBook);
+	        return bookRepository.save(existingBook);
+	    } else {
+	        if (bookEntity.getTitulo() == null || bookEntity.getAutor() == null || bookEntity.getIsbn() == null) {
+	            throw new IllegalArgumentException("Campos obrigatórios não podem ser nulos para inserção.");
+	        }
 
-		} else {
-			// Para uma nova entidade, garante que todos os campos obrigatórios estão
-			// preenchidos
-			if (bookEntity.getTitulo() == null || bookEntity.getAutor() == null || bookEntity.getIsbn() == null) {
-				throw new IllegalArgumentException("Campos obrigatórios não podem ser nulos para inserção.");
-			}
+	        return bookRepository.save(bookEntity);
+	    }
+	}
 
-			// Salva uma nova entidade
-			return bookRepository.save(bookEntity);
-		}
+	private String[] getNullPropertyNames(Object source) {
+	    final BeanWrapper src = new BeanWrapperImpl(source);
+	    java.beans.PropertyDescriptor[] pds = src.getPropertyDescriptors();
+	    List<String> nullPropertyNames = new ArrayList<>();
+	    for (java.beans.PropertyDescriptor pd : pds) {
+	        if (src.getPropertyValue(pd.getName()) == null) {
+	            nullPropertyNames.add(pd.getName());
+	        }
+	    }
+	    return nullPropertyNames.toArray(new String[0]);
 	}
 
 }

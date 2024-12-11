@@ -45,15 +45,18 @@ public class AuthenticationResource {
 	public ResponseEntity<?> login(@RequestBody @Valid AuthenticationDTO data) {
 	    try {
 	        var usernamePassword = new UsernamePasswordAuthenticationToken(data.email(), data.password());
+
 	        var auth = authenticationManager.authenticate(usernamePassword);
 
 	        var token = tokenService.generateToken((UserEntity) auth.getPrincipal());
-	        return ResponseEntity.ok(new LoginResponseDTO(token));
 
+	        return ResponseEntity.ok(new LoginResponseDTO(token));
 	    } catch (AuthenticationException e) {
 	        throw new AuthenticationFailedException("Usuário ou senha inválidos!");
 	    }
 	}
+
+
 
 
 	@Operation(summary = "Criar novo usuário")

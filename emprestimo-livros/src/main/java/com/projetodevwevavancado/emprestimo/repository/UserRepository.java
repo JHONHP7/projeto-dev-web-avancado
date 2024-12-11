@@ -13,7 +13,10 @@ import com.projetodevwevavancado.emprestimo.entity.UserEntity;
 @Repository
 public interface UserRepository extends JpaRepository<UserEntity, Long> {
 	
-	UserDetails findByEmail(String email);
+//	UserDetails findByEmail(String email);
+	
+	@Query("SELECT u FROM UserEntity u WHERE u.email = :email")
+	UserDetails findByEmail(@Param("email") String email);
 	
 	@Query("SELECT e FROM UserEntity e WHERE e.email = :email")
     Optional<UserEntity> findEntityByEmail(@Param("email") String email);
