@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
-  const [cpf, setCpf] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(''); // Estado para mensagem de erro
   const navigate = useNavigate();
@@ -16,7 +16,7 @@ const Login = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ cpf, password }),
+        body: JSON.stringify({ email, password }),
       });
 
       if (response.ok) {
@@ -36,8 +36,8 @@ const Login = () => {
     }
   };
 
-  const handleCpfChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCpf(e.target.value);
+  const handleemailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.target.value);
   };
 
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -50,9 +50,9 @@ const Login = () => {
       <form onSubmit={handleSubmit}>
         <input 
           type="text" 
-          placeholder="CPF" 
-          value={cpf}
-          onChange={handleCpfChange}
+          placeholder="email" 
+          value={email}
+          onChange={handleemailChange}
           className="w-full p-3 mb-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         <input 
