@@ -36,5 +36,7 @@ public class AuthorizationService implements UserDetailsService {
 		}
 		throw new RuntimeException("Usuário não autenticado.");
 	}
+	
+	
 
 }

@@ -44,6 +44,7 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.POST, "/users/update").hasRole(ADMIN_ROLE)
                         .requestMatchers(HttpMethod.POST, "/users/delete").hasRole(ADMIN_ROLE)
                         .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/auth/google-login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
 
                         // Configs do Swagger
@@ -51,6 +52,8 @@ public class SecurityConfiguration {
 
                         // Configs de qualquer outra requisição
                         .anyRequest().authenticated())
+                
+                		
 
                 // Config para verificar o token antes de verificar as roles
                 .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class)
