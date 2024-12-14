@@ -2,6 +2,7 @@ package com.projetodevwevavancado.emprestimo.api.resource.impl;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -12,9 +13,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.projetodevwevavancado.emprestimo.api.dto.request.FavoriteRequestDTO;
+import com.projetodevwevavancado.emprestimo.api.dto.response.FavoriteResponseByUserDTO;
+import com.projetodevwevavancado.emprestimo.api.dto.response.FavoriteResponseDTO;
 import com.projetodevwevavancado.emprestimo.api.resource.swagger.FavoriteResourceApi;
+import com.projetodevwevavancado.emprestimo.commons.util.ApiResponse;
 import com.projetodevwevavancado.emprestimo.entity.FavoriteEntity;
-import com.projetodevwevavancado.emprestimo.entity.UserEntity;
 import com.projetodevwevavancado.emprestimo.service.FavoriteService;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -30,21 +34,30 @@ public class FavoriteResource implements FavoriteResourceApi {
 	private final FavoriteService favoriteService;
 
 	@PostMapping("/add")
-	public ResponseEntity<FavoriteEntity> addFavorito(@RequestBody FavoriteEntity favorito) {
-		FavoriteEntity savedFavorito = favoriteService.addFavorito(favorito.getUsuario(), favorito.getLivro());
-		return ResponseEntity.ok(savedFavorito);
+	public ResponseEntity<FavoriteResponseDTO> addFavorito(@RequestBody FavoriteRequestDTO favorito) {
+		FavoriteResponseDTO responseDTO = favoriteService.addFavorito(favorito);
+		return ResponseEntity.ok(responseDTO);
 	}
 
-	@DeleteMapping("/remove")
-	public ResponseEntity<Void> removeFavorito(@RequestBody FavoriteEntity favorito) {
-		favoriteService.removeFavorito(favorito);
-		return ResponseEntity.noContent().build();
+	@DeleteMapping("/delete/favorite/{idUsuario}/{idLivro}")
+	public ResponseEntity<ApiResponse> removeFavorite(@PathVariable Long idUsuario, @PathVariable Long idLivro) {
+		try {
+			favoriteService.deleteFavorito(idUsuario, idLivro);
+			ApiResponse response = new ApiResponse("Favorito deletado com sucesso", true);
+			return ResponseEntity.ok(response);
+		} catch (IllegalArgumentException e) {
+			ApiResponse response = new ApiResponse(e.getMessage(), false);
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+		} catch (Exception e) {
+			ApiResponse response = new ApiResponse("Erro ao deletar favorito. Tente novamente mais tarde.", false);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+		}
 	}
 
 	@GetMapping("/usuario/{usuarioId}")
-	public ResponseEntity<List<FavoriteEntity>> findFavoritosByUsuario(@PathVariable Long usuarioId) {
-		List<FavoriteEntity> favoritos = favoriteService.findFavoritosByUsuario(new UserEntity(usuarioId));
-		return ResponseEntity.ok(favoritos);
+	public ResponseEntity<FavoriteResponseByUserDTO> findFavoritosByUsuario(@PathVariable Long usuarioId) {
+		FavoriteResponseByUserDTO responseDTO = favoriteService.findFavoritosByUsuario(usuarioId);
+		return ResponseEntity.ok(responseDTO);
 	}
 
 	@GetMapping
