@@ -63,7 +63,6 @@ public class UserEntity implements Serializable, UserDetails {
 		this.role = role;
 	}
 	
-	
 
 	public UserEntity(Long id) {
 		super();
@@ -100,8 +99,6 @@ public class UserEntity implements Serializable, UserDetails {
 		this.email = email;
 		this.senha = senha;
 		this.role = role;
-	}
-	
-	
+	}	
 
 }

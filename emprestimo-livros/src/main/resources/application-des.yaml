@@ -16,7 +16,31 @@ spring:
     baseline-on-migrate: true
     schemas: emprestimo
     locations: classpath:db/migration
-
+    
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 1080697336488-lqffnqk5lppnqkionbrnit6ubr0hpam6.apps.googleusercontent.com
+            client-secret: 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
+            scope:
+              - profile
+              - email
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+            authorization-grant-type: authorization_code
+            client-name: Google
+        provider:
+          google:
+            authorization-uri: https://accounts.google.com/o/oauth2/auth
+            token-uri: https://oauth2.googleapis.com/token
+            user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
+            user-name-attribute: id
+server:
+  port: 8080
+  error:
+    include-stacktrace: on-param
+    
 springdoc:
   api-docs:
     path: /v3/api-docs

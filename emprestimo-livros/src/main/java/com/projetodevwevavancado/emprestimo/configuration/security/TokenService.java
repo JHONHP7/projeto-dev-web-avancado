@@ -18,15 +18,23 @@ public class TokenService {
 	@Value("${api.security.token.secret}")
 	private String secret;
 
+	/**
+	 * quem criou o token nome da aplicação
+	 * usuário que ta recebendo o token
+	 * tempo para o token expirar
+	 * fazer a assinatura e geração final
+	 * @param user
+	 * @return
+	 */
 	public String generateToken(UserEntity user) {
 		
 		try {
 			Algorithm algorithm = Algorithm.HMAC256(secret);
 			String token = JWT.create()
-					.withIssuer("api-emprestimo-livro") //quem criou o token nome da aplicação
-					.withSubject(user.getEmail()) //usuário que ta recebendo o token
-					.withExpiresAt(genExpirationDate()) //tempo para o token expirar
-					.sign(algorithm); //fazer a assinatura e geração final
+					.withIssuer("api-emprestimo-livro")
+					.withSubject(user.getEmail())
+					.withExpiresAt(genExpirationDate())
+					.sign(algorithm);
 			return token;
 					
 		} catch (JWTCreationException e) {
