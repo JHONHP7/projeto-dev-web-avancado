@@ -1,0 +1,27 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://postgres:5432/emprestimo_livros
+    username: postgres
+    password: 1996
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      initialization-fail-timeout: 0
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+      default_schema: emprestimo
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    schemas: emprestimo
+    locations: classpath:db/migration
+    url: jdbc:postgresql://postgres:5432/emprestimo_livros
+    user: postgres
+    password: 1996

@@ -1,29 +1,53 @@
 spring:
   datasource:
-    driver-class-name: org.h2.Driver
-    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;INIT=CREATE SCHEMA IF NOT EXISTS emprestimo
-    username: sa
-    password: password
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
+    url: jdbc:postgresql://localhost:5432/emprestimo_livros
+    username: postgres
+    password: 1996
+    driver-class-name: org.postgresql.Driver
+
   jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
-    defer-datasource-initialization: true
-    show-sql: true
     hibernate:
-      ddl-auto: update
-    properties:
-      hibernate:
-        format_sql: true
+      ddl-auto: none  # Não alterar o esquema automaticamente
+      default_schema: emprestimo  # Define o schema "emprestimo" como padrão
+    show-sql: true  # Exibe as queries no console
 
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    schemas: emprestimo
+    locations: classpath:db/migration
+    
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: 1080697336488-lqffnqk5lppnqkionbrnit6ubr0hpam6.apps.googleusercontent.com
+            client-secret: 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
+            scope:
+              - profile
+              - email
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+            authorization-grant-type: authorization_code
+            client-name: Google
+        provider:
+          google:
+            authorization-uri: https://accounts.google.com/o/oauth2/auth
+            token-uri: https://oauth2.googleapis.com/token
+            user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
+            user-name-attribute: id
 server:
+  port: 8080
   error:
-    whitelabel:
-      enabled: false
+    include-stacktrace: on-param
+    
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
 
-security:
-  user:
-    name: sa
-    password: password
+api:
+  security:
+    token:
+      secret: ${JWT_SECRET:my-secret-key}  # Define a chave secreta do token JWT
