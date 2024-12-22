@@ -52,3 +52,5 @@ api:
   security:
     token:
       secret: ${API_SECURITY_TOKEN_SECRET:my-secret-key}  # Define a chave secreta do token JWT
+app:
+  caminhoImagem: src/main/resources/uploads/images/
