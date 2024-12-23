@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import com.projetodevwevavancado.emprestimo.api.resource.handler.exceptions.AuthenticationFailedException;
 import com.projetodevwevavancado.emprestimo.api.resource.handler.exceptions.DataNotFoundException;
 import com.projetodevwevavancado.emprestimo.api.resource.handler.exceptions.EmailAlreadyExistsException;
+import com.projetodevwevavancado.emprestimo.api.resource.handler.exceptions.FavoriteAlreadyExistsException;
 import com.projetodevwevavancado.emprestimo.commons.util.ApiResponse;
 
 @ControllerAdvice
@@ -43,6 +44,13 @@ public class ResourceExceptionHandler {
 	    ApiResponse response = new ApiResponse(ex.getMessage(), false);
 	    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
 	}
+	
+	@ExceptionHandler(FavoriteAlreadyExistsException.class)
+	public ResponseEntity<ApiResponse> handleFavoriteAlreadyExistsException(FavoriteAlreadyExistsException ex) {
+	    ApiResponse response = new ApiResponse(ex.getMessage(), false);
+	    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+	}
+
 
 
 }
