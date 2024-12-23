@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -56,6 +57,9 @@ public class AuthenticationResource {
 	@Autowired
 	private AuthorizationService authorizationService;
 
+	@Value("${spring.security.oauth2.client.registration.google.client-id}")
+	private String googleClientId;
+
 	@Operation(summary = "Fazer login e receber token JWT")
 	@PostMapping("/login")
 	public ResponseEntity<?> login(@RequestBody @Valid AuthenticationDTO data) {
@@ -102,7 +106,9 @@ public class AuthenticationResource {
 			}
 			GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(
 					GoogleNetHttpTransport.newTrustedTransport(), GsonFactory.getDefaultInstance())
-					.setAudience(Collections.singletonList("1080697336488-lqffnqk5lppnqkionbrnit6ubr0hpam6.apps.googleusercontent.com")).build();
+					.setAudience(Collections
+							.singletonList(googleClientId))
+					.build();
 			GoogleIdToken idToken = verifier.verify(token);
 			if (idToken != null) {
 				GoogleIdToken.Payload payload = idToken.getPayload();
