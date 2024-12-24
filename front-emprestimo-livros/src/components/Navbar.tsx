@@ -14,7 +14,7 @@ const Navbar = () => {
       <Link to="/books" className="hover:bg-gray-700 px-4 py-3 rounded transition-colors">
         Home
       </Link>
-      <Link to="/advertises" className="hover:bg-gray-700 px-4 py-3 rounded transition-colors">
+      <Link to="/books" className="hover:bg-gray-700 px-4 py-3 rounded transition-colors">
         List Books
       </Link>
       <button

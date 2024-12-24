@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.projetodevwevavancado.emprestimo.api.dto.request.LoanSaveRequestDTO;
 import com.projetodevwevavancado.emprestimo.api.dto.request.LoanSearchRequestDTO;
 import com.projetodevwevavancado.emprestimo.api.resource.swagger.LoanResourceApi;
 import com.projetodevwevavancado.emprestimo.commons.util.ApiResponse;
@@ -37,16 +38,17 @@ public class LoanResource implements LoanResourceApi {
 	}
 
 	@PostMapping("/create")
-	public ResponseEntity<ApiResponse> createLoan(@RequestBody LoanEntity loanEntity) {
-		try {
-			LoanEntity createdLoan = loanService.createLoan(loanEntity);
-			ApiResponse response = new ApiResponse("Empréstimo criado com sucesso!", true);
-			return ResponseEntity.ok(response);
-		} catch (Exception e) {
-			ApiResponse response = new ApiResponse("Erro ao criar empréstimo: " + e.getMessage(), false);
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-		}
+	public ResponseEntity<ApiResponse> createLoan(@RequestBody LoanSaveRequestDTO loanRequestDTO) {
+	    try {
+	        LoanEntity createdLoan = loanService.createLoan(loanRequestDTO);
+	        ApiResponse response = new ApiResponse("Empréstimo criado com sucesso!", true);
+	        return ResponseEntity.ok(response);
+	    } catch (Exception e) {
+	        ApiResponse response = new ApiResponse("Erro ao criar empréstimo: " + e.getMessage(), false);
+	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+	    }
 	}
+
 
 	@PutMapping("/return/{loanId}")
     public ResponseEntity<ApiResponse> markAsReturned(@PathVariable Long loanId) {

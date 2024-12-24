@@ -28,4 +28,7 @@ public interface LoanRepository extends JpaRepository<LoanEntity, Long> {
 	@Query(value = FIND_BY_USERBNAME)
 	List<LoanEntity> findByUserName(@Param("nomeUsuario") String nomeUsuario);
 
+	@Query("SELECT COUNT(l) FROM LoanEntity l WHERE l.usuario.id = :userId AND l.status = :status")
+	long countByUsuarioIdAndStatus(@Param("userId") Long userId, @Param("status") String status);
+
 }

@@ -6,10 +6,13 @@ import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import com.projetodevwevavancado.emprestimo.api.dto.request.LoanSaveRequestDTO;
 import com.projetodevwevavancado.emprestimo.entity.BookEntity;
 import com.projetodevwevavancado.emprestimo.entity.LoanEntity;
+import com.projetodevwevavancado.emprestimo.entity.UserEntity;
 import com.projetodevwevavancado.emprestimo.repository.BookRepository;
 import com.projetodevwevavancado.emprestimo.repository.LoanRepository;
+import com.projetodevwevavancado.emprestimo.repository.UserRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class LoanService {
 
+	private final UserRepository userRepository;
 	private final LoanRepository loanRepository;
 	private final BookRepository bookRepository;
 
@@ -30,46 +34,56 @@ public class LoanService {
 	}
 
 	@Transactional
-	public LoanEntity createLoan(LoanEntity loanEntity) {
-		// Obtém o livro do repositório para garantir que todos os dados estejam
-		// carregados
-		BookEntity book = bookRepository.findById(loanEntity.getLivro().getId())
-				.orElseThrow(() -> new IllegalArgumentException("Livro não encontrado"));
+	public LoanEntity createLoan(LoanSaveRequestDTO loanRequestDTO) {
+	    UserEntity user = userRepository.findById(loanRequestDTO.idUser())
+	        .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
 
-		// Obtenha a quantidade de exemplares disponíveis
-		Integer quantidade = book.getQuantidadeExemplares();
+	    long activeLoans = loanRepository.countByUsuarioIdAndStatus(loanRequestDTO.idUser(), "Emprestado");
+	    if (activeLoans >= 2) {
+	        throw new IllegalStateException("Usuário já possui o limite de dois empréstimos ativos.");
+	    }
 
-		// Verifica se há exemplares disponíveis
-		if (!book.temExemplaresDisponiveis()) {
-			throw new IllegalArgumentException("Não há exemplares disponíveis para empréstimo");
-		}
+	    BookEntity book = bookRepository.findById(loanRequestDTO.idBook())
+	        .orElseThrow(() -> new IllegalArgumentException("Livro não encontrado"));
+	    
+	    if(Boolean.FALSE.equals(book.getDisponivel())) {
+	    	throw new IllegalArgumentException("Livro não está disponível no momento.");
+	    }
 
-		// Diminui a quantidade de exemplares
-		book.ajustarQuantidadeExemplares(-1);
-		bookRepository.save(book); // Salva a atualização do livro
+	    if (!book.temExemplaresDisponiveis() && book.getDisponivel()) {
+	        throw new IllegalArgumentException("Não há exemplares disponíveis para empréstimo.");
+	    }
 
-		// Define a data do empréstimo e o status
-		loanEntity.setDataEmprestimo(new Date());
-		loanEntity.setStatus("Emprestado");
-		loanEntity.setLivro(book); // Certifique-se de que o livro está atualizado no empréstimo
 
-		return loanRepository.save(loanEntity);
+	    book.ajustarQuantidadeExemplares(-1);
+
+	    if (book.getQuantidadeExemplares() == 0) {
+	        book.setDisponivel(false);
+	    }
+	    bookRepository.save(book);
+
+	    LoanEntity loanEntity = new LoanEntity();
+	    loanEntity.setLivro(book);
+	    loanEntity.setUsuario(user);
+	    loanEntity.setDataEmprestimo(new Date());
+	    loanEntity.setStatus("Emprestado");
+
+	    return loanRepository.save(loanEntity);
 	}
+
+
 
 	@Transactional
 	public LoanEntity markAsReturned(Long loanId) {
 		LoanEntity loan = findById(loanId);
 
-		// Verifica se o empréstimo já está marcado como devolvido
 		if ("Devolvido".equalsIgnoreCase(loan.getStatus())) {
 			throw new IllegalStateException("Empréstimo já devolvido.");
 		}
 
-		// Atualiza o status e a data de devolução
 		loan.setStatus("Devolvido");
 		loan.setDataDevolucao(new Date());
 
-		// Aumenta a quantidade de exemplares do livro
 		BookEntity book = loan.getLivro();
 		book.ajustarQuantidadeExemplares(1);
 		bookRepository.save(book);
