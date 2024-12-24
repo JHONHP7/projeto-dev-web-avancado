@@ -43,7 +43,9 @@ const UpdateBook = () => {
 
         const data = await response.json();
 
-        const formattedDate = new Date(data.publicationDate).toISOString().split('T')[0];
+        // Convertendo a data do formato "DD-MM-YYYY" para "YYYY-MM-DD"
+        const [day, month, year] = data.publicationDate.split('-');
+        const formattedDate = `${year}-${month}-${day}`;
 
         setBook({
           id: data.bookId,
@@ -81,13 +83,23 @@ const UpdateBook = () => {
     e.preventDefault();
     try {
       const token = localStorage.getItem('token');
+
+      // Convertendo a data do formato "YYYY-MM-DD" para "DD-MM-YYYY"
+      const [year, month, day] = book.dataPublicacao.split('-');
+      const formattedDateForSubmit = `${day}-${month}-${year}`;
+
+      const bookToSubmit = {
+        ...book,
+        dataPublicacao: formattedDateForSubmit
+      };
+
       const response = await fetch('http://localhost:8080/books/update', {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(book),
+        body: JSON.stringify(bookToSubmit),
       });
 
       if (!response.ok) {

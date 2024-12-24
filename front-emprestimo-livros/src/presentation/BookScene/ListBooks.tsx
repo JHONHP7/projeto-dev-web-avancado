@@ -12,12 +12,41 @@ interface Book {
   dataPublicacao: string;
 }
 
+interface User {
+  id: number;
+  nome: string;
+  email: string;
+  role: string;
+}
+
 const ListBooks = () => {
   const navigate = useNavigate();
   const [books, setBooks] = useState<Book[]>([]);
   const [error, setError] = useState<string>('');
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const response = await fetch('http://localhost:8080/auth/usuario/logado', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error('Erro ao buscar usuário');
+        }
+
+        const userData = await response.json();
+        setUser(userData);
+      } catch (error) {
+        console.error('Erro ao buscar usuário:', error);
+      }
+    };
+
     const fetchBooks = async () => {
       try {
         const token = localStorage.getItem('token');
@@ -41,6 +70,7 @@ const ListBooks = () => {
       }
     };
 
+    fetchUser();
     fetchBooks();
   }, []);
 
@@ -49,12 +79,14 @@ const ListBooks = () => {
       <div className="p-4">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-bold">Lista de Livros</h2>
-          <button
-            onClick={() => navigate('/books/create')}
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-          >
-            Novo Livro
-          </button>
+          {user?.role === 'ADMIN' && (
+            <button
+              onClick={() => navigate('/books/create')}
+              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+            >
+              Novo Livro
+            </button>
+          )}
         </div>
 
         {error && (
@@ -74,7 +106,9 @@ const ListBooks = () => {
                   <th className="px-6 py-3 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                   <th className="px-6 py-3 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantidade</th>
                   <th className="px-6 py-3 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Data de Publicação</th>
-                  <th className="px-6 py-3 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
+                  {user?.role === 'ADMIN' && (
+                    <th className="px-6 py-3 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
+                  )}
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
@@ -89,15 +123,17 @@ const ListBooks = () => {
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">{book.quantidadeExemplares}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{new Date(book.dataPublicacao).toLocaleDateString()}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <button
-                        onClick={() => navigate(`/books/update/${book.id}`)}
-                        className="text-blue-600 hover:text-blue-900 mr-4"
-                      >
-                        Editar
-                      </button>
-                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">{book.dataPublicacao}</td>
+                    {user?.role === 'ADMIN' && (
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <button
+                          onClick={() => navigate(`/books/update/${book.id}`)}
+                          className="text-blue-600 hover:text-blue-900 mr-4"
+                        >
+                          Editar
+                        </button>
+                      </td>
+                    )}
                   </tr>
                 ))}
               </tbody>

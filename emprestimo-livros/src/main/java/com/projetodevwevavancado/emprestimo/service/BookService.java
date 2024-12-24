@@ -2,7 +2,9 @@ package com.projetodevwevavancado.emprestimo.service;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapper;
@@ -33,6 +35,8 @@ public class BookService {
 	}
 	
 	public BookUpdateDTO mapToDTO(BookEntity entity) {
+	    SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+	    sdf.setTimeZone(TimeZone.getTimeZone("GMT-3"));
 	    return BookUpdateDTO.builder()
 	        .bookId(entity.getId())
 	        .bookTitle(entity.getTitulo())
@@ -41,10 +45,12 @@ public class BookService {
 	        .bookAvailable(entity.getDisponivel())
 	        .bookQuantity(entity.getQuantidadeExemplares())
 	        .publicationDate(entity.getDataPublicacao() != null 
-	            ? new SimpleDateFormat("yyyy-MM-dd").format(entity.getDataPublicacao()) 
+	            ? sdf.format(entity.getDataPublicacao()) 
 	            : null)
 	        .build();
 	}
+
+
 
 
 
@@ -85,15 +91,39 @@ public class BookService {
 
 	public BookEntity saveOrUpdate(BookEntity bookEntity) {
 	    if (bookEntity.getId() != null) {
-	        BookEntity existingBook = bookRepository.findById(bookEntity.getId()).orElseThrow(
-	                () -> new IllegalArgumentException("Livro não encontrado para o id: " + bookEntity.getId()));
+	        BookEntity existingBook = bookRepository.findById(bookEntity.getId())
+	            .orElseThrow(() -> new IllegalArgumentException("Livro não encontrado para o id: " + bookEntity.getId()));
+
+	        // Se a data de publicação não estiver nula, converta para o formato correto com o fuso horário
+	        if (bookEntity.getDataPublicacao() != null) {
+	            SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+	            sdf.setTimeZone(TimeZone.getTimeZone("GMT-3"));  // Define o fuso horário de Brasília
+
+	            try {
+	                Date parsedDate = sdf.parse(sdf.format(bookEntity.getDataPublicacao()));
+	                existingBook.setDataPublicacao(parsedDate);
+	            } catch (Exception e) {
+	                throw new IllegalArgumentException("Erro ao formatar data de publicação");
+	            }
+	        }
 
 	        BeanUtils.copyProperties(bookEntity, existingBook, getNullPropertyNames(bookEntity));
-
 	        return bookRepository.save(existingBook);
 	    } else {
 	        if (bookEntity.getTitulo() == null || bookEntity.getAutor() == null || bookEntity.getIsbn() == null) {
 	            throw new IllegalArgumentException("Campos obrigatórios não podem ser nulos para inserção.");
+	        }
+
+	        // Se a data de publicação não estiver nula, formate ela antes de salvar com o fuso horário correto
+	        if (bookEntity.getDataPublicacao() != null) {
+	            SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+	            sdf.setTimeZone(TimeZone.getTimeZone("GMT-3"));  // Define o fuso horário de Brasília
+	            try {
+	                Date parsedDate = sdf.parse(sdf.format(bookEntity.getDataPublicacao()));
+	                bookEntity.setDataPublicacao(parsedDate);
+	            } catch (Exception e) {
+	                throw new IllegalArgumentException("Erro ao formatar data de publicação");
+	            }
 	        }
 
 	        return bookRepository.save(bookEntity);

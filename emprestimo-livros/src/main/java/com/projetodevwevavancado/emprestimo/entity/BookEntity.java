@@ -54,7 +54,7 @@ public class BookEntity implements Serializable {
 	@JsonProperty("quantidadeExemplares")
 	private Integer quantidadeExemplares;
 
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy", timezone = "GMT-3")
 	@Temporal(TemporalType.DATE)
 	private Date dataPublicacao;
 

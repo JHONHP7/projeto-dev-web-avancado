@@ -1,4 +1,3 @@
-// src/presentation/BookScene/CreateBook.tsx
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -33,6 +32,12 @@ const CreateBook = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Formatar a data de publicação no formato DD-MM-YYYY
+    const [year, month, day] = book.dataPublicacao.split("-");
+    const formattedDate = `${day}-${month}-${year}`;
+    const updatedBook = { ...book, dataPublicacao: formattedDate };
+
     try {
       const token = localStorage.getItem('token');
       const response = await fetch('http://localhost:8080/books/save', {
@@ -41,7 +46,7 @@ const CreateBook = () => {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(book),
+        body: JSON.stringify(updatedBook),
       });
 
       if (!response.ok) {
