@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 
+import com.projetodevwevavancado.emprestimo.api.dto.request.BookRequestByTitleDTO;
+import com.projetodevwevavancado.emprestimo.api.dto.response.BookDTO;
 import com.projetodevwevavancado.emprestimo.api.dto.response.BookUpdateDTO;
 import com.projetodevwevavancado.emprestimo.entity.BookEntity;
 
@@ -26,4 +28,7 @@ public interface BookResourceApi {
 	@Operation(summary = "Update livro")
 	public ResponseEntity<BookUpdateDTO> findById(Long id);
 
+
+	@Operation(summary = "Buscar lista de livro por titulo")
+	public ResponseEntity<List<BookDTO>> findBooksByTitle(BookRequestByTitleDTO title);
 }

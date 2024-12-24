@@ -43,6 +43,8 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.GET, "/users").hasRole(ADMIN_ROLE)
                         .requestMatchers(HttpMethod.POST, "/users/update").hasRole(ADMIN_ROLE)
                         .requestMatchers(HttpMethod.POST, "/users/delete").hasRole(ADMIN_ROLE)
+                        .requestMatchers(HttpMethod.POST, "/users/**").hasRole(ADMIN_ROLE)
+                        .requestMatchers(HttpMethod.POST, "/books").hasRole(ADMIN_ROLE)
                         .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/google-login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()

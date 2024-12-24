@@ -36,27 +36,41 @@ public class UserResource implements UserResourceApi {
 	private UserService userService;
 
 	@GetMapping
-	public ResponseEntity<ApiResponseUsers<List<UserResponseDTO>>> listAll() {
-		try {
-			List<UserResponseDTO> users = userService.listAll();
+    public ResponseEntity<ApiResponseUsers<List<UserResponseDTO>>> listAll() {
+        try {
+            List<UserResponseDTO> users = userService.listAll();
 
-			if (users.isEmpty()) {
-				ApiResponseUsers<List<UserResponseDTO>> response = new ApiResponseUsers<>(null,
-						"Nenhum usuário encontrado.", false, HttpStatus.NOT_FOUND.value());
-				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-			}
+            if (users.isEmpty()) {
+                ApiResponseUsers<List<UserResponseDTO>> response = new ApiResponseUsers<>(
+                        null,
+                        "Nenhum usuário encontrado.",
+                        false,
+                        HttpStatus.NOT_FOUND.value()
+                );
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+            }
 
-			ApiResponseUsers<List<UserResponseDTO>> response = new ApiResponseUsers<>(users,
-					"Usuários listados com sucesso", true, HttpStatus.OK.value());
-			return ResponseEntity.ok(response);
+            ApiResponseUsers<List<UserResponseDTO>> response = new ApiResponseUsers<>(
+                    users,
+                    "Usuários listados com sucesso",
+                    true,
+                    HttpStatus.OK.value()
+            );
+            return ResponseEntity.ok(response);
 
-		} catch (Exception e) {
-			ApiResponseUsers<List<UserResponseDTO>> response = new ApiResponseUsers<>(null,
-					"Erro ao listar usuários. Tente novamente mais tarde.", false,
-					HttpStatus.INTERNAL_SERVER_ERROR.value());
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-		}
-	}
+        } catch (Exception e) {
+            // Log detalhado da exceção
+            e.printStackTrace();
+
+            ApiResponseUsers<List<UserResponseDTO>> response = new ApiResponseUsers<>(
+                    null,
+                    "Erro ao listar usuários. Tente novamente mais tarde.",
+                    false,
+                    HttpStatus.INTERNAL_SERVER_ERROR.value()
+            );
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
 
 	@DeleteMapping("/{id}")
 	public ResponseEntity<ApiResponse> deleteUser(@PathVariable Long id) {

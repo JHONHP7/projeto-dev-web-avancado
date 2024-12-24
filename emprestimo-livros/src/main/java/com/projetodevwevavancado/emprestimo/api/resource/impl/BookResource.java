@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.projetodevwevavancado.emprestimo.api.dto.request.BookRequestByTitleDTO;
+import com.projetodevwevavancado.emprestimo.api.dto.response.BookDTO;
 import com.projetodevwevavancado.emprestimo.api.dto.response.BookUpdateDTO;
 import com.projetodevwevavancado.emprestimo.api.resource.swagger.BookResourceApi;
 import com.projetodevwevavancado.emprestimo.entity.BookEntity;
@@ -56,5 +58,17 @@ public class BookResource implements BookResourceApi {
 	public ResponseEntity<BookUpdateDTO> findById(@PathVariable Long id) {
 		return ResponseEntity.ok(bookService.findByBookById(id));
 	}
+
+	@PostMapping("/title")
+	public ResponseEntity<List<BookDTO>> findBooksByTitle(@RequestBody BookRequestByTitleDTO title) {
+	    List<BookDTO> books = bookService.findBookAllBookById(title);
+	    if (books.isEmpty()) {
+	        return ResponseEntity.noContent().build();
+	    }
+	    return ResponseEntity.ok(books);
+	}
+
+
+
 
 }

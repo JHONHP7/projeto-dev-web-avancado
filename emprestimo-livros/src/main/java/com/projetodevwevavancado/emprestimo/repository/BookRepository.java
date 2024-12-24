@@ -1,10 +1,13 @@
 package com.projetodevwevavancado.emprestimo.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import com.projetodevwevavancado.emprestimo.api.dto.request.BookRequestByTitleDTO;
 import com.projetodevwevavancado.emprestimo.entity.BookEntity;
 
 @Repository
@@ -19,5 +22,9 @@ public interface BookRepository extends JpaRepository<BookEntity, Long> {
 	
 	@Query(value = "SELECT * FROM emprestimo.tb_book tb WHERE tb.sq_book = :idBook", nativeQuery = true)
 	BookEntity findBookById(@Param("idBook") Long idBook);
+
+	@Query(value = "SELECT * FROM emprestimo.tb_book b WHERE b.titulo LIKE :title", nativeQuery = true)
+	List<BookEntity> findBookAllBookById(@Param("title") String title);
+
 
 }

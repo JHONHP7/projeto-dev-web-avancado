@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -14,11 +15,19 @@ import com.projetodevwevavancado.emprestimo.api.resource.handler.exceptions.Emai
 import com.projetodevwevavancado.emprestimo.entity.UserEntity;
 import com.projetodevwevavancado.emprestimo.repository.UserRepository;
 
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
+
+@AllArgsConstructor
+@RequiredArgsConstructor
 @Service
 public class UserService {
 
+	@Autowired
 	private UserRepository userRepository;
 
+	@Autowired
 	private ModelMapper modelMapper;
 
 	public UserResponseDTO userEntityToUserResponseDTO(UserEntity userEntity) {
@@ -26,10 +35,29 @@ public class UserService {
 	}
 
 	public List<UserResponseDTO> listAll() {
-		List<UserEntity> entities = userRepository.findAll();
-
-		return entities.stream().map(this::userEntityToUserResponseDTO).toList();
+	    try {
+	        List<UserEntity> entities = userRepository.findAll();
+	        if (entities.isEmpty()) {
+	            return List.of();
+	        }
+	        return entities.stream().map(this::convertToDTO).toList();
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        throw new RuntimeException("Erro ao listar usuários: " + e.getMessage(), e);
+	    }
 	}
+
+
+	private UserResponseDTO convertToDTO(UserEntity userEntity) {
+	    return UserResponseDTO.builder()
+	            .id(userEntity.getId())
+	            .nome(userEntity.getNome())
+	            .email(userEntity.getEmail())
+	            .role(userEntity.getRole())
+	            .build();
+	}
+
+
 
 	public Optional<UserEntity> findById(Long id) {
 		return userRepository.findById(id);
@@ -72,5 +100,15 @@ public class UserService {
 			throw new EmailAlreadyExistsException("O e-mail já está em uso por outro usuário.");
 		}
 	}
+	
+	public List<UserResponseDTO> findUserByEmail(String email) {
+	return null;	
+	}
+
+	/**
+	 * Conversões DTO/ENTITY
+	 */
+
 
 }
+

@@ -5,12 +5,15 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.projetodevwevavancado.emprestimo.api.dto.request.BookRequestByTitleDTO;
 import com.projetodevwevavancado.emprestimo.api.dto.response.BookDTO;
 import com.projetodevwevavancado.emprestimo.api.dto.response.BookUpdateDTO;
 import com.projetodevwevavancado.emprestimo.entity.BookEntity;
@@ -21,8 +24,9 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class BookService {
-	private final BookRepository bookRepository;
 	
+	@Autowired
+	private final BookRepository bookRepository;
 	
 	public BookDTO convertBookEntityToBookDTO(BookEntity bookEntity) {
 	    return new BookDTO(
@@ -141,5 +145,30 @@ public class BookService {
 	    }
 	    return nullPropertyNames.toArray(new String[0]);
 	}
+	
+	public List<BookDTO> findBookAllBookById(BookRequestByTitleDTO title) {
+	    String searchTitle = "%" + title.getTitle() + "%"; // Adiciona os wildcards
+	    List<BookEntity> entities = bookRepository.findBookAllBookById(searchTitle);
 
+	    List<BookDTO> dtos = entities.stream()
+	        .map(this::bookEntityToDTO)
+	        .collect(Collectors.toList());
+
+	    return dtos;
+	}
+
+	
+	/**
+	 * Conversçoes
+	 */
+
+	private BookDTO bookEntityToDTO(BookEntity entity) {
+		return BookDTO.builder()
+				.bookAuthor(entity.getAutor())
+				.bookAvailable(entity.getDisponivel())
+				.bookId(entity.getId())
+				.bookQuantity(entity.getQuantidadeExemplares())
+				.bookTitle(entity.getTitulo())
+				.build();
+	}
 }
