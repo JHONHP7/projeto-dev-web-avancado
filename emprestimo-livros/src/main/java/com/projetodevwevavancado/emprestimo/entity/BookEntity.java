@@ -3,6 +3,7 @@ package com.projetodevwevavancado.emprestimo.entity;
 import java.io.Serializable;
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.persistence.AttributeOverride;
@@ -53,7 +54,7 @@ public class BookEntity implements Serializable {
 	@JsonProperty("quantidadeExemplares")
 	private Integer quantidadeExemplares;
 
-	@JsonProperty("dataPublicacao")
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
 	@Temporal(TemporalType.DATE)
 	private Date dataPublicacao;
 

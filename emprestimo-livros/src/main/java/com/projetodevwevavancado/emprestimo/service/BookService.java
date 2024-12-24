@@ -1,5 +1,6 @@
 package com.projetodevwevavancado.emprestimo.service;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,6 +9,8 @@ import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.stereotype.Service;
 
+import com.projetodevwevavancado.emprestimo.api.dto.response.BookDTO;
+import com.projetodevwevavancado.emprestimo.api.dto.response.BookUpdateDTO;
 import com.projetodevwevavancado.emprestimo.entity.BookEntity;
 import com.projetodevwevavancado.emprestimo.repository.BookRepository;
 
@@ -17,6 +20,33 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class BookService {
 	private final BookRepository bookRepository;
+	
+	
+	public BookDTO convertBookEntityToBookDTO(BookEntity bookEntity) {
+	    return new BookDTO(
+	            bookEntity.getId(),
+	            bookEntity.getTitulo(),
+	            bookEntity.getAutor(),
+	            bookEntity.getDisponivel(),
+	            bookEntity.getQuantidadeExemplares()
+	    );
+	}
+	
+	public BookUpdateDTO mapToDTO(BookEntity entity) {
+	    return BookUpdateDTO.builder()
+	        .bookId(entity.getId())
+	        .bookTitle(entity.getTitulo())
+	        .bookAuthor(entity.getAutor())
+	        .bookIsbn(entity.getIsbn())
+	        .bookAvailable(entity.getDisponivel())
+	        .bookQuantity(entity.getQuantidadeExemplares())
+	        .publicationDate(entity.getDataPublicacao() != null 
+	            ? new SimpleDateFormat("yyyy-MM-dd").format(entity.getDataPublicacao()) 
+	            : null)
+	        .build();
+	}
+
+
 
 	public List<BookEntity> findAll() {
 		return bookRepository.findAll();
@@ -24,6 +54,14 @@ public class BookService {
 
 	public BookEntity findById(BookEntity entity) {
 		return bookRepository.findById(entity.getId()).orElseThrow(() -> new RuntimeException("Livro não encontrado"));
+	}
+	
+
+	public BookUpdateDTO findByBookById( Long id) {
+		 BookEntity bookEntity = bookRepository.findById(id)
+	                .orElseThrow(() -> new RuntimeException("Livro não encontrado"));
+	        
+	        return mapToDTO(bookEntity);
 	}
 
 	public BookEntity findByTitle(String title) {

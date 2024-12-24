@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 
+import com.projetodevwevavancado.emprestimo.api.dto.response.BookUpdateDTO;
 import com.projetodevwevavancado.emprestimo.entity.BookEntity;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -21,5 +22,8 @@ public interface BookResourceApi {
 
 	@Operation(summary = "Update livro")
 	public ResponseEntity<BookEntity> update(BookEntity bookEntity);
+
+	@Operation(summary = "Update livro")
+	public ResponseEntity<BookUpdateDTO> findById(Long id);
 
 }

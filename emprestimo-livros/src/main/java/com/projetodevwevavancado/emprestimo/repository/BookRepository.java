@@ -16,5 +16,8 @@ public interface BookRepository extends JpaRepository<BookEntity, Long> {
 
 	@Query(value = FIND_QUANTIDADE_BY_ID_BOOK, nativeQuery = true)
 	int findQuantidadeByIdBook(@Param("idBook") Long idBook);
+	
+	@Query(value = "SELECT * FROM emprestimo.tb_book tb WHERE tb.sq_book = :idBook", nativeQuery = true)
+	BookEntity findBookById(@Param("idBook") Long idBook);
 
 }

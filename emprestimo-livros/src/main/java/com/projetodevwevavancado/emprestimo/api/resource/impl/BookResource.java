@@ -6,12 +6,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.projetodevwevavancado.emprestimo.api.dto.response.BookUpdateDTO;
 import com.projetodevwevavancado.emprestimo.api.resource.swagger.BookResourceApi;
 import com.projetodevwevavancado.emprestimo.entity.BookEntity;
 import com.projetodevwevavancado.emprestimo.service.BookService;
@@ -48,6 +50,11 @@ public class BookResource implements BookResourceApi {
 	@DeleteMapping("/delete")
 	public ResponseEntity<Void> delete(@RequestBody BookEntity entity) {
 		return ResponseEntity.ok(bookService.delete(entity));
+	}
+
+	@GetMapping("/{id}")
+	public ResponseEntity<BookUpdateDTO> findById(@PathVariable Long id) {
+		return ResponseEntity.ok(bookService.findByBookById(id));
 	}
 
 }
