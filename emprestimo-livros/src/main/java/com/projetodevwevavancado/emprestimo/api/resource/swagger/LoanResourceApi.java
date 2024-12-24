@@ -3,10 +3,10 @@ package com.projetodevwevavancado.emprestimo.api.resource.swagger;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import com.projetodevwevavancado.emprestimo.api.dto.request.LoanSaveRequestDTO;
 import com.projetodevwevavancado.emprestimo.api.dto.request.LoanSearchRequestDTO;
+import com.projetodevwevavancado.emprestimo.api.dto.response.LoanDTO;
 import com.projetodevwevavancado.emprestimo.commons.util.ApiResponse;
 import com.projetodevwevavancado.emprestimo.entity.LoanEntity;
 
@@ -18,7 +18,7 @@ public interface LoanResourceApi {
 	public ResponseEntity<ApiResponse> createLoan(LoanSaveRequestDTO loanRequestDTO);
 
 	@Operation(summary = "Buscar lista de empréstimos")
-	public ResponseEntity<List<LoanEntity>> findAll();
+	public ResponseEntity<List<LoanDTO>> findAll();
 
 	@Operation(summary = "Marcar empréstimo como devolvido")
 	public ResponseEntity<ApiResponse> markAsReturned(Long loanId);
@@ -31,4 +31,7 @@ public interface LoanResourceApi {
 
 	@Operation(summary = "Buscar empréstimos pelo nome do usuário")
 	public ResponseEntity<List<LoanEntity>> findByUserName(LoanSearchRequestDTO request);
+
+	@Operation(summary = "Renova empréstimos por 7 dias")
+	public ResponseEntity<ApiResponse> renovarEmprestimo(Long loanId);
 }

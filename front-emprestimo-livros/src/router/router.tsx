@@ -5,6 +5,7 @@ import ListBooks from '../presentation/BookScene/ListBooks';
 import CreateBook from '../presentation/BookScene/CreateBook';
 import UpdateBook from '../presentation/BookScene/UpdateBook';
 import Login from '../presentation/Login/Login';
+import LoanScene from '../presentation/LoanScene/LoanScene';
 
 export const router = createBrowserRouter([
 
@@ -31,6 +32,10 @@ export const router = createBrowserRouter([
       {
         path: "books/update/:id",
         element: <UpdateBook />,
+      },
+      {
+        path: "loans",
+        element: <LoanScene />,
       },
     ],
   },

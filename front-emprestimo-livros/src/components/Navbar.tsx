@@ -17,6 +17,9 @@ const Navbar = () => {
       <Link to="/books" className="hover:bg-gray-700 px-4 py-3 rounded transition-colors">
         List Books
       </Link>
+      <Link to="/loans" className="hover:bg-gray-700 px-4 py-3 rounded transition-colors">
+        List Loans
+      </Link>
       <button
         onClick={handleLogout}
         className="mt-auto bg-red-600 hover:bg-red-700 px-4 py-3 rounded transition-colors text-white"

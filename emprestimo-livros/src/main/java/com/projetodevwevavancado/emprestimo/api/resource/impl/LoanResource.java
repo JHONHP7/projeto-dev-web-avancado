@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.projetodevwevavancado.emprestimo.api.dto.request.LoanSaveRequestDTO;
 import com.projetodevwevavancado.emprestimo.api.dto.request.LoanSearchRequestDTO;
+import com.projetodevwevavancado.emprestimo.api.dto.response.LoanDTO;
 import com.projetodevwevavancado.emprestimo.api.resource.swagger.LoanResourceApi;
 import com.projetodevwevavancado.emprestimo.commons.util.ApiResponse;
 import com.projetodevwevavancado.emprestimo.entity.LoanEntity;
@@ -33,7 +34,7 @@ public class LoanResource implements LoanResourceApi {
 	private final LoanService loanService;
 
 	@GetMapping
-	public ResponseEntity<List<LoanEntity>> findAll() {
+	public ResponseEntity<List<LoanDTO>> findAll() {
 		return ResponseEntity.ok(loanService.findAll());
 	}
 
@@ -86,4 +87,18 @@ public class LoanResource implements LoanResourceApi {
 		return ResponseEntity.ok(loans);
 	}
 
+	@PutMapping("/renew/{loanId}")
+	public ResponseEntity<ApiResponse> renovarEmprestimo(@PathVariable Long loanId) {
+        try {
+            LoanEntity loanRenovado = loanService.renovarEmprestimo(loanId);
+            ApiResponse response = new ApiResponse("Empréstimo renovado com sucesso!", true);
+            return ResponseEntity.ok(response);
+        } catch (IllegalStateException e) {
+            ApiResponse response = new ApiResponse("Limite de renovações atingido.", false);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        } catch (IllegalArgumentException e) {
+            ApiResponse response = new ApiResponse("Empréstimo não encontrado.", false);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+        }
+    }
 }

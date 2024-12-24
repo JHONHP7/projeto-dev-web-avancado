@@ -32,30 +32,33 @@ import lombok.Setter;
 @AttributeOverrides({ @AttributeOverride(name = "id", column = @Column(name = "SQ_LOAN")) })
 public class LoanEntity implements Serializable {
 
-	private static final long serialVersionUID = 5880540814450443693L;
+    private static final long serialVersionUID = 5880540814450443693L;
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "livro_id")
-	private BookEntity livro;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "livro_id")
+    private BookEntity livro;
 
-	@ManyToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "usuario_id")
-	private UserEntity usuario;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "usuario_id")
+    private UserEntity usuario;
 
-	@JsonProperty("dataEmprestimo")
-	private Date dataEmprestimo;
+    @JsonProperty("dataEmprestimo")
+    private Date dataEmprestimo;
 
-	@JsonProperty("dataDevolucao")
-	private Date dataDevolucao;
+    @JsonProperty("dataDevolucao")
+    private Date dataDevolucao;
 
-	@JsonProperty("status")
-	private String status;
+    @JsonProperty("status")
+    private String status;
 
-	@PrePersist
+    @Column(name = "renovacoes", nullable = false)
+    private Integer renovacoes = 0;
+    
+    @PrePersist
 	public void prePersist() {
 		if (dataEmprestimo != null) {
 			this.dataDevolucao = calcularDataDevolucao(dataEmprestimo);
@@ -69,15 +72,16 @@ public class LoanEntity implements Serializable {
 		return calendar.getTime();
 	}
 
-	public LoanEntity(Long id, BookEntity livro, UserEntity usuario, Date dataEmprestimo, Date dataDevolucao,
-			String status) {
-		super();
-		this.id = id;
-		this.livro = livro;
-		this.usuario = usuario;
-		this.dataEmprestimo = dataEmprestimo;
-		this.dataDevolucao = dataDevolucao;
-		this.status = status;
-	}
-
+    public LoanEntity(Long id, BookEntity livro, UserEntity usuario, Date dataEmprestimo, Date dataDevolucao,
+                      String status) {
+        this.id = id;
+        this.livro = livro;
+        this.usuario = usuario;
+        this.dataEmprestimo = dataEmprestimo;
+        this.dataDevolucao = dataDevolucao;
+        this.status = status;
+    }
+    
+    
 }
+

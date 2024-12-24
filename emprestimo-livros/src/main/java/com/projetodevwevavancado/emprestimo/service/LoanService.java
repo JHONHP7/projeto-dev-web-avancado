@@ -1,5 +1,6 @@
 package com.projetodevwevavancado.emprestimo.service;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -7,6 +8,7 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import com.projetodevwevavancado.emprestimo.api.dto.request.LoanSaveRequestDTO;
+import com.projetodevwevavancado.emprestimo.api.dto.response.LoanDTO;
 import com.projetodevwevavancado.emprestimo.entity.BookEntity;
 import com.projetodevwevavancado.emprestimo.entity.LoanEntity;
 import com.projetodevwevavancado.emprestimo.entity.UserEntity;
@@ -25,9 +27,13 @@ public class LoanService {
 	private final LoanRepository loanRepository;
 	private final BookRepository bookRepository;
 
-	public List<LoanEntity> findAll() {
-		return loanRepository.findAll();
+	public List<LoanDTO> findAll() {
+	    return loanRepository.findAll()
+	        .stream()
+	        .map(this::toLoanPageDTO)
+	        .toList();
 	}
+
 
 	public LoanEntity findById(Long id) {
 		return loanRepository.findById(id).orElseThrow(() -> new RuntimeException("Empréstimo não encontrado"));
@@ -118,4 +124,49 @@ public class LoanService {
 	public List<LoanEntity> findByUserName(String nomeUsuario) {
 		return loanRepository.findByUserName(nomeUsuario);
 	}
+	
+	/**
+	 * Renova o empréstimo por 7 dias, com limite de 2 renovações
+	 * @param loanId
+	 * @return
+	 */
+    public LoanEntity renovarEmprestimo(Long loanId) {
+    	
+        LoanEntity loan = loanRepository.findById(loanId)
+                .orElseThrow(() -> new IllegalArgumentException("Empréstimo não encontrado"));
+
+        if (loan.getRenovacoes() >= 2) {
+            throw new IllegalStateException("Limite de renovações atingido");
+        }
+        if ("Devolvido".equals(loan.getStatus())) {
+        	System.out.println("O status  eh: " + loan.getStatus());
+            throw new IllegalStateException("Empréstimo já foi devolvido, não pode ser renovado!");
+        }
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(loan.getDataDevolucao());
+        calendar.add(Calendar.DAY_OF_MONTH, 7);
+        loan.setDataDevolucao(calendar.getTime());
+
+        loan.setRenovacoes(loan.getRenovacoes() + 1);
+
+        return loanRepository.save(loan);
+    }
+	
+	/**
+	 * Converter DTOS
+	 */
+	public LoanDTO toLoanPageDTO(LoanEntity loanEntity) {
+	    return new LoanDTO(
+	        loanEntity.getId(),
+	        loanEntity.getLivro().getId(),
+	        loanEntity.getUsuario().getId(),
+	        loanEntity.getLivro().getTitulo(),
+	        loanEntity.getUsuario().getNome(),
+	        loanEntity.getDataEmprestimo(),
+	        loanEntity.getDataDevolucao(),
+	        loanEntity.getStatus()
+	    );
+	}
+
 }

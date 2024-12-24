@@ -31,14 +31,14 @@ const BookTable: React.FC<BookTableProps> = ({ books, user }) => {
       <table className="min-w-full bg-white border rounded-lg">
         <thead className="bg-gray-100">
           <tr>
-            <th className="px-6 py-3 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Título</th>
-            <th className="px-6 py-3 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Autor</th>
-            <th className="px-6 py-3 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ISBN</th>
-            <th className="px-6 py-3 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-            <th className="px-6 py-3 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantidade</th>
-            <th className="px-6 py-3 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Data de Publicação</th>
+            <th className="px-6 py-3 border-b text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Título</th>
+            <th className="px-6 py-3 border-b text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Autor</th>
+            <th className="px-6 py-3 border-b text-center text-xs font-medium text-gray-500 uppercase tracking-wider">ISBN</th>
+            <th className="px-6 py-3 border-b text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+            <th className="px-6 py-3 border-b text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Quantidade</th>
+            <th className="px-6 py-3 border-b text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Data de Publicação</th>
             {user?.role === 'ADMIN' && (
-              <th className="px-6 py-3 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
+              <th className="px-6 py-3 border-b text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
             )}
           </tr>
         </thead>
@@ -59,7 +59,7 @@ const BookTable: React.FC<BookTableProps> = ({ books, user }) => {
                 <td className="px-6 py-4 whitespace-nowrap">
                   <button
                     onClick={() => navigate(`/books/update/${book.id}`)}
-                    className="text-blue-600 hover:text-blue-900 mr-4"
+                    className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md transition duration-300 ease-in-out transform hover:scale-105 shadow-md"
                   >
                     Editar
                   </button>
