@@ -5,7 +5,7 @@ import { GoogleOAuthProvider, GoogleLogin, CredentialResponse } from '@react-oau
 const Login = () => {
   const [email, setemail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState(''); // Estado para mensagem de erro
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -26,7 +26,7 @@ const Login = () => {
         console.log('Login bem-sucedido, token salvo no localStorage.');
         setError('');
 
-        navigate('/');
+        navigate('/books');
       } else {
         setError('Erro na autenticação. Verifique suas credenciais e tente novamente.');
         console.error('Erro na autenticação:', response.statusText);
@@ -46,7 +46,6 @@ const Login = () => {
   };
 
   const handleGoogleLoginSuccess = (credentialResponse: CredentialResponse) => {
-    // Envie o token do Google para o back-end
     fetch('http://localhost:8080/auth/google-login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -56,7 +55,7 @@ const Login = () => {
       .then((data) => {
         localStorage.setItem('token', data.token);
         console.log('Login bem-sucedido com Google!');
-        navigate('/advertises');
+        navigate('/books');
       })
       .catch((error) => console.error('Erro ao autenticar com Google:', error));
   };

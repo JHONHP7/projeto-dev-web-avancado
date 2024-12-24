@@ -1,6 +1,9 @@
 import { Navigate, createBrowserRouter } from 'react-router-dom';
 import Home from '../presentation/Home/Home';
 import ListAdvertise from '../presentation/AdvertiseScene/ListAdvertise';
+import ListBooks from '../presentation/BookScene/ListBooks';
+import CreateBook from '../presentation/BookScene/CreateBook';
+import UpdateBook from '../presentation/BookScene/UpdateBook';
 import Login from '../presentation/Login/Login';
 
 export const router = createBrowserRouter([
@@ -16,6 +19,18 @@ export const router = createBrowserRouter([
       {
         path: "advertises",
         element: <ListAdvertise />,
+      },
+      {
+        path: "books",
+        element: <ListBooks />,
+      },
+      {
+        path: "books/create",
+        element: <CreateBook />,
+      },
+      {
+        path: "books/update/:id",
+        element: <UpdateBook />,
       },
     ],
   },
