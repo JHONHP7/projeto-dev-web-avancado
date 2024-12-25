@@ -33,6 +33,8 @@ const ListBooks = () => {
     titulo: '',
     autor: ''
   });
+  const [currentPage, setCurrentPage] = useState(1);
+  const booksPerPage = 10;
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -92,6 +94,16 @@ const ListBooks = () => {
     
     return matchesTitulo && matchesAutor;
   });
+
+  // Lógica de paginação
+  const indexOfLastBook = currentPage * booksPerPage;
+  const indexOfFirstBook = indexOfLastBook - booksPerPage;
+  const currentBooks = filteredBooks.slice(indexOfFirstBook, indexOfLastBook);
+  const totalPages = Math.ceil(filteredBooks.length / booksPerPage);
+
+  const paginate = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  };
 
   return (
     <div className="w-screen h-full">
@@ -161,7 +173,24 @@ const ListBooks = () => {
         )}
 
         {filteredBooks.length > 0 ? (
-          <BookTable books={filteredBooks} user={user} />
+          <>
+            <BookTable books={currentBooks} user={user} />
+            <div className="flex justify-center mt-4 gap-2">
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((number) => (
+                <button
+                  key={number}
+                  onClick={() => paginate(number)}
+                  className={`px-3 py-1 rounded ${
+                    currentPage === number
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-200 hover:bg-gray-300'
+                  }`}
+                >
+                  {number}
+                </button>
+              ))}
+            </div>
+          </>
         ) : (
           <p className="text-gray-700">Carregando ou nenhum livro disponível...</p>
         )}

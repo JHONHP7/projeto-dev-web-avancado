@@ -45,6 +45,9 @@ const CreateLoan = () => {
     disponivel: true,
     indisponivel: true
   });
+  const [currentBookPage, setCurrentBookPage] = useState(1);
+  const [currentUserPage, setCurrentUserPage] = useState(1);
+  const itemsPerPage = 10;
 
   useEffect(() => {
     fetchInitialData();
@@ -130,6 +133,7 @@ const CreateLoan = () => {
       }));
 
       setBooks(convertedBooks);
+      setCurrentBookPage(1);
     } catch (error) {
       console.error('Erro ao buscar livros:', error);
     }
@@ -156,6 +160,7 @@ const CreateLoan = () => {
 
       const data = await response.json();
       setUsers(data);
+      setCurrentUserPage(1);
     } catch (error) {
       console.error('Erro ao buscar usuários:', error);
     }
@@ -223,6 +228,16 @@ const CreateLoan = () => {
     return true;
   });
 
+  const indexOfLastBook = currentBookPage * itemsPerPage;
+  const indexOfFirstBook = indexOfLastBook - itemsPerPage;
+  const currentBooks = filteredBooks.slice(indexOfFirstBook, indexOfLastBook);
+  const totalBookPages = Math.ceil(filteredBooks.length / itemsPerPage);
+
+  const indexOfLastUser = currentUserPage * itemsPerPage;
+  const indexOfFirstUser = indexOfLastUser - itemsPerPage;
+  const currentUsers = (users.length > 0 ? users : allUsers).slice(indexOfFirstUser, indexOfLastUser);
+  const totalUserPages = Math.ceil((users.length > 0 ? users : allUsers).length / itemsPerPage);
+
   return (
     <div className="p-8 max-w-7xl mx-auto">
       <div className="flex justify-between items-center mb-8">
@@ -281,7 +296,7 @@ const CreateLoan = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredBooks.map((book) => (
+              {currentBooks.map((book) => (
                 <tr key={book.id} className={`${selectedBookId === book.id ? 'bg-blue-50' : ''}`}>
                   <td className="px-4 py-2">{book.titulo}</td>
                   <td className="px-4 py-2">{book.autor}</td>
@@ -310,6 +325,27 @@ const CreateLoan = () => {
               ))}
             </tbody>
           </table>
+          {totalBookPages > 1 && (
+            <div className="flex justify-center gap-2 mt-4">
+              <button
+                onClick={() => setCurrentBookPage(prev => Math.max(prev - 1, 1))}
+                disabled={currentBookPage === 1}
+                className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
+              >
+                Anterior
+              </button>
+              <span className="px-3 py-1">
+                Página {currentBookPage} de {totalBookPages}
+              </span>
+              <button
+                onClick={() => setCurrentBookPage(prev => Math.min(prev + 1, totalBookPages))}
+                disabled={currentBookPage === totalBookPages}
+                className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
+              >
+                Próxima
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
@@ -336,7 +372,7 @@ const CreateLoan = () => {
               </tr>
             </thead>
             <tbody>
-              {(users.length > 0 ? users : allUsers).map((user) => (
+              {currentUsers.map((user) => (
                 <tr key={user.id} className={`${selectedUserId === user.id ? 'bg-blue-50' : ''}`}>
                   <td className="px-4 py-2">{user.nome}</td>
                   <td className="px-4 py-2">{user.email}</td>
@@ -356,6 +392,27 @@ const CreateLoan = () => {
               ))}
             </tbody>
           </table>
+          {totalUserPages > 1 && (
+            <div className="flex justify-center gap-2 mt-4">
+              <button
+                onClick={() => setCurrentUserPage(prev => Math.max(prev - 1, 1))}
+                disabled={currentUserPage === 1}
+                className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
+              >
+                Anterior
+              </button>
+              <span className="px-3 py-1">
+                Página {currentUserPage} de {totalUserPages}
+              </span>
+              <button
+                onClick={() => setCurrentUserPage(prev => Math.min(prev + 1, totalUserPages))}
+                disabled={currentUserPage === totalUserPages}
+                className="px-3 py-1 bg-gray-200 rounded disabled:opacity-50"
+              >
+                Próxima
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
