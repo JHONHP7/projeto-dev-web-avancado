@@ -26,6 +26,10 @@ const LoanScene = () => {
   const [loans, setLoans] = useState<Loan[]>([]);
   const [error, setError] = useState<string>('');
   const [user, setUser] = useState<User | null>(null);
+  const [statusFilter, setStatusFilter] = useState({
+    devolvido: true,
+    emprestado: true
+  });
 
   const fetchLoans = async () => {
     try {
@@ -176,6 +180,12 @@ const LoanScene = () => {
     }
   };
 
+  const filteredLoans = loans.filter(loan => {
+    if (loan.status === "Devolvido" && !statusFilter.devolvido) return false;
+    if (loan.status !== "Devolvido" && !statusFilter.emprestado) return false;
+    return true;
+  });
+
   return (
     <div className="w-screen h-full">
       <div className="p-4">
@@ -191,14 +201,35 @@ const LoanScene = () => {
           )}
         </div>
 
+        <div className="flex gap-4 mb-4">
+          <label className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              checked={statusFilter.devolvido}
+              onChange={e => setStatusFilter(prev => ({...prev, devolvido: e.target.checked}))}
+              className="form-checkbox h-5 w-5 text-blue-600"
+            />
+            <span>Devolvidos</span>
+          </label>
+          <label className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              checked={statusFilter.emprestado}
+              onChange={e => setStatusFilter(prev => ({...prev, emprestado: e.target.checked}))}
+              className="form-checkbox h-5 w-5 text-blue-600"
+            />
+            <span>Emprestados</span>
+          </label>
+        </div>
+
         {error && (
           <div className="text-red-500 mb-4">
             {error}
           </div>
         )}
 
-        {loans.length > 0 ? (
-          <LoansTable loans={loans} user={user} handleRenew={handleRenew} handleReturn={handleReturn} />
+        {filteredLoans.length > 0 ? (
+          <LoansTable loans={filteredLoans} user={user} handleRenew={handleRenew} handleReturn={handleReturn} />
         ) : (
           <p className="text-gray-700">Carregando ou nenhum empréstimo disponível...</p>
         )}
