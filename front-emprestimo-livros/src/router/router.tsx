@@ -7,9 +7,9 @@ import UpdateBook from '../presentation/BookScene/UpdateBook';
 import Login from '../presentation/Login/Login';
 import LoanScene from '../presentation/LoanScene/LoanScene';
 import CreateLoan from '../presentation/LoanScene/CreateLoan';
+import UserProfile from '../presentation/UserScene/UserProfile';
 
 export const router = createBrowserRouter([
-
   {
     path: "/",
     element: <Home />,
@@ -41,6 +41,10 @@ export const router = createBrowserRouter([
       {
         path: "loans/create",
         element: <CreateLoan />,
+      },
+      {
+        path: "profile",
+        element: <UserProfile />,
       },
     ],
   },

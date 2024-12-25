@@ -197,7 +197,6 @@ const LoanScene = () => {
     return matchesUserName && matchesBookName;
   });
 
-  // Lógica de paginação
   const indexOfLastLoan = currentPage * loansPerPage;
   const indexOfFirstLoan = indexOfLastLoan - loansPerPage;
   const currentLoans = filteredLoans.slice(indexOfFirstLoan, indexOfLastLoan);
@@ -206,24 +205,24 @@ const LoanScene = () => {
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
   return (
-    <div className="w-screen h-full">
-      <div className="p-4">
-        <div className="flex justify-between items-center mb-4">
+    <div className="min-h-screen w-full px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto py-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
           <h2 className="text-2xl font-bold">Empréstimos</h2>
           {user?.role === 'ADMIN' && (
             <button
               onClick={() => navigate('/loans/create')}
-              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+              className="w-full sm:w-auto bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
             >
               Novo Empréstimo
             </button>
           )}
         </div>
 
-        <div className="flex flex-col gap-4 mb-4">
-          <div className="flex gap-4">
-            <div className="flex items-center w-1/3">
-              <label className="w-20">Usuário:</label>
+        <div className="flex flex-col gap-4 mb-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+              <label className="w-20 whitespace-nowrap">Usuário:</label>
               <input
                 type="text"
                 placeholder="Pesquisar por usuário..."
@@ -232,8 +231,8 @@ const LoanScene = () => {
                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
-            <div className="flex items-center w-1/3">
-              <label className="w-20">Livro:</label>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+              <label className="w-20 whitespace-nowrap">Livro:</label>
               <input
                 type="text"
                 placeholder="Pesquisar por livro..."
@@ -244,8 +243,8 @@ const LoanScene = () => {
             </div>
           </div>
 
-          <div className="flex gap-4">
-            <label className="flex items-center space-x-2">
+          <div className="flex flex-wrap gap-4">
+            <label className="flex items-center space-x-2 cursor-pointer">
               <input
                 type="checkbox"
                 checked={statusFilter.devolvido}
@@ -254,7 +253,7 @@ const LoanScene = () => {
               />
               <span>Devolvidos</span>
             </label>
-            <label className="flex items-center space-x-2">
+            <label className="flex items-center space-x-2 cursor-pointer">
               <input
                 type="checkbox"
                 checked={statusFilter.emprestado}
@@ -267,21 +266,21 @@ const LoanScene = () => {
         </div>
 
         {error && (
-          <div className="text-red-500 mb-4">
+          <div className="text-red-500 mb-4 text-center">
             {error}
           </div>
         )}
 
         {filteredLoans.length > 0 ? (
-          <>
+          <div className="overflow-x-auto">
             <LoansTable loans={currentLoans} user={user} handleRenew={handleRenew} handleReturn={handleReturn} />
-            <div className="flex justify-center mt-4">
-              <div className="flex gap-2">
+            <div className="flex justify-center mt-6 overflow-x-auto">
+              <div className="flex flex-wrap gap-2 justify-center">
                 {Array.from({ length: totalPages }, (_, i) => i + 1).map(number => (
                   <button
                     key={number}
                     onClick={() => paginate(number)}
-                    className={`px-3 py-1 rounded ${
+                    className={`px-3 py-1 rounded min-w-[2.5rem] ${
                       currentPage === number
                         ? 'bg-blue-600 text-white'
                         : 'bg-gray-200 hover:bg-gray-300'
@@ -292,9 +291,9 @@ const LoanScene = () => {
                 ))}
               </div>
             </div>
-          </>
+          </div>
         ) : (
-          <p className="text-gray-700">Carregando ou nenhum empréstimo disponível...</p>
+          <p className="text-gray-700 text-center py-8">Carregando ou nenhum empréstimo disponível...</p>
         )}
       </div>
     </div>

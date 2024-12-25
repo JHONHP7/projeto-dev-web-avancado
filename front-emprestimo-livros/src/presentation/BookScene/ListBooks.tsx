@@ -106,23 +106,23 @@ const ListBooks = () => {
   };
 
   return (
-    <div className="w-screen h-full">
-      <div className="p-4">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-bold">Lista de Livros</h2>
+    <div className="w-full min-h-screen p-4">
+      <div className="max-w-7xl mx-auto">
+        <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+          <h2 className="text-xl sm:text-2xl font-bold">Lista de Livros</h2>
           {user?.role === 'ADMIN' && (
             <button
               onClick={() => navigate('/books/create')}
-              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+              className="w-full sm:w-auto bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
             >
               Novo Livro
             </button>
           )}
         </div>
 
-        <div className="flex flex-col gap-4 mb-4">
-          <div className="flex gap-4">
-            <div className="flex items-center w-1/3">
+        <div className="flex flex-col gap-4 mb-6">
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center w-full sm:w-1/2 gap-2">
               <label className="w-20">Título:</label>
               <input
                 type="text"
@@ -132,7 +132,7 @@ const ListBooks = () => {
                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
-            <div className="flex items-center w-1/3">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center w-full sm:w-1/2 gap-2">
               <label className="w-20">Autor:</label>
               <input
                 type="text"
@@ -144,7 +144,7 @@ const ListBooks = () => {
             </div>
           </div>
 
-          <div className="flex gap-4">
+          <div className="flex flex-wrap gap-4">
             <label className="flex items-center space-x-2">
               <input
                 type="checkbox"
@@ -172,28 +172,30 @@ const ListBooks = () => {
           </div>
         )}
 
-        {filteredBooks.length > 0 ? (
-          <>
-            <BookTable books={currentBooks} user={user} />
-            <div className="flex justify-center mt-4 gap-2">
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map((number) => (
-                <button
-                  key={number}
-                  onClick={() => paginate(number)}
-                  className={`px-3 py-1 rounded ${
-                    currentPage === number
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-200 hover:bg-gray-300'
-                  }`}
-                >
-                  {number}
-                </button>
-              ))}
-            </div>
-          </>
-        ) : (
-          <p className="text-gray-700">Carregando ou nenhum livro disponível...</p>
-        )}
+        <div className="overflow-x-auto">
+          {filteredBooks.length > 0 ? (
+            <>
+              <BookTable books={currentBooks} user={user} />
+              <div className="flex flex-wrap justify-center mt-6 gap-2">
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((number) => (
+                  <button
+                    key={number}
+                    onClick={() => paginate(number)}
+                    className={`px-3 py-1 rounded ${
+                      currentPage === number
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-gray-200 hover:bg-gray-300'
+                    }`}
+                  >
+                    {number}
+                  </button>
+                ))}
+              </div>
+            </>
+          ) : (
+            <p className="text-center text-gray-700">Carregando ou nenhum livro disponível...</p>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -115,7 +115,7 @@ const UpdateBook = () => {
 
   if (isLoading) {
     return (
-      <div className="w-screen h-full p-4">
+      <div className="min-h-screen w-full p-4">
         <div className="flex justify-center items-center h-64">
           <p className="text-gray-600">Carregando dados do livro...</p>
         </div>
@@ -124,99 +124,108 @@ const UpdateBook = () => {
   }
 
   return (
-    <div className="w-screen h-full p-4">
-      <div className="max-w-2xl mx-auto">
-        <div className="flex justify-between items-center mb-6">
+    <div className="min-h-screen w-full p-4 sm:p-6 lg:p-8">
+      <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-md p-4 sm:p-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
           <h2 className="text-2xl font-bold">Atualizar Livro</h2>
           <button
             onClick={() => navigate('/books')}
-            className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
+            className="w-full sm:w-auto bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition-colors"
           >
             Voltar
           </button>
         </div>
 
-        {error && <div className="text-red-500 mb-4">{error}</div>}
+        {error && <div className="text-red-500 mb-4 text-center">{error}</div>}
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Título</label>
-            <input
-              type="text"
-              name="titulo"
-              value={book.titulo}
-              onChange={handleChange}
-              className="mt-1 block w-full rounded-md border border-gray-300 p-2"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Autor</label>
-            <input
-              type="text"
-              name="autor"
-              value={book.autor}
-              onChange={handleChange}
-              className="mt-1 block w-full rounded-md border border-gray-300 p-2"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">ISBN</label>
-            <input
-              type="text"
-              name="isbn"
-              value={book.isbn}
-              onChange={handleChange}
-              className="mt-1 block w-full rounded-md border border-gray-300 p-2"
-              required
-            />
-          </div>
-          <div>
-            <label className="flex items-center gap-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Título</label>
               <input
-                type="checkbox"
-                name="disponivel"
-                checked={book.disponivel}
+                type="text"
+                name="titulo"
+                value={book.titulo}
                 onChange={handleChange}
-                className="rounded border-gray-300 text-blue-600"
+                className="w-full rounded-md border border-gray-300 p-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                required
               />
-              <span>Disponível</span>
-            </label>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Autor</label>
+              <input
+                type="text"
+                name="autor"
+                value={book.autor}
+                onChange={handleChange}
+                className="w-full rounded-md border border-gray-300 p-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                required
+              />
+            </div>
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Quantidade de Exemplares</label>
-            <input
-              type="number"
-              name="quantidadeExemplares"
-              value={book.quantidadeExemplares}
-              onChange={handleChange}
-              className="mt-1 block w-full rounded-md border border-gray-300 p-2"
-              required
-            />
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">ISBN</label>
+              <input
+                type="text"
+                name="isbn"
+                value={book.isbn}
+                onChange={handleChange}
+                className="w-full rounded-md border border-gray-300 p-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Quantidade de Exemplares</label>
+              <input
+                type="number"
+                name="quantidadeExemplares"
+                value={book.quantidadeExemplares}
+                onChange={handleChange}
+                className="w-full rounded-md border border-gray-300 p-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                required
+              />
+            </div>
           </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700">Data de Publicação</label>
-            <input
-              type="date"
-              name="dataPublicacao"
-              value={book.dataPublicacao}
-              onChange={handleChange}
-              className="mt-1 block w-full rounded-md border border-gray-300 p-2"
-              required
-            />
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Data de Publicação</label>
+              <input
+                type="date"
+                name="dataPublicacao"
+                value={book.dataPublicacao}
+                onChange={handleChange}
+                className="w-full rounded-md border border-gray-300 p-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                required
+              />
+            </div>
+            <div className="flex items-center">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  name="disponivel"
+                  checked={book.disponivel}
+                  onChange={handleChange}
+                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500 h-5 w-5"
+                />
+                <span className="text-sm font-medium text-gray-700">Disponível</span>
+              </label>
+            </div>
           </div>
-          <div className="flex gap-4 pt-4">
+
+          <div className="flex flex-col sm:flex-row gap-4 pt-6">
             <button
               type="submit"
-              className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700"
+              className="w-full sm:w-auto bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition-colors"
             >
               Atualizar
             </button>
             <button
               type="button"
               onClick={() => navigate('/books')}
-              className="bg-gray-500 text-white px-6 py-2 rounded hover:bg-gray-600"
+              className="w-full sm:w-auto bg-gray-500 text-white px-6 py-2 rounded hover:bg-gray-600 transition-colors"
             >
               Cancelar
             </button>

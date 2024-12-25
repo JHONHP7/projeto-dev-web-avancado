@@ -1,30 +1,41 @@
-import { useEffect } from 'react';
-import { useNavigate, Outlet } from 'react-router-dom';
-import Navbar from '../../components/Navbar';
+import { Link, Outlet, useNavigate } from 'react-router-dom';
 
 const Home = () => {
   const navigate = useNavigate();
+  const user = JSON.parse(localStorage.getItem('user') || 'null');
 
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      navigate('/login');
-    }
-  }, [navigate]);
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    navigate('/login');
+  };
 
   return (
     <div>
-      <div className="flex flex-col">
-        <Navbar />
-        <main className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
-          <div
-            className="flex flex-1 items-center justify-center rounded-lg border border-dashed shadow-sm"
-            x-chunk="dashboard-02-chunk-1"
-          >
-            <Outlet />
+      <nav className="bg-blue-600 p-4">
+        <div className="container mx-auto flex justify-between items-center">
+          <div className="flex space-x-4">
+            <Link to="/books" className="text-white hover:text-gray-200">
+              Livros
+            </Link>
+            <Link to="/loans" className="text-white hover:text-gray-200">
+              Empréstimos
+            </Link>
           </div>
-        </main>
-      </div>
+          <div className="flex items-center space-x-4">
+            <Link to="/profile" className="text-white hover:text-gray-200">
+              Meu Perfil
+            </Link>
+            <button
+              onClick={handleLogout}
+              className="text-white hover:text-gray-200"
+            >
+              Sair
+            </button>
+          </div>
+        </div>
+      </nav>
+      <Outlet />
     </div>
   );
 };

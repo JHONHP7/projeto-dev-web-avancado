@@ -56,6 +56,9 @@ const Navbar = () => {
           List Loans
         </Link>
       )}
+      <Link to="/profile" className="hover:bg-gray-700 px-4 py-3 rounded transition-colors">
+        Profile
+      </Link>
       <button
         onClick={handleLogout}
         className="mt-auto bg-red-600 hover:bg-red-700 px-4 py-3 rounded transition-colors text-white"
