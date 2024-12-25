@@ -2,6 +2,7 @@ package com.projetodevwevavancado.emprestimo.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,11 +13,11 @@ import com.projetodevwevavancado.emprestimo.api.dto.request.UserRequestDTO;
 import com.projetodevwevavancado.emprestimo.api.dto.response.UserResponseDTO;
 import com.projetodevwevavancado.emprestimo.api.resource.handler.exceptions.DataNotFoundException;
 import com.projetodevwevavancado.emprestimo.api.resource.handler.exceptions.EmailAlreadyExistsException;
+import com.projetodevwevavancado.emprestimo.api.resource.handler.exceptions.ResourceNotFoundException;
 import com.projetodevwevavancado.emprestimo.entity.UserEntity;
 import com.projetodevwevavancado.emprestimo.repository.UserRepository;
 
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 @AllArgsConstructor
@@ -102,8 +103,25 @@ public class UserService {
 	}
 	
 	public List<UserResponseDTO> findUserByEmail(String email) {
-	return null;	
+
+		String emailCorreto = "%" + email + "%";
+	    
+	    var users = userRepository.findUserByEmail(emailCorreto);
+
+	    if (users == null || users.isEmpty()) {
+	        throw new ResourceNotFoundException("Nenhum usuário encontrado com o e-mail fornecido: " + email);
+	    }
+
+	    return users.stream()
+	            .map(user -> UserResponseDTO.builder()
+	                    .id(user.getId())
+	                    .nome(user.getNome())
+	                    .email(user.getEmail())
+	                    .role(user.getRole())
+	                    .build())
+	            .toList();
 	}
+
 
 	/**
 	 * Conversões DTO/ENTITY

@@ -10,6 +10,7 @@ import com.projetodevwevavancado.emprestimo.api.resource.handler.exceptions.Auth
 import com.projetodevwevavancado.emprestimo.api.resource.handler.exceptions.DataNotFoundException;
 import com.projetodevwevavancado.emprestimo.api.resource.handler.exceptions.EmailAlreadyExistsException;
 import com.projetodevwevavancado.emprestimo.api.resource.handler.exceptions.FavoriteAlreadyExistsException;
+import com.projetodevwevavancado.emprestimo.api.resource.handler.exceptions.ResourceNotFoundException;
 import com.projetodevwevavancado.emprestimo.commons.util.ApiResponse;
 
 @ControllerAdvice
@@ -49,6 +50,12 @@ public class ResourceExceptionHandler {
 	public ResponseEntity<ApiResponse> handleFavoriteAlreadyExistsException(FavoriteAlreadyExistsException ex) {
 	    ApiResponse response = new ApiResponse(ex.getMessage(), false);
 	    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+	}
+
+	@ExceptionHandler(ResourceNotFoundException.class)
+	public ResponseEntity<ApiResponse> handleResourceNotFoundException(ResourceNotFoundException ex) {
+	    ApiResponse response = new ApiResponse(ex.getMessage(), false);
+	    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
 	}
 
 

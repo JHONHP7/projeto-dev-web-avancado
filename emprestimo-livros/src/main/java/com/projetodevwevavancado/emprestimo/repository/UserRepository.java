@@ -25,8 +25,9 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
 	@Query(value = "SELECT * FROM tb_user", nativeQuery = true)
 	List<UserEntity> findAllUsers();
 	
-	@Query("SELECT u FROM UserEntity u WHERE u.email = :email")
+	@Query("SELECT u FROM UserEntity u WHERE LOWER(u.email) LIKE LOWER(:email)")
 	List<UserEntity> findUserByEmail(@Param("email") String email);
 
-
+	List<UserEntity> findByEmailContainingIgnoreCase(String email);
+	
 }

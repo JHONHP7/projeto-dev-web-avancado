@@ -23,8 +23,8 @@ public interface BookRepository extends JpaRepository<BookEntity, Long> {
 	@Query(value = "SELECT * FROM emprestimo.tb_book tb WHERE tb.sq_book = :idBook", nativeQuery = true)
 	BookEntity findBookById(@Param("idBook") Long idBook);
 
-	@Query(value = "SELECT * FROM emprestimo.tb_book b WHERE b.titulo LIKE :title", nativeQuery = true)
-	List<BookEntity> findBookAllBookById(@Param("title") String title);
+	@Query(value = "SELECT * FROM emprestimo.tb_book b WHERE LOWER(b.titulo) LIKE LOWER(:title)", nativeQuery = true)
+	List<BookEntity> findBookAllBookByTitle(@Param("title") String title);
 
 
 }

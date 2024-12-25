@@ -17,6 +17,7 @@ import com.projetodevwevavancado.emprestimo.api.dto.request.UserRequestDTO;
 import com.projetodevwevavancado.emprestimo.api.dto.response.UserResponseDTO;
 import com.projetodevwevavancado.emprestimo.api.resource.handler.exceptions.DataNotFoundException;
 import com.projetodevwevavancado.emprestimo.api.resource.handler.exceptions.EmailAlreadyExistsException;
+import com.projetodevwevavancado.emprestimo.api.resource.handler.exceptions.ResourceNotFoundException;
 import com.projetodevwevavancado.emprestimo.api.resource.handler.response.ApiResponseUsers;
 import com.projetodevwevavancado.emprestimo.api.resource.swagger.UserResourceApi;
 import com.projetodevwevavancado.emprestimo.commons.util.ApiResponse;
@@ -36,41 +37,29 @@ public class UserResource implements UserResourceApi {
 	private UserService userService;
 
 	@GetMapping
-    public ResponseEntity<ApiResponseUsers<List<UserResponseDTO>>> listAll() {
-        try {
-            List<UserResponseDTO> users = userService.listAll();
+	public ResponseEntity<ApiResponseUsers<List<UserResponseDTO>>> listAll() {
+		try {
+			List<UserResponseDTO> users = userService.listAll();
 
-            if (users.isEmpty()) {
-                ApiResponseUsers<List<UserResponseDTO>> response = new ApiResponseUsers<>(
-                        null,
-                        "Nenhum usuário encontrado.",
-                        false,
-                        HttpStatus.NOT_FOUND.value()
-                );
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
-            }
+			if (users.isEmpty()) {
+				ApiResponseUsers<List<UserResponseDTO>> response = new ApiResponseUsers<>(null,
+						"Nenhum usuário encontrado.", false, HttpStatus.NOT_FOUND.value());
+				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
+			}
 
-            ApiResponseUsers<List<UserResponseDTO>> response = new ApiResponseUsers<>(
-                    users,
-                    "Usuários listados com sucesso",
-                    true,
-                    HttpStatus.OK.value()
-            );
-            return ResponseEntity.ok(response);
+			ApiResponseUsers<List<UserResponseDTO>> response = new ApiResponseUsers<>(users,
+					"Usuários listados com sucesso", true, HttpStatus.OK.value());
+			return ResponseEntity.ok(response);
 
-        } catch (Exception e) {
-            // Log detalhado da exceção
-            e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
 
-            ApiResponseUsers<List<UserResponseDTO>> response = new ApiResponseUsers<>(
-                    null,
-                    "Erro ao listar usuários. Tente novamente mais tarde.",
-                    false,
-                    HttpStatus.INTERNAL_SERVER_ERROR.value()
-            );
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-        }
-    }
+			ApiResponseUsers<List<UserResponseDTO>> response = new ApiResponseUsers<>(null,
+					"Erro ao listar usuários. Tente novamente mais tarde.", false,
+					HttpStatus.INTERNAL_SERVER_ERROR.value());
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+		}
+	}
 
 	@DeleteMapping("/{id}")
 	public ResponseEntity<ApiResponse> deleteUser(@PathVariable Long id) {
@@ -88,7 +77,8 @@ public class UserResource implements UserResourceApi {
 	}
 
 	@PostMapping("/update")
-	public ResponseEntity<ApiResponseUsers<UserResponseDTO>> updateUser(@RequestBody @Valid UserRequestDTO userRequest) {
+	public ResponseEntity<ApiResponseUsers<UserResponseDTO>> updateUser(
+			@RequestBody @Valid UserRequestDTO userRequest) {
 
 		try {
 			UserResponseDTO updatedUser = userService.updateUser(userRequest);
@@ -115,4 +105,14 @@ public class UserResource implements UserResourceApi {
 		}
 	}
 
+	@GetMapping("/email/{email}")
+	public ResponseEntity<List<UserResponseDTO>> getAllByEmail(@PathVariable String email) {
+		List<UserResponseDTO> usuarios = userService.findUserByEmail(email);
+
+		if (usuarios == null || usuarios.isEmpty()) {
+			throw new ResourceNotFoundException("Nenhum usuário encontrado com o e-mail fornecido: " + email);
+		}
+
+		return ResponseEntity.ok(usuarios);
+	}
 }

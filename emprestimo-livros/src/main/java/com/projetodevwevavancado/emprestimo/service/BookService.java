@@ -147,8 +147,8 @@ public class BookService {
 	}
 	
 	public List<BookDTO> findBookAllBookById(BookRequestByTitleDTO title) {
-	    String searchTitle = "%" + title.getTitle() + "%"; // Adiciona os wildcards
-	    List<BookEntity> entities = bookRepository.findBookAllBookById(searchTitle);
+	    String searchTitle = "%" + title.getTitle() + "%";
+	    List<BookEntity> entities = bookRepository.findBookAllBookByTitle(searchTitle);
 
 	    List<BookDTO> dtos = entities.stream()
 	        .map(this::bookEntityToDTO)
