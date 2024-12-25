@@ -41,10 +41,34 @@ const CreateLoan = () => {
   const [allUsers, setAllUsers] = useState<User[]>([]);
   const [selectedBookId, setSelectedBookId] = useState<number | null>(null);
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
+  const [statusFilter, setStatusFilter] = useState({
+    disponivel: true,
+    indisponivel: true
+  });
 
   useEffect(() => {
     fetchInitialData();
   }, []);
+
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      if (bookTitle) {
+        searchBooks();
+      } else {
+        setBooks([]);
+      }
+    }, 300);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [bookTitle]);
+
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      searchUsers();
+    }, 300);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [userName]);
 
   const fetchInitialData = async () => {
     try {
@@ -193,17 +217,11 @@ const CreateLoan = () => {
     }
   };
 
-  const handleBookKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      searchBooks();
-    }
-  };
-
-  const handleUserKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      searchUsers();
-    }
-  };
+  const filteredBooks = (books.length > 0 ? books : allBooks).filter(book => {
+    if (book.disponivel && !statusFilter.disponivel) return false;
+    if (!book.disponivel && !statusFilter.indisponivel) return false;
+    return true;
+  });
 
   return (
     <div className="p-8 max-w-7xl mx-auto">
@@ -225,15 +243,29 @@ const CreateLoan = () => {
             placeholder="Digite o título do livro"
             value={bookTitle}
             onChange={(e) => setBookTitle(e.target.value)}
-            onKeyPress={handleBookKeyPress}
             className="border p-3 rounded-lg flex-1 text-lg"
           />
-          <button 
-            onClick={searchBooks}
-            className="bg-blue-500 text-white px-8 py-3 rounded-lg hover:bg-blue-600 text-lg"
-          >
-            Buscar
-          </button>
+        </div>
+
+        <div className="flex gap-4 mb-4">
+          <label className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              checked={statusFilter.disponivel}
+              onChange={e => setStatusFilter(prev => ({...prev, disponivel: e.target.checked}))}
+              className="form-checkbox h-5 w-5 text-blue-600"
+            />
+            <span>Disponíveis</span>
+          </label>
+          <label className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              checked={statusFilter.indisponivel}
+              onChange={e => setStatusFilter(prev => ({...prev, indisponivel: e.target.checked}))}
+              className="form-checkbox h-5 w-5 text-blue-600"
+            />
+            <span>Indisponíveis</span>
+          </label>
         </div>
 
         <h3 className="text-xl font-medium mb-4">Livros Disponíveis</h3>
@@ -249,7 +281,7 @@ const CreateLoan = () => {
               </tr>
             </thead>
             <tbody>
-              {(books.length > 0 ? books : allBooks).map((book) => (
+              {filteredBooks.map((book) => (
                 <tr key={book.id} className={`${selectedBookId === book.id ? 'bg-blue-50' : ''}`}>
                   <td className="px-4 py-2">{book.titulo}</td>
                   <td className="px-4 py-2">{book.autor}</td>
@@ -289,15 +321,8 @@ const CreateLoan = () => {
             placeholder="Digite o e-mail do usuário"
             value={userName}
             onChange={(e) => setUserName(e.target.value)}
-            onKeyPress={handleUserKeyPress}
             className="border p-3 rounded-lg flex-1 text-lg"
           />
-          <button 
-            onClick={searchUsers}
-            className="bg-blue-500 text-white px-8 py-3 rounded-lg hover:bg-blue-600 text-lg"
-          >
-            Buscar
-          </button>
         </div>
 
         <h3 className="text-xl font-medium mb-4">Usuários Disponíveis</h3>

@@ -30,6 +30,10 @@ const LoanScene = () => {
     devolvido: true,
     emprestado: true
   });
+  const [searchTerm, setSearchTerm] = useState({
+    userName: '',
+    bookName: ''
+  });
 
   const fetchLoans = async () => {
     try {
@@ -183,7 +187,11 @@ const LoanScene = () => {
   const filteredLoans = loans.filter(loan => {
     if (loan.status === "Devolvido" && !statusFilter.devolvido) return false;
     if (loan.status !== "Devolvido" && !statusFilter.emprestado) return false;
-    return true;
+    
+    const matchesUserName = loan.userName.toLowerCase().includes(searchTerm.userName.toLowerCase());
+    const matchesBookName = loan.bookName.toLowerCase().includes(searchTerm.bookName.toLowerCase());
+    
+    return matchesUserName && matchesBookName;
   });
 
   return (
@@ -201,25 +209,50 @@ const LoanScene = () => {
           )}
         </div>
 
-        <div className="flex gap-4 mb-4">
-          <label className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              checked={statusFilter.devolvido}
-              onChange={e => setStatusFilter(prev => ({...prev, devolvido: e.target.checked}))}
-              className="form-checkbox h-5 w-5 text-blue-600"
-            />
-            <span>Devolvidos</span>
-          </label>
-          <label className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              checked={statusFilter.emprestado}
-              onChange={e => setStatusFilter(prev => ({...prev, emprestado: e.target.checked}))}
-              className="form-checkbox h-5 w-5 text-blue-600"
-            />
-            <span>Emprestados</span>
-          </label>
+        <div className="flex flex-col gap-4 mb-4">
+          <div className="flex gap-4">
+            <div className="flex items-center w-1/3">
+              <label className="w-20">Usuário:</label>
+              <input
+                type="text"
+                placeholder="Pesquisar por usuário..."
+                value={searchTerm.userName}
+                onChange={e => setSearchTerm(prev => ({...prev, userName: e.target.value}))}
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div className="flex items-center w-1/3">
+              <label className="w-20">Livro:</label>
+              <input
+                type="text"
+                placeholder="Pesquisar por livro..."
+                value={searchTerm.bookName}
+                onChange={e => setSearchTerm(prev => ({...prev, bookName: e.target.value}))}
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+          </div>
+
+          <div className="flex gap-4">
+            <label className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                checked={statusFilter.devolvido}
+                onChange={e => setStatusFilter(prev => ({...prev, devolvido: e.target.checked}))}
+                className="form-checkbox h-5 w-5 text-blue-600"
+              />
+              <span>Devolvidos</span>
+            </label>
+            <label className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                checked={statusFilter.emprestado}
+                onChange={e => setStatusFilter(prev => ({...prev, emprestado: e.target.checked}))}
+                className="form-checkbox h-5 w-5 text-blue-600"
+              />
+              <span>Emprestados</span>
+            </label>
+          </div>
         </div>
 
         {error && (
