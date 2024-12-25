@@ -25,6 +25,10 @@ const ListBooks = () => {
   const [books, setBooks] = useState<Book[]>([]);
   const [error, setError] = useState<string>('');
   const [user, setUser] = useState<User | null>(null);
+  const [statusFilter, setStatusFilter] = useState({
+    disponivel: true,
+    indisponivel: true
+  });
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -75,6 +79,12 @@ const ListBooks = () => {
     fetchBooks();
   }, []);
 
+  const filteredBooks = books.filter(book => {
+    if (book.disponivel && !statusFilter.disponivel) return false;
+    if (!book.disponivel && !statusFilter.indisponivel) return false;
+    return true;
+  });
+
   return (
     <div className="w-screen h-full">
       <div className="p-4">
@@ -90,14 +100,35 @@ const ListBooks = () => {
           )}
         </div>
 
+        <div className="flex gap-4 mb-4">
+          <label className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              checked={statusFilter.disponivel}
+              onChange={e => setStatusFilter(prev => ({...prev, disponivel: e.target.checked}))}
+              className="form-checkbox h-5 w-5 text-blue-600"
+            />
+            <span>Disponíveis</span>
+          </label>
+          <label className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              checked={statusFilter.indisponivel}
+              onChange={e => setStatusFilter(prev => ({...prev, indisponivel: e.target.checked}))}
+              className="form-checkbox h-5 w-5 text-blue-600"
+            />
+            <span>Indisponíveis</span>
+          </label>
+        </div>
+
         {error && (
           <div className="text-red-500 mb-4">
             {error}
           </div>
         )}
 
-        {books.length > 0 ? (
-          <BookTable books={books} user={user} />
+        {filteredBooks.length > 0 ? (
+          <BookTable books={filteredBooks} user={user} />
         ) : (
           <p className="text-gray-700">Carregando ou nenhum livro disponível...</p>
         )}
