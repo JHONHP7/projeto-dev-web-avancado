@@ -6,7 +6,6 @@ interface Book {
   id: number;
   titulo: string;
   autor: string;
-  isbn: string;
   disponivel: boolean;
   quantidadeExemplares: number;
   dataPublicacao: string;
@@ -101,7 +100,6 @@ const CreateLoan = () => {
         id: book.bookId,
         titulo: book.bookTitle,
         autor: book.bookAuthor,
-        isbn: '',
         disponivel: book.bookAvailable,
         quantidadeExemplares: book.bookQuantity,
         dataPublicacao: ''
@@ -245,7 +243,6 @@ const CreateLoan = () => {
               <tr>
                 <th className="px-4 py-2">Título</th>
                 <th className="px-4 py-2">Autor</th>
-                <th className="px-4 py-2">ISBN</th>
                 <th className="px-4 py-2">Exemplares</th>
                 <th className="px-4 py-2">Status</th>
                 <th className="px-4 py-2">Ação</th>
@@ -256,7 +253,6 @@ const CreateLoan = () => {
                 <tr key={book.id} className={`${selectedBookId === book.id ? 'bg-blue-50' : ''}`}>
                   <td className="px-4 py-2">{book.titulo}</td>
                   <td className="px-4 py-2">{book.autor}</td>
-                  <td className="px-4 py-2">{book.isbn}</td>
                   <td className="px-4 py-2">{book.quantidadeExemplares}</td>
                   <td className="px-4 py-2">
                     <span className={book.disponivel ? 'text-green-600' : 'text-red-600'}>
