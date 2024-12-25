@@ -104,9 +104,12 @@ const BookTable: React.FC<BookTableProps> = ({ books, user }) => {
                 <td className="px-6 py-4 whitespace-nowrap">
                   <button
                     onClick={() => toggleFavorite(book.id)}
-                    className="text-yellow-500 hover:text-yellow-600 text-xl"
+                    className="text-2xl transition-transform duration-200 ease-in-out hover:scale-110 focus:outline-none"
                   >
-                    {favoriteBooks.includes(book.id) ? <AiFillStar /> : <AiOutlineStar />}
+                    {favoriteBooks.includes(book.id) ? 
+                      <AiFillStar className="text-yellow-400 drop-shadow-lg hover:text-yellow-500" /> : 
+                      <AiOutlineStar className="text-gray-400 hover:text-yellow-400" />
+                    }
                   </button>
                 </td>
               )}
