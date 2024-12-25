@@ -29,6 +29,10 @@ const ListBooks = () => {
     disponivel: true,
     indisponivel: true
   });
+  const [searchTerm, setSearchTerm] = useState({
+    titulo: '',
+    autor: ''
+  });
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -82,7 +86,11 @@ const ListBooks = () => {
   const filteredBooks = books.filter(book => {
     if (book.disponivel && !statusFilter.disponivel) return false;
     if (!book.disponivel && !statusFilter.indisponivel) return false;
-    return true;
+    
+    const matchesTitulo = book.titulo.toLowerCase().includes(searchTerm.titulo.toLowerCase());
+    const matchesAutor = book.autor.toLowerCase().includes(searchTerm.autor.toLowerCase());
+    
+    return matchesTitulo && matchesAutor;
   });
 
   return (
@@ -100,25 +108,50 @@ const ListBooks = () => {
           )}
         </div>
 
-        <div className="flex gap-4 mb-4">
-          <label className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              checked={statusFilter.disponivel}
-              onChange={e => setStatusFilter(prev => ({...prev, disponivel: e.target.checked}))}
-              className="form-checkbox h-5 w-5 text-blue-600"
-            />
-            <span>Disponíveis</span>
-          </label>
-          <label className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              checked={statusFilter.indisponivel}
-              onChange={e => setStatusFilter(prev => ({...prev, indisponivel: e.target.checked}))}
-              className="form-checkbox h-5 w-5 text-blue-600"
-            />
-            <span>Indisponíveis</span>
-          </label>
+        <div className="flex flex-col gap-4 mb-4">
+          <div className="flex gap-4">
+            <div className="flex items-center w-1/3">
+              <label className="w-20">Título:</label>
+              <input
+                type="text"
+                placeholder="Pesquisar por título..."
+                value={searchTerm.titulo}
+                onChange={e => setSearchTerm(prev => ({...prev, titulo: e.target.value}))}
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div className="flex items-center w-1/3">
+              <label className="w-20">Autor:</label>
+              <input
+                type="text"
+                placeholder="Pesquisar por autor..."
+                value={searchTerm.autor}
+                onChange={e => setSearchTerm(prev => ({...prev, autor: e.target.value}))}
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+          </div>
+
+          <div className="flex gap-4">
+            <label className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                checked={statusFilter.disponivel}
+                onChange={e => setStatusFilter(prev => ({...prev, disponivel: e.target.checked}))}
+                className="form-checkbox h-5 w-5 text-blue-600"
+              />
+              <span>Disponíveis</span>
+            </label>
+            <label className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                checked={statusFilter.indisponivel}
+                onChange={e => setStatusFilter(prev => ({...prev, indisponivel: e.target.checked}))}
+                className="form-checkbox h-5 w-5 text-blue-600"
+              />
+              <span>Indisponíveis</span>
+            </label>
+          </div>
         </div>
 
         {error && (
