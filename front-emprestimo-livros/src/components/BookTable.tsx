@@ -1,5 +1,5 @@
 // src/components/BookTable.tsx
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { AiFillStar, AiOutlineStar } from "react-icons/ai";
 
@@ -25,9 +25,48 @@ interface BookTableProps {
   user: User | null;
 }
 
+interface FavoriteResponse {
+  userId: number;
+  userName: string;
+  books: {
+    bookId: number;
+    bookTitle: string;
+    bookAuthor: string;
+    bookAvailable: boolean;
+    bookQuantity: number;
+  }[];
+}
+
 const BookTable: React.FC<BookTableProps> = ({ books, user }) => {
   const navigate = useNavigate();
   const [favoriteBooks, setFavoriteBooks] = useState<number[]>([]);
+  const [showOnlyFavorites, setShowOnlyFavorites] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const booksPerPage = 10;
+
+  useEffect(() => {
+    const fetchFavorites = async () => {
+      if (!user) return;
+
+      try {
+        const response = await fetch(`http://localhost:8080/favorites/usuario/${user.id}`, {
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          }
+        });
+
+        if (response.ok) {
+          const data: FavoriteResponse = await response.json();
+          const favoriteIds = data.books.map(book => book.bookId);
+          setFavoriteBooks(favoriteIds);
+        }
+      } catch (error) {
+        console.error('Erro ao buscar favoritos:', error);
+      }
+    };
+
+    fetchFavorites();
+  }, [user]);
 
   const toggleFavorite = async (bookId: number) => {
     if (!user) return;
@@ -68,8 +107,36 @@ const BookTable: React.FC<BookTableProps> = ({ books, user }) => {
     }
   };
 
+  const filteredBooks = showOnlyFavorites && user?.role === 'USER' 
+    ? books.filter(book => favoriteBooks.includes(book.id))
+    : books;
+
+  const displayedBooks = showOnlyFavorites 
+    ? filteredBooks 
+    : filteredBooks.slice((currentPage - 1) * booksPerPage, currentPage * booksPerPage);
+
+  const totalPages = showOnlyFavorites 
+    ? Math.ceil(filteredBooks.length / booksPerPage)
+    : Math.ceil(filteredBooks.length / booksPerPage);
+
   return (
     <div className="overflow-x-auto">
+      {user?.role === 'USER' && (
+        <div className="mb-4">
+          <label className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              checked={showOnlyFavorites}
+              onChange={(e) => {
+                setShowOnlyFavorites(e.target.checked);
+                setCurrentPage(1);
+              }}
+              className="form-checkbox h-5 w-5 text-blue-600"
+            />
+            <span>Favoritos</span>
+          </label>
+        </div>
+      )}
       <table className="min-w-full bg-white border rounded-lg">
         <thead className="bg-gray-100">
           <tr>
@@ -88,7 +155,7 @@ const BookTable: React.FC<BookTableProps> = ({ books, user }) => {
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-200">
-          {books.map((book) => (
+          {displayedBooks.map((book) => (
             <tr key={book.id}>
               <td className="px-6 py-4 whitespace-nowrap">{book.titulo}</td>
               <td className="px-6 py-4 whitespace-nowrap">{book.autor}</td>
@@ -127,6 +194,21 @@ const BookTable: React.FC<BookTableProps> = ({ books, user }) => {
           ))}
         </tbody>
       </table>
+      {!showOnlyFavorites && totalPages > 1 && (
+        <div className="flex justify-center mt-4">
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+            <button
+              key={page}
+              onClick={() => setCurrentPage(page)}
+              className={`mx-1 px-3 py-1 rounded ${
+                currentPage === page ? 'bg-blue-500 text-white' : 'bg-gray-200'
+              }`}
+            >
+              {page}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
