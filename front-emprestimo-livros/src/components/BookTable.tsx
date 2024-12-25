@@ -1,5 +1,7 @@
 // src/components/BookTable.tsx
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { AiFillStar, AiOutlineStar } from "react-icons/ai";
 
 interface Book {
   id: number;
@@ -25,6 +27,46 @@ interface BookTableProps {
 
 const BookTable: React.FC<BookTableProps> = ({ books, user }) => {
   const navigate = useNavigate();
+  const [favoriteBooks, setFavoriteBooks] = useState<number[]>([]);
+
+  const toggleFavorite = async (bookId: number) => {
+    if (!user) return;
+
+    try {
+      if (favoriteBooks.includes(bookId)) {
+        // Desfavoritar
+        const response = await fetch(`http://localhost:8080/favorites/delete/favorite/${user.id}/${bookId}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          }
+        });
+
+        if (response.ok) {
+          setFavoriteBooks(prev => prev.filter(id => id !== bookId));
+        }
+      } else {
+        // Favoritar
+        const response = await fetch('http://localhost:8080/favorites/add', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            idUsuario: user.id,
+            idLivro: bookId
+          })
+        });
+
+        if (response.ok) {
+          setFavoriteBooks(prev => [...prev, bookId]);
+        }
+      }
+    } catch (error) {
+      console.error('Erro ao gerenciar favoritos:', error);
+    }
+  };
 
   return (
     <div className="overflow-x-auto">
@@ -37,6 +79,9 @@ const BookTable: React.FC<BookTableProps> = ({ books, user }) => {
             <th className="px-6 py-3 border-b text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
             <th className="px-6 py-3 border-b text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Quantidade</th>
             <th className="px-6 py-3 border-b text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Data de Publicação</th>
+            {user?.role === 'USER' && (
+              <th className="px-6 py-3 border-b text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Favorito</th>
+            )}
             {user?.role === 'ADMIN' && (
               <th className="px-6 py-3 border-b text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
             )}
@@ -55,6 +100,16 @@ const BookTable: React.FC<BookTableProps> = ({ books, user }) => {
               </td>
               <td className="px-6 py-4 whitespace-nowrap">{book.quantidadeExemplares}</td>
               <td className="px-6 py-4 whitespace-nowrap">{book.dataPublicacao}</td>
+              {user?.role === 'USER' && (
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <button
+                    onClick={() => toggleFavorite(book.id)}
+                    className="text-yellow-500 hover:text-yellow-600 text-xl"
+                  >
+                    {favoriteBooks.includes(book.id) ? <AiFillStar /> : <AiOutlineStar />}
+                  </button>
+                </td>
+              )}
               {user?.role === 'ADMIN' && (
                 <td className="px-6 py-4 whitespace-nowrap">
                   <button
