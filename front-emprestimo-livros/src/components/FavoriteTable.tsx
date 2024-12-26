@@ -1,4 +1,5 @@
 import Swal from 'sweetalert2';
+import { removeFavorite } from '../service/api';
 
 interface Book {
   bookId: number;
@@ -33,18 +34,7 @@ const FavoriteTable = ({ favoritesList }: FavoriteTableProps) => {
       });
 
       if (result.isConfirmed) {
-        const token = localStorage.getItem('token');
-        const response = await fetch(`http://localhost:8080/favorites/delete/favorite/${favoritesList.userId}/${bookId}`, {
-          method: 'DELETE',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error('Erro ao remover favorito');
-        }
+        await removeFavorite(favoritesList.userId, bookId);
 
         await Swal.fire(
           'Removido!',

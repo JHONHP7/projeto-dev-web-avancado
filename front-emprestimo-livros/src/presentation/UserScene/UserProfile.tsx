@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import FavoriteTable from '../../components/FavoriteTable';
 import { useAuth } from '../../hooks/useAuth';
+import { getFavoritesByUserId } from '../../service/api';
 
 interface FavoriteResponse {
   userId: number;
@@ -26,19 +27,7 @@ const UserProfile = () => {
     const fetchFavorites = async () => {
       if (user) {
         try {
-          const token = localStorage.getItem('token');
-          const response = await fetch(`http://localhost:8080/favorites/usuario/${user.id}`, {
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json',
-            },
-          });
-
-          if (!response.ok) {
-            throw new Error('Erro ao buscar favoritos');
-          }
-
-          const favoritesData = await response.json();
+          const favoritesData = await getFavoritesByUserId(user.id);
           setFavorites(favoritesData);
         } catch (error) {
           console.error('Erro ao buscar favoritos:', error);
