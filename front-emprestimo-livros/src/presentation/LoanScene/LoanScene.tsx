@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import LoansTable from "../../components/LoansTable";
 import Swal from 'sweetalert2';
+import { getLoans, renewLoan, returnLoan, getUserProfile} from '../../service/api/index';
 
 interface Loan {
   loanId: number;
@@ -40,20 +41,7 @@ const LoanScene = () => {
 
   const fetchLoans = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:8080/loans', {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error('Erro na requisição');
-      }
-
-      const data = await response.json();
+      const data = await getLoans();
       setLoans(data);
     } catch (error) {
       console.error('Erro ao buscar empréstimos:', error);
@@ -64,19 +52,7 @@ const LoanScene = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const token = localStorage.getItem('token');
-        const response = await fetch('http://localhost:8080/auth/usuario/logado', {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error('Erro ao buscar usuário');
-        }
-
-        const userData = await response.json();
+        const userData = await getUserProfile();
         setUser(userData);
       } catch (error) {
         console.error('Erro ao buscar usuário:', error);
@@ -100,21 +76,7 @@ const LoanScene = () => {
     }
 
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:8080/loans/renew/${loanId}`, {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
-
-      const responseData = await response.json();
-
-      if (!response.ok) {
-        throw new Error(responseData.message || 'Erro ao renovar empréstimo');
-      }
-
+      await renewLoan(loanId);
       Swal.fire({
         title: 'Sucesso!',
         text: 'Empréstimo renovado com sucesso!',
@@ -152,21 +114,7 @@ const LoanScene = () => {
     }
 
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:8080/loans/return/${loanId}`, {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
-
-      const responseData = await response.json();
-
-      if (!response.ok) {
-        throw new Error(responseData.message || 'Erro ao devolver empréstimo');
-      }
-
+      await returnLoan(loanId);
       Swal.fire({
         title: 'Sucesso!',
         text: 'Empréstimo devolvido com sucesso!',

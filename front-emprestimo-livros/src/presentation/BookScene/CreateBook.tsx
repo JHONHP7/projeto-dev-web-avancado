@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Swal from 'sweetalert2';
 
 interface BookCreate {
   titulo: string;
@@ -35,7 +36,6 @@ const CreateBook = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Formatar a data de publicação no formato DD-MM-YYYY
     const [year, month, day] = book.dataPublicacao.split("-");
     const formattedDate = `${day}-${month}-${year}`;
     const updatedBook = { ...book, dataPublicacao: formattedDate };
@@ -55,10 +55,24 @@ const CreateBook = () => {
         throw new Error('Erro ao salvar livro');
       }
 
+      await Swal.fire({
+        title: 'Sucesso!',
+        text: 'Livro cadastrado com sucesso!',
+        icon: 'success',
+        confirmButtonText: 'Ok'
+      });
+
       navigate('/books');
     } catch (error) {
       setError('Erro ao salvar livro. Por favor, tente novamente.');
       console.error('Erro:', error);
+      
+      Swal.fire({
+        title: 'Erro!',
+        text: 'Erro ao salvar livro. Por favor, tente novamente.',
+        icon: 'error',
+        confirmButtonText: 'Ok'
+      });
     }
   };
 

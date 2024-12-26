@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getBookByIdForUpdate, updateBook } from "../../service/api";
+import Swal from 'sweetalert2';
 
 interface Book {
   id: number;
@@ -59,8 +60,20 @@ const UpdateBook = () => {
     e.preventDefault();
     try {
       await updateBook(book);
+      await Swal.fire({
+        title: 'Sucesso!',
+        text: 'Livro atualizado com sucesso!',
+        icon: 'success',
+        confirmButtonText: 'OK'
+      });
       navigate('/books');
     } catch (error) {
+      Swal.fire({
+        title: 'Erro!',
+        text: 'Erro ao atualizar livro. Por favor, tente novamente.',
+        icon: 'error',
+        confirmButtonText: 'OK'
+      });
       setError('Erro ao atualizar livro. Por favor, tente novamente.');
       console.error('Erro:', error);
     }

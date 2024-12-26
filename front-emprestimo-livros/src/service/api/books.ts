@@ -10,10 +10,29 @@ interface Book {
   dataPublicacao: string;
 }
 
+interface FavoriteResponse {
+  userId: number;
+  userName: string;
+  books: {
+    bookId: number;
+    bookTitle: string;
+    bookAuthor: string;
+    bookAvailable: boolean;
+    bookQuantity: number;
+  }[];
+}
+
+interface BookResponse {
+  bookId: number;
+  bookTitle: string;
+  bookAuthor: string;
+  bookAvailable: boolean;
+  bookQuantity: number;
+}
+
 export const getBooks = async (): Promise<Book[]> => {
   try {
     const response = await fetch(`${API_CONFIG.BASE_URL}/books`, {
-      method: 'GET',
       headers: API_CONFIG.getAuthHeader()
     });
 
@@ -25,6 +44,63 @@ export const getBooks = async (): Promise<Book[]> => {
     return data;
   } catch (error) {
     console.error('Erro ao buscar livros:', error);
+    throw error;
+  }
+};
+
+export const getFavoriteBooks = async (userId: number): Promise<FavoriteResponse> => {
+  try {
+    const response = await fetch(`${API_CONFIG.BASE_URL}/favorites/usuario/${userId}`, {
+      headers: API_CONFIG.getAuthHeader()
+    });
+
+    if (!response.ok) {
+      throw new Error('Erro ao buscar favoritos');
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Erro ao buscar favoritos:', error);
+    throw error;
+  }
+};
+
+export const addFavoriteBook = async (userId: number, bookId: number): Promise<void> => {
+  try {
+    const response = await fetch(`${API_CONFIG.BASE_URL}/favorites/add`, {
+      method: 'POST',
+      headers: {
+        ...API_CONFIG.getAuthHeader(),
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        idUsuario: userId,
+        idLivro: bookId
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error('Erro ao adicionar favorito');
+    }
+  } catch (error) {
+    console.error('Erro ao adicionar favorito:', error);
+    throw error;
+  }
+};
+
+export const removeFavoriteBook = async (userId: number, bookId: number): Promise<void> => {
+  try {
+    const response = await fetch(`${API_CONFIG.BASE_URL}/favorites/delete/favorite/${userId}/${bookId}`, {
+      method: 'DELETE',
+      headers: API_CONFIG.getAuthHeader()
+    });
+
+    if (!response.ok) {
+      throw new Error('Erro ao remover favorito');
+    }
+  } catch (error) {
+    console.error('Erro ao remover favorito:', error);
     throw error;
   }
 };
@@ -50,25 +126,28 @@ export const getBookById = async (id: number): Promise<Book> => {
 
 export const createBook = async (bookData: Omit<Book, 'id'>): Promise<Book> => {
   try {
-    /* Formatar a data de publicação no formato DD-MM-YYYY */
+    const token = localStorage.getItem('token');
     const [year, month, day] = bookData.dataPublicacao.split("-");
     const formattedDate = `${day}-${month}-${year}`;
     const updatedBook = { ...bookData, dataPublicacao: formattedDate };
 
     const response = await fetch(`${API_CONFIG.BASE_URL}/books/save`, {
       method: 'POST',
-      headers: API_CONFIG.getAuthHeader(),
-      body: JSON.stringify(updatedBook)
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(updatedBook),
     });
 
     if (!response.ok) {
-      throw new Error('Erro ao criar livro');
+      throw new Error('Erro ao salvar livro');
     }
 
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error('Erro ao criar livro:', error);
+    console.error('Erro ao salvar livro:', error);
     throw error;
   }
 };
@@ -118,24 +197,6 @@ export const deleteBook = async (id: number): Promise<void> => {
   }
 };
 
-export const getLoggedUser = async () => {
-  try {
-    const response = await fetch(`${API_CONFIG.BASE_URL}/auth/usuario/logado`, {
-      headers: API_CONFIG.getAuthHeader()
-    });
-
-    if (!response.ok) {
-      throw new Error('Erro ao buscar usuário');
-    }
-
-    const userData = await response.json();
-    return userData;
-  } catch (error) {
-    console.error('Erro ao buscar usuário:', error);
-    throw error;
-  }
-};
-
 export const getBookByIdForUpdate = async (id: number): Promise<Book> => {
   try {
     const response = await fetch(`${API_CONFIG.BASE_URL}/books/${id}`, {
@@ -164,6 +225,57 @@ export const getBookByIdForUpdate = async (id: number): Promise<Book> => {
     };
   } catch (error) {
     console.error('Erro ao buscar livro:', error);
+    throw error;
+  }
+};
+
+export const searchBooksByTitle = async (title: string): Promise<Book[]> => {
+  try {
+    const response = await fetch(`${API_CONFIG.BASE_URL}/books/title`, {
+      method: 'POST',
+      headers: {
+        ...API_CONFIG.getAuthHeader(),
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ title })
+    });
+
+    if (!response.ok) {
+      throw new Error('Erro ao buscar livros');
+    }
+
+    const data: BookResponse[] = await response.json();
+    return data.map(book => ({
+      id: book.bookId,
+      titulo: book.bookTitle,
+      autor: book.bookAuthor,
+      disponivel: book.bookAvailable,
+      quantidadeExemplares: book.bookQuantity,
+      dataPublicacao: '',
+      isbn: ''
+    }));
+  } catch (error) {
+    console.error('Erro ao buscar livros:', error);
+    throw error;
+  }
+};
+
+export const deleteBookById = async (id: number): Promise<void> => {
+  try {
+    const response = await fetch(`${API_CONFIG.BASE_URL}/books/delete`, {
+      method: 'DELETE',
+      headers: {
+        ...API_CONFIG.getAuthHeader(),
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ id })
+    });
+
+    if (!response.ok) {
+      throw new Error('Erro ao deletar livro');
+    }
+  } catch (error) {
+    console.error('Erro ao deletar livro:', error);
     throw error;
   }
 };

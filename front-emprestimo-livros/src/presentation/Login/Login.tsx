@@ -6,12 +6,16 @@ const Login = () => {
   const [email, setemail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setIsLoading(true);
 
     try {
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
       const response = await fetch('http://localhost:8080/auth/login', {
         method: 'POST',
         headers: {
@@ -25,7 +29,6 @@ const Login = () => {
         localStorage.setItem('token', data.token);
         console.log('Login bem-sucedido, token salvo no localStorage.');
         setError('');
-
         navigate('/books');
       } else {
         setError('Erro na autenticação. Verifique suas credenciais e tente novamente.');
@@ -34,6 +37,8 @@ const Login = () => {
     } catch (error) {
       setError('Erro de requisição. Tente novamente mais tarde.');
       console.error('Erro de requisição:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -46,18 +51,26 @@ const Login = () => {
   };
 
   const handleGoogleLoginSuccess = (credentialResponse: CredentialResponse) => {
-    fetch('http://localhost:8080/auth/google-login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token: credentialResponse.credential }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        localStorage.setItem('token', data.token);
-        console.log('Login bem-sucedido com Google!');
-        navigate('/books');
+    setIsLoading(true);
+    
+    setTimeout(() => {
+      fetch('http://localhost:8080/auth/google-login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: credentialResponse.credential }),
       })
-      .catch((error) => console.error('Erro ao autenticar com Google:', error));
+        .then((res) => res.json())
+        .then((data) => {
+          localStorage.setItem('token', data.token);
+          console.log('Login bem-sucedido com Google!');
+          navigate('/books');
+        })
+        .catch((error) => {
+          console.error('Erro ao autenticar com Google:', error);
+          setError('Erro ao autenticar com Google. Tente novamente.');
+        })
+        .finally(() => setIsLoading(false));
+    }, 1000);
   };
 
   return (
@@ -70,6 +83,7 @@ const Login = () => {
             placeholder="email"
             value={email}
             onChange={handleemailChange}
+            disabled={isLoading}
             className="w-full p-3 mb-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <input
@@ -77,13 +91,22 @@ const Login = () => {
             placeholder="Senha"
             value={password}
             onChange={handlePasswordChange}
+            disabled={isLoading}
             className="w-full p-3 mb-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
           <button
             type="submit"
-            className="w-full p-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+            disabled={isLoading}
+            className="w-full p-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition flex items-center justify-center"
           >
-            Logar
+            {isLoading ? (
+              <div className="flex items-center">
+                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                Carregando...
+              </div>
+            ) : (
+              'Logar'
+            )}
           </button>
         </form>
         {error && <div className="mt-4 text-red-500">{error}</div>}

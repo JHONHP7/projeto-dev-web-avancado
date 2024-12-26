@@ -1,5 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import { getUserProfile } from '../service/api/index';
 
 interface User {
   id: number;
@@ -15,19 +16,7 @@ const Navbar = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const token = localStorage.getItem('token');
-        const response = await fetch('http://localhost:8080/auth/usuario/logado', {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error('Erro ao buscar usuário');
-        }
-
-        const userData = await response.json();
+        const userData = await getUserProfile();
         setUser(userData);
       } catch (error) {
         console.error('Erro ao buscar usuário:', error);

@@ -2,6 +2,9 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { AiFillStar, AiOutlineStar } from "react-icons/ai";
+import { getFavoriteBooks, addFavoriteBook, removeFavoriteBook } from '../service/api/index';
+import Swal from 'sweetalert2';
+import { deleteBookById } from '../service/api/books';
 
 interface Book {
   id: number;
@@ -25,18 +28,6 @@ interface BookTableProps {
   user: User | null;
 }
 
-interface FavoriteResponse {
-  userId: number;
-  userName: string;
-  books: {
-    bookId: number;
-    bookTitle: string;
-    bookAuthor: string;
-    bookAvailable: boolean;
-    bookQuantity: number;
-  }[];
-}
-
 const BookTable: React.FC<BookTableProps> = ({ books, user }) => {
   const navigate = useNavigate();
   const [favoriteBooks, setFavoriteBooks] = useState<number[]>([]);
@@ -49,17 +40,9 @@ const BookTable: React.FC<BookTableProps> = ({ books, user }) => {
       if (!user) return;
 
       try {
-        const response = await fetch(`http://localhost:8080/favorites/usuario/${user.id}`, {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          }
-        });
-
-        if (response.ok) {
-          const data: FavoriteResponse = await response.json();
-          const favoriteIds = data.books.map(book => book.bookId);
-          setFavoriteBooks(favoriteIds);
-        }
+        const data = await getFavoriteBooks(user.id);
+        const favoriteIds = data.books.map(book => book.bookId);
+        setFavoriteBooks(favoriteIds);
       } catch (error) {
         console.error('Erro ao buscar favoritos:', error);
       }
@@ -73,49 +56,61 @@ const BookTable: React.FC<BookTableProps> = ({ books, user }) => {
 
     try {
       if (favoriteBooks.includes(bookId)) {
-        const response = await fetch(`http://localhost:8080/favorites/delete/favorite/${user.id}/${bookId}`, {
-          method: 'DELETE',
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
-          }
-        });
-
-        if (response.ok) {
-          setFavoriteBooks(prev => prev.filter(id => id !== bookId));
-        }
+        await removeFavoriteBook(user.id, bookId);
+        setFavoriteBooks(prev => prev.filter(id => id !== bookId));
       } else {
-        const response = await fetch('http://localhost:8080/favorites/add', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            idUsuario: user.id,
-            idLivro: bookId
-          })
-        });
-
-        if (response.ok) {
-          setFavoriteBooks(prev => [...prev, bookId]);
-        }
+        await addFavoriteBook(user.id, bookId);
+        setFavoriteBooks(prev => [...prev, bookId]);
       }
     } catch (error) {
       console.error('Erro ao gerenciar favoritos:', error);
     }
   };
 
-  const filteredBooks = showOnlyFavorites && user?.role === 'USER' 
+  const filteredBooks = showOnlyFavorites && user?.role === 'USER'
     ? books.filter(book => favoriteBooks.includes(book.id))
     : books;
 
-  const displayedBooks = showOnlyFavorites 
-    ? filteredBooks 
+  const displayedBooks = showOnlyFavorites
+    ? filteredBooks
     : filteredBooks.slice((currentPage - 1) * booksPerPage, currentPage * booksPerPage);
 
-  const totalPages = showOnlyFavorites 
+  const totalPages = showOnlyFavorites
     ? Math.ceil(filteredBooks.length / booksPerPage)
     : Math.ceil(filteredBooks.length / booksPerPage);
+
+  const handleDelete = async (id: number) => {
+    try {
+      const result = await Swal.fire({
+        title: 'Tem certeza?',
+        text: "Você não poderá reverter esta ação!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Sim, deletar!',
+        cancelButtonText: 'Cancelar'
+      });
+
+      if (result.isConfirmed) {
+        await deleteBookById(id);
+        await Swal.fire(
+          'Deletado!',
+          'O livro foi deletado com sucesso.',
+          'success'
+        );
+        // Aqui você precisará atualizar a lista de livros
+        window.location.reload();
+      }
+    } catch (error) {
+      console.error('Erro ao deletar:', error);
+      Swal.fire(
+        'Erro!',
+        'Não foi possível deletar o livro.',
+        'error'
+      );
+    }
+  };
 
   return (
     <div className="w-full">
@@ -152,8 +147,8 @@ const BookTable: React.FC<BookTableProps> = ({ books, user }) => {
                         onClick={() => toggleFavorite(book.id)}
                         className="text-2xl"
                       >
-                        {favoriteBooks.includes(book.id) ? 
-                          <AiFillStar className="text-yellow-400" /> : 
+                        {favoriteBooks.includes(book.id) ?
+                          <AiFillStar className="text-yellow-400" /> :
                           <AiOutlineStar className="text-gray-400" />
                         }
                       </button>
@@ -168,12 +163,18 @@ const BookTable: React.FC<BookTableProps> = ({ books, user }) => {
                     <p>Data de Publicação: {book.dataPublicacao}</p>
                   </div>
                   {user?.role === 'ADMIN' && (
-                    <div className="mt-4">
+                    <div className="mt-4 flex gap-2">
                       <button
                         onClick={() => navigate(`/books/update/${book.id}`)}
-                        className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md"
+                        className="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md"
                       >
                         Editar
+                      </button>
+                      <button
+                        onClick={() => handleDelete(book.id)}
+                        className="flex-1 bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-md"
+                      >
+                        Excluir
                       </button>
                     </div>
                   )}
@@ -217,8 +218,8 @@ const BookTable: React.FC<BookTableProps> = ({ books, user }) => {
                           onClick={() => toggleFavorite(book.id)}
                           className="text-2xl transition-transform duration-200 ease-in-out hover:scale-110"
                         >
-                          {favoriteBooks.includes(book.id) ? 
-                            <AiFillStar className="text-yellow-400" /> : 
+                          {favoriteBooks.includes(book.id) ?
+                            <AiFillStar className="text-yellow-400" /> :
                             <AiOutlineStar className="text-gray-400" />
                           }
                         </button>
@@ -226,12 +227,20 @@ const BookTable: React.FC<BookTableProps> = ({ books, user }) => {
                     )}
                     {user?.role === 'ADMIN' && (
                       <td className="px-6 py-4 whitespace-nowrap text-center">
-                        <button
-                          onClick={() => navigate(`/books/update/${book.id}`)}
-                          className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md"
-                        >
-                          Editar
-                        </button>
+                        <div className="flex justify-center gap-2">
+                          <button
+                            onClick={() => navigate(`/books/update/${book.id}`)}
+                            className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md"
+                          >
+                            Editar
+                          </button>
+                          <button
+                            onClick={() => handleDelete(book.id)}
+                            className="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-md"
+                          >
+                            Excluir
+                          </button>
+                        </div>
                       </td>
                     )}
                   </tr>
@@ -248,9 +257,8 @@ const BookTable: React.FC<BookTableProps> = ({ books, user }) => {
             <button
               key={page}
               onClick={() => setCurrentPage(page)}
-              className={`px-3 py-1 rounded min-w-[2.5rem] ${
-                currentPage === page ? 'bg-blue-500 text-white' : 'bg-gray-200'
-              }`}
+              className={`px-3 py-1 rounded min-w-[2.5rem] ${currentPage === page ? 'bg-blue-500 text-white' : 'bg-gray-200'
+                }`}
             >
               {page}
             </button>
