@@ -1,11 +1,5 @@
 import { API_CONFIG } from './config';
-
-interface User {
-  id: number;
-  nome: string;
-  email: string;
-  role: string;
-}
+import { User } from '../../interfaces/interfaces';
 
 export const searchUsersByEmail = async (email: string): Promise<User[]> => {
   try {

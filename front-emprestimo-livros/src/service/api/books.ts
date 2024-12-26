@@ -1,34 +1,5 @@
 import { API_CONFIG } from './config';
-
-interface Book {
-  id: number;
-  titulo: string;
-  autor: string;
-  isbn: string;
-  disponivel: boolean;
-  quantidadeExemplares: number;
-  dataPublicacao: string;
-}
-
-interface FavoriteResponse {
-  userId: number;
-  userName: string;
-  books: {
-    bookId: number;
-    bookTitle: string;
-    bookAuthor: string;
-    bookAvailable: boolean;
-    bookQuantity: number;
-  }[];
-}
-
-interface BookResponse {
-  bookId: number;
-  bookTitle: string;
-  bookAuthor: string;
-  bookAvailable: boolean;
-  bookQuantity: number;
-}
+import { BookResponse, Book, FavoriteResponse } from '../../interfaces/interfaces';  
 
 export const getBooks = async (): Promise<Book[]> => {
   try {
@@ -108,7 +79,7 @@ export const removeFavoriteBook = async (userId: number, bookId: number): Promis
 export const getBookById = async (id: number): Promise<Book> => {
   try {
     const response = await fetch(`${API_CONFIG.BASE_URL}/books/${id}`, {
-      method: 'GET', 
+      method: 'GET',
       headers: API_CONFIG.getAuthHeader()
     });
 

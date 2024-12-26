@@ -1,25 +1,5 @@
 import { API_CONFIG } from './config';
-
-interface Loan {
-  loanId: number;
-  bookId: number;
-  userId: number;
-  loanDate: string;
-  returnDate: string;
-  status: string;
-  bookName: string;
-  userName: string;
-}
-
-interface CreateLoanRequest {
-  idUser: number;
-  idBook: number;
-}
-
-interface LoanResponse {
-  message: string;
-  success: boolean;
-}
+import { Loan, CreateLoanRequest, LoanResponse } from '../../interfaces/interfaces';
 
 export const createLoan = async (loanData: CreateLoanRequest): Promise<LoanResponse> => {
   try {

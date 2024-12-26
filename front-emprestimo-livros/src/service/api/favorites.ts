@@ -1,18 +1,5 @@
 import { API_CONFIG } from './config';
-
-interface Book {
-  bookId: number;
-  bookTitle: string;
-  bookAuthor: string;
-  bookAvailable: boolean;
-  bookQuantity: number;
-}
-
-interface UserFavorites {
-  userId: number;
-  userName: string;
-  books: Book[];
-}
+import { UserFavorites } from '../../interfaces/interfaces';
 
 export const getFavoritesByUserId = async (userId: number): Promise<UserFavorites> => {
   try {
@@ -38,7 +25,7 @@ export const addFavorite = async (bookId: number): Promise<void> => {
     const response = await fetch(`${API_CONFIG.BASE_URL}/favorites/add`, {
       method: 'POST',
       headers: API_CONFIG.getAuthHeader(),
-      body: JSON.stringify({ 
+      body: JSON.stringify({
         idUsuario: 0,
         idLivro: bookId
       })
@@ -72,7 +59,7 @@ export const removeFavorite = async (userId: number, bookId: number): Promise<vo
 export const checkIsFavorite = async (bookId: number): Promise<boolean> => {
   try {
     const response = await fetch(`${API_CONFIG.BASE_URL}/favorites/check/${bookId}`, {
-      method: 'GET', 
+      method: 'GET',
       headers: API_CONFIG.getAuthHeader()
     });
 
