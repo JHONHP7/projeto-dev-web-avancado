@@ -1,14 +1,21 @@
 import { Link, Outlet, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../hooks/useAuth';
+import { useEffect } from 'react';
 
 const Home = () => {
   const navigate = useNavigate();
-  const user = JSON.parse(localStorage.getItem('user') || 'null');
+  const { user, logout, getCurrentUser } = useAuth();
+
+  useEffect(() => {
+    getCurrentUser();
+  }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    logout();
     navigate('/login');
   };
+
+  console.log('User role:', user?.role); // Adicionar log para debug
 
   return (
     <div>
@@ -18,9 +25,11 @@ const Home = () => {
             <Link to="/books" className="text-white hover:text-gray-200">
               Livros
             </Link>
-            <Link to="/loans" className="text-white hover:text-gray-200">
-              Empréstimos
-            </Link>
+            {user && user.role === 'ADMIN' && (
+              <Link to="/loans" className="text-white hover:text-gray-200">
+                Empréstimos
+              </Link>
+            )}
           </div>
           <div className="flex items-center space-x-4">
             <Link to="/profile" className="text-white hover:text-gray-200">

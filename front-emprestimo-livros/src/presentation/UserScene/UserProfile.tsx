@@ -1,12 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import FavoriteTable from '../../components/FavoriteTable';
-
-interface User {
-  id: number;
-  nome: string;
-  email: string;
-  role: string;
-}
+import { useAuth } from '../../hooks/useAuth';
 
 interface FavoriteResponse {
   userId: number;
@@ -21,37 +15,12 @@ interface FavoriteResponse {
 }
 
 const UserProfile = () => {
-  const [user, setUser] = useState<User | null>(null);
+  const { user } = useAuth();
   const [favorites, setFavorites] = useState<FavoriteResponse>({
     userId: 0,
     userName: '',
     books: []
   });
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        const response = await fetch('http://localhost:8080/auth/usuario/logado', {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error('Erro ao buscar usuário');
-        }
-
-        const userData = await response.json();
-        setUser(userData);
-      } catch (error) {
-        console.error('Erro ao buscar usuário:', error);
-      }
-    };
-
-    fetchUser();
-  }, []);
 
   useEffect(() => {
     const fetchFavorites = async () => {
@@ -82,21 +51,35 @@ const UserProfile = () => {
 
   return (
     <div className="p-8">
-      <h1 className="text-3xl font-bold mb-8">Perfil do Usuário</h1>
       {user && (
         <div className="space-y-8">
-          <div className="bg-white p-6 rounded-lg shadow-lg">
-            <h2 className="text-2xl font-semibold mb-4">Informações do Usuário</h2>
-            <div className="space-y-4">
-              <p><span className="font-semibold">Nome:</span> {user.nome}</p>
-              <p><span className="font-semibold">Email:</span> {user.email}</p>
-              <p><span className="font-semibold">Tipo:</span> {user.role}</p>
+          <div className="bg-blue-50 p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
+            <h2 className="text-2xl font-semibold mb-4 text-blue-600">Informações do Usuário</h2>
+            <div className="flex items-center space-x-6 mb-6">
+              <div className="w-24 h-24 rounded-full overflow-hidden bg-gray-200 hover:scale-105 transition-transform duration-300">
+                <img 
+                  src="/src/assets/user-profile.svg"
+                  alt="Foto de perfil"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="space-y-4">
+                <p className="hover:bg-blue-100 p-2 rounded-lg transition-colors">
+                  <span className="font-semibold text-blue-600">Nome:</span> {user.nome}
+                </p>
+                <p className="hover:bg-blue-100 p-2 rounded-lg transition-colors">
+                  <span className="font-semibold text-blue-600">Email:</span> {user.email}
+                </p>
+                <p className="hover:bg-blue-100 p-2 rounded-lg transition-colors">
+                  <span className="font-semibold text-blue-600">Tipo:</span> {user.role === 'USER' ? 'Aluno' : 'Funcionário da biblioteca'}
+                </p>
+              </div>
             </div>
           </div>
           
           {user.role === 'USER' && (
-            <div className="bg-white p-6 rounded-lg shadow-lg">
-              <h2 className="text-2xl font-semibold mb-4">Livros Favoritos</h2>
+            <div className="bg-blue-50 p-6 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
+              <h2 className="text-2xl font-semibold mb-4 text-blue-600">Livros Favoritos</h2>
               <FavoriteTable favoritesList={favorites} />
             </div>
           )}
