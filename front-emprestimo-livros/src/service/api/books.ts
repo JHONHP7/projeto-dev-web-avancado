@@ -50,7 +50,7 @@ export const getBookById = async (id: number): Promise<Book> => {
 
 export const createBook = async (bookData: Omit<Book, 'id'>): Promise<Book> => {
   try {
-    // Formatar a data de publicação no formato DD-MM-YYYY
+    /* Formatar a data de publicação no formato DD-MM-YYYY */
     const [year, month, day] = bookData.dataPublicacao.split("-");
     const formattedDate = `${day}-${month}-${year}`;
     const updatedBook = { ...bookData, dataPublicacao: formattedDate };
@@ -75,7 +75,7 @@ export const createBook = async (bookData: Omit<Book, 'id'>): Promise<Book> => {
 
 export const updateBook = async (bookData: Book): Promise<Book> => {
   try {
-    // Convertendo a data do formato "YYYY-MM-DD" para "DD-MM-YYYY"
+    /** Convertendo a data do formato "YYYY-MM-DD" para "DD-MM-YYYY" */
     const [year, month, day] = bookData.dataPublicacao.split('-');
     const formattedDateForSubmit = `${day}-${month}-${year}`;
 
@@ -147,8 +147,9 @@ export const getBookByIdForUpdate = async (id: number): Promise<Book> => {
     }
 
     const data = await response.json();
-
-    // Convertendo a data do formato "DD-MM-YYYY" para "YYYY-MM-DD"
+    /**
+     * Convertendo a data do formato "DD-MM-YYYY" para "YYYY-MM-DD"
+     */
     const [day, month, year] = data.publicationDate.split('-');
     const formattedDate = `${year}-${month}-${day}`;
 

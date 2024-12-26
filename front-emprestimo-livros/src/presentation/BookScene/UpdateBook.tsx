@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { getBookByIdForUpdate, updateBook } from "../../service/api";
 
 interface Book {
   id: number;
@@ -29,33 +30,8 @@ const UpdateBook = () => {
   useEffect(() => {
     const fetchBook = async () => {
       try {
-        const token = localStorage.getItem('token');
-        const response = await fetch(`http://localhost:8080/books/${id}`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error('Erro ao buscar livro');
-        }
-
-        const data = await response.json();
-
-        // Convertendo a data do formato "DD-MM-YYYY" para "YYYY-MM-DD"
-        const [day, month, year] = data.publicationDate.split('-');
-        const formattedDate = `${year}-${month}-${day}`;
-
-        setBook({
-          id: data.bookId,
-          titulo: data.bookTitle,
-          autor: data.bookAuthor,
-          isbn: data.bookIsbn,
-          disponivel: data.bookAvailable,
-          quantidadeExemplares: data.bookQuantity,
-          dataPublicacao: formattedDate,
-        });
+        const data = await getBookByIdForUpdate(Number(id));
+        setBook(data);
         setIsLoading(false);
       } catch (error) {
         setError('Erro ao carregar livro. Por favor, tente novamente.');
@@ -82,30 +58,7 @@ const UpdateBook = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const token = localStorage.getItem('token');
-
-      // Convertendo a data do formato "YYYY-MM-DD" para "DD-MM-YYYY"
-      const [year, month, day] = book.dataPublicacao.split('-');
-      const formattedDateForSubmit = `${day}-${month}-${year}`;
-
-      const bookToSubmit = {
-        ...book,
-        dataPublicacao: formattedDateForSubmit
-      };
-
-      const response = await fetch('http://localhost:8080/books/update', {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(bookToSubmit),
-      });
-
-      if (!response.ok) {
-        throw new Error('Erro ao atualizar livro');
-      }
-
+      await updateBook(book);
       navigate('/books');
     } catch (error) {
       setError('Erro ao atualizar livro. Por favor, tente novamente.');
