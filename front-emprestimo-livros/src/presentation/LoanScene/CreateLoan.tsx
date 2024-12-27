@@ -1,43 +1,15 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
-
-interface Book {
-  id: number;
-  titulo: string;
-  autor: string;
-  disponivel: boolean;
-  quantidadeExemplares: number;
-  dataPublicacao: string;
-}
-
-interface BookResponse {
-  bookId: number;
-  bookTitle: string;
-  bookAuthor: string;
-  bookAvailable: boolean;
-  bookQuantity: number;
-}
-
-interface User {
-  id: number;
-  nome: string;
-  email: string;
-  role: string;
-}
-
-interface LoanResponse {
-  message: string;
-  success: boolean;
-}
+import { BookDetails, User, BookResponse, LoanResponse } from '../../interfaces/interfaces';
 
 const CreateLoan = () => {
   const navigate = useNavigate();
   const [bookTitle, setBookTitle] = useState('');
   const [userName, setUserName] = useState('');
-  const [books, setBooks] = useState<Book[]>([]);
+  const [books, setBooks] = useState<BookDetails[]>([]);
   const [users, setUsers] = useState<User[]>([]);
-  const [allBooks, setAllBooks] = useState<Book[]>([]);
+  const [allBooks, setAllBooks] = useState<BookDetails[]>([]);
   const [allUsers, setAllUsers] = useState<User[]>([]);
   const [selectedBookId, setSelectedBookId] = useState<number | null>(null);
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
@@ -123,7 +95,7 @@ const CreateLoan = () => {
 
       const data: BookResponse[] = await response.json();
       
-      const convertedBooks: Book[] = data.map(book => ({
+      const convertedBooks: BookDetails[] = data.map(book => ({
         id: book.bookId,
         titulo: book.bookTitle,
         autor: book.bookAuthor,

@@ -3,7 +3,7 @@ export * from './book/Book';
 export * from './book/BookResponse';
 export * from './book/BookCreate';
 export * from './book/BookTableProps';
-
+export * from './book/BookDetails';
 // Favoritos
 export * from './favorite/FavoriteResponse';
 export * from './favorite/FavoriteTableProps';
