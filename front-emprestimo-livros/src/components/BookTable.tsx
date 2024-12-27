@@ -3,30 +3,10 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { AiFillStar, AiOutlineStar } from "react-icons/ai";
 import { getFavoriteBooks, addFavoriteBook, removeFavoriteBook } from '../service/api/index';
+import { BookTableProps } from '../interfaces/interfaces';
 import Swal from 'sweetalert2';
 import { deleteBookById } from '../service/api/books';
 
-interface Book {
-  id: number;
-  titulo: string;
-  autor: string;
-  isbn: string;
-  disponivel: boolean;
-  quantidadeExemplares: number;
-  dataPublicacao: string;
-}
-
-interface User {
-  id: number;
-  nome: string;
-  email: string;
-  role: string;
-}
-
-interface BookTableProps {
-  books: Book[];
-  user: User | null;
-}
 
 const BookTable: React.FC<BookTableProps> = ({ books, user }) => {
   const navigate = useNavigate();

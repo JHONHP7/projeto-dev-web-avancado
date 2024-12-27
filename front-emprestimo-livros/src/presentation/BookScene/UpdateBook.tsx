@@ -1,17 +1,9 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getBookByIdForUpdate, updateBook } from "../../service/api";
+import { Book } from "../../interfaces/interfaces";
 import Swal from 'sweetalert2';
 
-interface Book {
-  id: number;
-  titulo: string;
-  autor: string;
-  isbn: string;
-  disponivel: boolean;
-  quantidadeExemplares: number;
-  dataPublicacao: string;
-}
 
 const UpdateBook = () => {
   const { id } = useParams();

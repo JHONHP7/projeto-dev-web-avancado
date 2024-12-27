@@ -1,13 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { getUserProfile } from '../service/api/index';
-
-interface User {
-  id: number;
-  nome: string;
-  email: string;
-  role: string;
-}
+import { User } from '../interfaces/interfaces';
 
 const Navbar = () => {
   const navigate = useNavigate();

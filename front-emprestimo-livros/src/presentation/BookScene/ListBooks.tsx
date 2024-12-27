@@ -3,23 +3,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import BookTable from "../../components/BookTable";
 import { getUserProfile, getBooks } from '../../service/api/index';
-
-interface Book {
-  id: number;
-  titulo: string;
-  autor: string;
-  isbn: string;
-  disponivel: boolean;
-  quantidadeExemplares: number;
-  dataPublicacao: string;
-}
-
-interface User {
-  id: number;
-  nome: string;
-  email: string;
-  role: string;
-}
+import { Book, User } from "../../interfaces/interfaces";
 
 const ListBooks = () => {
   const navigate = useNavigate();

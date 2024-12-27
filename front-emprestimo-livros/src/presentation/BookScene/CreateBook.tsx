@@ -1,15 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Swal from 'sweetalert2';
-
-interface BookCreate {
-  titulo: string;
-  autor: string;
-  isbn: string;
-  disponivel: boolean;
-  quantidadeExemplares: number;
-  dataPublicacao: string;
-}
+import { BookCreate } from "../../interfaces/interfaces";
 
 const CreateBook = () => {
   const navigate = useNavigate();

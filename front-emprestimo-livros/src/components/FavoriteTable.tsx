@@ -1,23 +1,6 @@
 import Swal from 'sweetalert2';
 import { removeFavorite } from '../service/api';
-
-interface Book {
-  bookId: number;
-  bookTitle: string;
-  bookAuthor: string;
-  bookAvailable: boolean;
-  bookQuantity: number;
-}
-
-interface FavoriteResponse {
-  userId: number;
-  userName: string;
-  books: Book[];
-}
-
-interface FavoriteTableProps {
-  favoritesList: FavoriteResponse;
-}
+import { FavoriteTableProps } from '../interfaces/interfaces';
 
 const FavoriteTable = ({ favoritesList }: FavoriteTableProps) => {
   const handleRemoveFavorite = async (bookId: number) => {

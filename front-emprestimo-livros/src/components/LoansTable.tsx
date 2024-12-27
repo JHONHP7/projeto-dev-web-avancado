@@ -1,27 +1,4 @@
-interface Loan {
-  loanId: number;
-  bookId: number;
-  userId: number;
-  loanDate: string;
-  returnDate: string;
-  status: string;
-  bookName: string;
-  userName: string;
-}
-
-interface User {
-  id: number;
-  nome: string;
-  email: string;
-  role: string;
-}
-
-interface LoansTableProps {
-  loans: Loan[];
-  user: User | null;
-  handleRenew: (loanId: number, status: string) => void;
-  handleReturn: (loanId: number) => void;
-}
+import { LoansTableProps } from '../interfaces/interfaces';
 
 const LoansTable: React.FC<LoansTableProps> = ({ loans, user, handleRenew, handleReturn }) => {
   const formatDate = (dateString: string): string => {
