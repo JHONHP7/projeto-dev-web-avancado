@@ -4,11 +4,12 @@ This is a REST API for managing a book lending system. It provides endpoints to 
 
 ## Description
 
-The **Book Lending System API** is a RESTful service that facilitates the management of book lending operations. It is designed to support both regular users and administrators. Regular users can view books, mark favorites, and track loans. Administrators have additional privileges to manage books, users, and loans. The system is built using Java Spring Boot, with PostgreSQL as the database.
+The **Book Lending System API** is a RESTful service that facilitates the management of book lending operations. It is designed to support both regular users and administrators. Regular users can view books, mark favorites, and track loans. Administrators have additional privileges to manage books, users, and loans. The system is built using Java Spring Boot, with PostgreSQL as the database. The frontend is developed using React with Vite.
 
 ## Technologies
 
 - **Backend**: Java 17 with Spring Boot
+- **Frontend**: React with Vite
 - **Build Tool**: Maven
 - **Database**: PostgreSQL
 - **Documentation**: Swagger
@@ -21,8 +22,11 @@ The **Book Lending System API** is a RESTful service that facilitates the manage
 - **Docker Compose**: [Install Docker Compose](https://docs.docker.com/compose/install/)
 - **Java 17**: [Install JDK 17](https://www.azul.com/downloads/?package=jdk#zulu)
 - **Maven**: [Install Maven](https://maven.apache.org/download.cgi)
+- **Node.js and npm**: [Install Node.js](https://nodejs.org/)
 
 ## Setup Instructions
+
+### Backend
 
 1. Clone the repository and navigate to the project folder:
    ```bash
@@ -50,6 +54,28 @@ The **Book Lending System API** is a RESTful service that facilitates the manage
 5. The application will be available at:
    - API: `http://localhost:8080`
    - PostgreSQL Database: `localhost:5434`
+
+### Frontend
+
+1. Navigate to the frontend directory:
+   ```bash
+   cd front-emprestimo-livros
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Start the development server:
+   ```bash
+   npm run dev
+   ```
+
+   The frontend will be available at:
+   ```
+   http://localhost:5173
+   ```
 
 ## Database Configuration
 
