@@ -198,24 +198,12 @@ If you want to create and configure the database manually without Docker, follow
 
 4. Create the database:
    ```sql
-   CREATE DATABASE emprestimo;
+   CREATE DATABASE emprestimo_livros;
    ```
 
 5. Create the schema and user:
    ```sql
    CREATE SCHEMA emprestimo;
-   CREATE USER emprestimo_user WITH PASSWORD '1996';
-   GRANT ALL PRIVILEGES ON DATABASE emprestimo TO emprestimo_user;
-   ALTER SCHEMA emprestimo OWNER TO emprestimo_user;
-   ```
-
-6. Update your `application.yaml` file to reflect the new database settings:
-   ```yaml
-   spring:
-     datasource:
-       url: jdbc:postgresql://localhost:5432/emprestimo
-       username: emprestimo_user
-       password: 1996
    ```
 
 ### Modifying Credentials
