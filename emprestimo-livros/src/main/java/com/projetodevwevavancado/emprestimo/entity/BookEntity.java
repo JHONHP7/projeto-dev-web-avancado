@@ -17,6 +17,7 @@ import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -51,6 +52,7 @@ public class BookEntity implements Serializable {
 	@JsonProperty("disponivel")
 	private Boolean disponivel;
 
+	@Min(0)
 	@JsonProperty("quantidadeExemplares")
 	private Integer quantidadeExemplares;
 

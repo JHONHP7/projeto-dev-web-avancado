@@ -2,7 +2,6 @@ package com.projetodevwevavancado.emprestimo.service;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 import java.util.stream.Collectors;
@@ -16,6 +15,7 @@ import org.springframework.stereotype.Service;
 import com.projetodevwevavancado.emprestimo.api.dto.request.BookRequestByTitleDTO;
 import com.projetodevwevavancado.emprestimo.api.dto.response.BookDTO;
 import com.projetodevwevavancado.emprestimo.api.dto.response.BookUpdateDTO;
+import com.projetodevwevavancado.emprestimo.api.resource.handler.exceptions.NegativeQuantityException;
 import com.projetodevwevavancado.emprestimo.entity.BookEntity;
 import com.projetodevwevavancado.emprestimo.repository.BookRepository;
 
@@ -28,6 +28,12 @@ public class BookService {
 	@Autowired
 	private final BookRepository bookRepository;
 	
+	/**
+	 * Converte uma entidade de livro para o DTO de livro.
+	 *
+	 * @param bookEntity a entidade de livro a ser convertida
+	 * @return o DTO de livro correspondente
+	 */
 	public BookDTO convertBookEntityToBookDTO(BookEntity bookEntity) {
 	    return new BookDTO(
 	            bookEntity.getId(),
@@ -38,6 +44,12 @@ public class BookService {
 	    );
 	}
 	
+	/**
+	 * Mapeia uma entidade de livro para o DTO de atualização de livro.
+	 *
+	 * @param entity a entidade de livro a ser mapeada
+	 * @return o DTO de atualização de livro correspondente
+	 */
 	public BookUpdateDTO mapToDTO(BookEntity entity) {
 	    SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
 	    sdf.setTimeZone(TimeZone.getTimeZone("GMT-3"));
@@ -54,26 +66,44 @@ public class BookService {
 	        .build();
 	}
 
-
-
-
-
+	/**
+	 * Recupera todos os livros armazenados no repositório.
+	 *
+	 * @return uma lista de todas as entidades de livro
+	 */
 	public List<BookEntity> findAll() {
 		return bookRepository.findAll();
 	}
 
+	/**
+	 * Recupera um livro pelo seu ID.
+	 *
+	 * @param entity a entidade contendo o ID do livro a ser recuperado
+	 * @return a entidade de livro correspondente ao ID fornecido
+	 */
 	public BookEntity findById(BookEntity entity) {
 		return bookRepository.findById(entity.getId()).orElseThrow(() -> new RuntimeException("Livro não encontrado"));
 	}
 	
-
-	public BookUpdateDTO findByBookById( Long id) {
+	/**
+	 * Recupera um livro pelo seu ID e o mapeia para um DTO.
+	 *
+	 * @param id o ID do livro a ser recuperado
+	 * @return o DTO de atualização do livro correspondente ao ID fornecido
+	 */
+	public BookUpdateDTO findByBookById(Long id) {
 		 BookEntity bookEntity = bookRepository.findById(id)
 	                .orElseThrow(() -> new RuntimeException("Livro não encontrado"));
 	        
 	        return mapToDTO(bookEntity);
 	}
 
+	/**
+	 * Recupera um livro pelo seu título.
+	 *
+	 * @param title o título do livro a ser procurado
+	 * @return a entidade de livro correspondente ao título fornecido
+	 */
 	public BookEntity findByTitle(String title) {
 		List<BookEntity> allBooks = bookRepository.findAll();
 		for (BookEntity book : allBooks) {
@@ -84,56 +114,89 @@ public class BookService {
 		return null;
 	}
 
+	/**
+	 * Exclui um livro do repositório.
+	 *
+	 * @param entity a entidade do livro a ser excluída
+	 * @return um valor nulo após a exclusão
+	 */
 	public Void delete(BookEntity entity) {
 		bookRepository.delete(findById(entity));
 		return null;
 	}
 	
+	/**
+	 * Salva uma entidade de livro no repositório.
+	 *
+	 * @param bookEntity a entidade de livro a ser salva
+	 * @return a entidade de livro salva
+	 */
 	public BookEntity save(BookEntity bookEntity) {
 		return bookRepository.save(bookEntity);
 	}
-
-	public BookEntity saveOrUpdate(BookEntity bookEntity) {
-	    if (bookEntity.getId() != null) {
-	        BookEntity existingBook = bookRepository.findById(bookEntity.getId())
-	            .orElseThrow(() -> new IllegalArgumentException("Livro não encontrado para o id: " + bookEntity.getId()));
-
-	        // Se a data de publicação não estiver nula, converta para o formato correto com o fuso horário
-	        if (bookEntity.getDataPublicacao() != null) {
-	            SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
-	            sdf.setTimeZone(TimeZone.getTimeZone("GMT-3"));  // Define o fuso horário de Brasília
-
-	            try {
-	                Date parsedDate = sdf.parse(sdf.format(bookEntity.getDataPublicacao()));
-	                existingBook.setDataPublicacao(parsedDate);
-	            } catch (Exception e) {
-	                throw new IllegalArgumentException("Erro ao formatar data de publicação");
-	            }
-	        }
-
-	        BeanUtils.copyProperties(bookEntity, existingBook, getNullPropertyNames(bookEntity));
-	        return bookRepository.save(existingBook);
-	    } else {
-	        if (bookEntity.getTitulo() == null || bookEntity.getAutor() == null || bookEntity.getIsbn() == null) {
-	            throw new IllegalArgumentException("Campos obrigatórios não podem ser nulos para inserção.");
-	        }
-
-	        // Se a data de publicação não estiver nula, formate ela antes de salvar com o fuso horário correto
-	        if (bookEntity.getDataPublicacao() != null) {
-	            SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
-	            sdf.setTimeZone(TimeZone.getTimeZone("GMT-3"));  // Define o fuso horário de Brasília
-	            try {
-	                Date parsedDate = sdf.parse(sdf.format(bookEntity.getDataPublicacao()));
-	                bookEntity.setDataPublicacao(parsedDate);
-	            } catch (Exception e) {
-	                throw new IllegalArgumentException("Erro ao formatar data de publicação");
-	            }
-	        }
-
-	        return bookRepository.save(bookEntity);
+	
+	/**
+	 * Salva um novo livro, verificando se a quantidade de exemplares é negativa.
+	 *
+	 * @param bookEntity a entidade de livro a ser salva
+	 * @return a entidade de livro salva
+	 * @throws NegativeQuantityException se a quantidade de exemplares for negativa
+	 */
+	public BookEntity saveBook(BookEntity bookEntity) {
+	    if (bookEntity.getQuantidadeExemplares() < 0) {
+	        throw new NegativeQuantityException("A quantidade de exemplares não pode ser negativa.");
 	    }
+	    
+	    if (bookEntity.getTitulo() == null || bookEntity.getAutor() == null || bookEntity.getIsbn() == null) {
+	        throw new IllegalArgumentException("Campos obrigatórios não podem ser nulos para inserção.");
+	    }
+	    
+	    return bookRepository.save(bookEntity);
 	}
 
+	/**
+	 * Atualiza um livro existente, verificando se a quantidade de exemplares é negativa.
+	 *
+	 * @param bookEntity a entidade de livro com os dados a serem atualizados
+	 * @return a entidade de livro atualizada
+	 * @throws NegativeQuantityException se a quantidade de exemplares for negativa
+	 */
+	public BookEntity updateBook(BookEntity bookEntity) {
+	    if (bookEntity.getQuantidadeExemplares() < 0) {
+	        throw new NegativeQuantityException("A quantidade de exemplares não pode ser negativa.");
+	    }
+
+	    BookEntity existingBook = bookRepository.findById(bookEntity.getId())
+	            .orElseThrow(() -> new IllegalArgumentException("Livro não encontrado para o id: " + bookEntity.getId()));
+
+	    BeanUtils.copyProperties(bookEntity, existingBook, getNullPropertyNames(bookEntity));
+
+	    return bookRepository.save(existingBook);
+	}
+
+	/**
+	 * Salva ou atualiza um livro, dependendo se o ID está presente.
+	 *
+	 * @param bookEntity a entidade de livro a ser salva ou atualizada
+	 * @return o DTO de atualização do livro correspondente
+	 */
+	public BookUpdateDTO saveOrUpdateBook(BookEntity bookEntity) {
+	    BookEntity savedBook;
+	    if (bookEntity.getId() != null) {
+	        savedBook = updateBook(bookEntity);
+	    } else {
+	        savedBook = saveBook(bookEntity);
+	    }
+	    
+	    return mapToDTO(savedBook);
+	}
+
+	/**
+	 * Obtém os nomes das propriedades nulas de uma entidade.
+	 *
+	 * @param source a entidade da qual as propriedades nulas serão verificadas
+	 * @return um array de nomes das propriedades nulas
+	 */
 	private String[] getNullPropertyNames(Object source) {
 	    final BeanWrapper src = new BeanWrapperImpl(source);
 	    java.beans.PropertyDescriptor[] pds = src.getPropertyDescriptors();
@@ -146,6 +209,12 @@ public class BookService {
 	    return nullPropertyNames.toArray(new String[0]);
 	}
 	
+	/**
+	 * Busca livros pelo título e os mapeia para DTOs.
+	 *
+	 * @param title o DTO contendo o título do livro a ser procurado
+	 * @return uma lista de DTOs de livros que correspondem ao título
+	 */
 	public List<BookDTO> findBookAllBookById(BookRequestByTitleDTO title) {
 	    String searchTitle = "%" + title.getTitle() + "%";
 	    List<BookEntity> entities = bookRepository.findBookAllBookByTitle(searchTitle);
@@ -157,11 +226,12 @@ public class BookService {
 	    return dtos;
 	}
 
-	
 	/**
-	 * Conversçoes
+	 * Converte uma entidade de livro para DTO de livro.
+	 *
+	 * @param entity a entidade de livro a ser convertida
+	 * @return o DTO de livro correspondente
 	 */
-
 	private BookDTO bookEntityToDTO(BookEntity entity) {
 		return BookDTO.builder()
 				.bookAuthor(entity.getAutor())

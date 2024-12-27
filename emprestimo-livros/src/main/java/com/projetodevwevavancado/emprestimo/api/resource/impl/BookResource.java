@@ -21,6 +21,7 @@ import com.projetodevwevavancado.emprestimo.entity.BookEntity;
 import com.projetodevwevavancado.emprestimo.service.BookService;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -33,16 +34,18 @@ public class BookResource implements BookResourceApi {
 	private final BookService bookService;
 
 	@PostMapping("/save")
-	public ResponseEntity<BookEntity> save(@RequestBody BookEntity bookEntity) {
-		bookService.saveOrUpdate(bookEntity);
-		return ResponseEntity.ok().build();
-	}
+    public ResponseEntity<BookUpdateDTO> save(@Valid @RequestBody BookEntity bookEntity) {
+        BookUpdateDTO responseDTO = bookService.saveOrUpdateBook(bookEntity);
+        return ResponseEntity.ok(responseDTO); // Retorna diretamente o DTO
+    }
 
 	@PutMapping("/update")
-	public ResponseEntity<BookEntity> update(@RequestBody BookEntity bookEntity) {
-		BookEntity updatedBook = bookService.saveOrUpdate(bookEntity);
-		return ResponseEntity.ok(updatedBook);
+	public ResponseEntity<BookUpdateDTO> update(@Valid @RequestBody BookEntity bookEntity) {
+	    // Chama o método saveOrUpdate do serviço, que agora retorna um BookUpdateDTO
+	    BookUpdateDTO updatedBookDTO = bookService.saveOrUpdateBook(bookEntity);
+	    return ResponseEntity.ok(updatedBookDTO); // Retorna diretamente o BookUpdateDTO
 	}
+
 
 	@GetMapping
 	public ResponseEntity<List<BookEntity>> findAll() {
@@ -67,8 +70,6 @@ public class BookResource implements BookResourceApi {
 	    }
 	    return ResponseEntity.ok(books);
 	}
-
-
 
 
 }

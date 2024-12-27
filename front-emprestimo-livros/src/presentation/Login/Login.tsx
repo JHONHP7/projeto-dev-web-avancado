@@ -70,7 +70,7 @@ const Login = () => {
           setError('Erro ao autenticar com Google. Tente novamente.');
         })
         .finally(() => setIsLoading(false));
-    }, 1000);
+    }, 200);
   };
 
   return (
