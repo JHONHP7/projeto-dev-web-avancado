@@ -163,6 +163,61 @@ The **Book Lending System API** is a RESTful service that facilitates the manage
 - **Username**: `postgres`
 - **Password**: `1996`
 
+### Creating the Database Locally
+
+If you want to create and configure the database manually without Docker, follow these steps:
+
+1. Install PostgreSQL:
+   - **Windows**: Download and install PostgreSQL from [PostgreSQL Downloads](https://www.postgresql.org/download/).
+   - **Ubuntu**:
+     ```bash
+     sudo apt update
+     sudo apt install postgresql postgresql-contrib
+     ```
+   - **Mac**: Use Homebrew:
+     ```bash
+     brew install postgresql
+     ```
+
+2. Start the PostgreSQL service:
+   - **Windows**: Start the service via the PostgreSQL app or `pgAdmin`.
+   - **Ubuntu**:
+     ```bash
+     sudo systemctl start postgresql
+     ```
+   - **Mac**:
+     ```bash
+     brew services start postgresql
+     ```
+
+3. Log in to the PostgreSQL shell:
+   ```bash
+   psql -U postgres
+   ```
+   - Enter the password if prompted.
+
+4. Create the database:
+   ```sql
+   CREATE DATABASE emprestimo;
+   ```
+
+5. Create the schema and user:
+   ```sql
+   CREATE SCHEMA emprestimo;
+   CREATE USER emprestimo_user WITH PASSWORD '1996';
+   GRANT ALL PRIVILEGES ON DATABASE emprestimo TO emprestimo_user;
+   ALTER SCHEMA emprestimo OWNER TO emprestimo_user;
+   ```
+
+6. Update your `application.yaml` file to reflect the new database settings:
+   ```yaml
+   spring:
+     datasource:
+       url: jdbc:postgresql://localhost:5432/emprestimo
+       username: emprestimo_user
+       password: 1996
+   ```
+
 ### Modifying Credentials
 
 You can modify the database credentials in two places:
