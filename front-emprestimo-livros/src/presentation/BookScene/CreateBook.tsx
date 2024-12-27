@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Swal from 'sweetalert2';
 import { BookCreate } from "../../interfaces/interfaces";
+import { createBook } from "../../service/api/books";
 
 const CreateBook = () => {
   const navigate = useNavigate();
@@ -19,33 +20,18 @@ const CreateBook = () => {
     const { name, value, type, checked } = e.target;
     setBook(prev => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : 
-              type === 'number' ? Number(value) : 
-              value
+      [name]: type === 'checkbox' ? checked :
+        type === 'number' ? Number(value) :
+          value
     }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    const [year, month, day] = book.dataPublicacao.split("-");
-    const formattedDate = `${day}-${month}-${year}`;
-    const updatedBook = { ...book, dataPublicacao: formattedDate };
+    const updatedBook = { ...book };
 
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:8080/books/save', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updatedBook),
-      });
-
-      if (!response.ok) {
-        throw new Error('Erro ao salvar livro');
-      }
+      await createBook(updatedBook);
 
       await Swal.fire({
         title: 'Sucesso!',
@@ -58,7 +44,7 @@ const CreateBook = () => {
     } catch (error) {
       setError('Erro ao salvar livro. Por favor, tente novamente.');
       console.error('Erro:', error);
-      
+
       Swal.fire({
         title: 'Erro!',
         text: 'Erro ao salvar livro. Por favor, tente novamente.',

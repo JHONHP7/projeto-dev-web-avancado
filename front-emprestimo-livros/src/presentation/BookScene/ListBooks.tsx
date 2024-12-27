@@ -55,7 +55,6 @@ const ListBooks = () => {
     return matchesTitulo && matchesAutor;
   });
 
-  // Lógica de paginação
   const indexOfLastBook = currentPage * booksPerPage;
   const indexOfFirstBook = indexOfLastBook - booksPerPage;
   const currentBooks = filteredBooks.slice(indexOfFirstBook, indexOfLastBook);

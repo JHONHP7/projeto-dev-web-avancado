@@ -1,5 +1,5 @@
 import { API_CONFIG } from './config';
-import { BookResponse, Book, FavoriteResponse } from '../../interfaces/interfaces';  
+import { BookResponse, Book, FavoriteResponse } from '../../interfaces/interfaces';
 
 export const getBooks = async (): Promise<Book[]> => {
   try {
@@ -97,11 +97,14 @@ export const getBookById = async (id: number): Promise<Book> => {
 
 export const createBook = async (bookData: Omit<Book, 'id'>): Promise<Book> => {
   try {
-    const token = localStorage.getItem('token');
+    // Reformatando a data para o formato dd-MM-yyyy
     const [year, month, day] = bookData.dataPublicacao.split("-");
     const formattedDate = `${day}-${month}-${year}`;
     const updatedBook = { ...bookData, dataPublicacao: formattedDate };
 
+    const token = localStorage.getItem('token');
+
+    // Enviando a requisição POST
     const response = await fetch(`${API_CONFIG.BASE_URL}/books/save`, {
       method: 'POST',
       headers: {
@@ -121,7 +124,7 @@ export const createBook = async (bookData: Omit<Book, 'id'>): Promise<Book> => {
     console.error('Erro ao salvar livro:', error);
     throw error;
   }
-};
+}
 
 export const updateBook = async (bookData: Book): Promise<Book> => {
   try {

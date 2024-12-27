@@ -15,8 +15,6 @@ const Home = () => {
     navigate('/login');
   };
 
-  console.log('User role:', user?.role); // Adicionar log para debug
-
   return (
     <div>
       <nav className="bg-blue-600 p-4">
