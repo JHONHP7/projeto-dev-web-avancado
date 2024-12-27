@@ -3,24 +3,7 @@ import { useNavigate } from "react-router-dom";
 import LoansTable from "../../components/LoansTable";
 import Swal from 'sweetalert2';
 import { getLoans, renewLoan, returnLoan, getUserProfile} from '../../service/api/index';
-
-interface Loan {
-  loanId: number;
-  bookId: number;
-  userId: number;
-  loanDate: string;
-  returnDate: string;
-  status: string;
-  bookName: string;
-  userName: string;
-}
-
-interface User {
-  id: number;
-  nome: string;
-  email: string;
-  role: string;
-}
+import { Loan, User } from '../../interfaces/interfaces';
 
 const LoanScene = () => {
   const navigate = useNavigate();

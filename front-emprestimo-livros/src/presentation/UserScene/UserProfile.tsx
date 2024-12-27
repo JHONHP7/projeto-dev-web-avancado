@@ -2,18 +2,7 @@ import { useEffect, useState } from 'react';
 import FavoriteTable from '../../components/FavoriteTable';
 import { useAuth } from '../../hooks/useAuth';
 import { getFavoritesByUserId } from '../../service/api';
-
-interface FavoriteResponse {
-  userId: number;
-  userName: string;
-  books: {
-    bookId: number;
-    bookTitle: string;
-    bookAuthor: string;
-    bookAvailable: boolean;
-    bookQuantity: number;
-  }[];
-}
+import { FavoriteResponse } from '../../interfaces/interfaces';
 
 const UserProfile = () => {
   const { user } = useAuth();
