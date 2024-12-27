@@ -26,7 +26,7 @@ The **Book Lending System API** is a RESTful service that facilitates the manage
 
 ## Setup Instructions
 
-### Backend
+### Backend Setup
 
 1. Clone the repository and navigate to the project folder:
    ```bash
@@ -51,11 +51,11 @@ The **Book Lending System API** is a RESTful service that facilitates the manage
    - Build the backend image
    - Start the PostgreSQL database and backend application
 
-5. The application will be available at:
+5. Access the application:
    - API: `http://localhost:8080`
    - PostgreSQL Database: `localhost:5434`
 
-### Frontend
+### Frontend Setup
 
 1. Navigate to the frontend directory:
    ```bash
@@ -76,6 +76,85 @@ The **Book Lending System API** is a RESTful service that facilitates the manage
    ```
    http://localhost:5173
    ```
+
+## Platform-Specific Setup
+
+### Windows
+
+1. Ensure that **Docker Desktop**, **JDK 17**, **Maven**, and **Node.js** are installed and added to the system PATH.
+   - Follow the links in the [Prerequisites](#prerequisites) section for installation guides.
+
+2. Open a terminal (PowerShell or Command Prompt) and navigate to the backend folder.
+   ```bash
+   cd emprestimo-livros
+   ```
+
+3. Build the backend project:
+   ```bash
+   mvn clean package
+   ```
+
+4. Start the containers:
+   ```bash
+   docker-compose build
+   docker-compose up -d
+   ```
+
+5. Repeat the frontend setup instructions from the [Frontend Setup](#frontend-setup) section.
+
+### Ubuntu
+
+1. Install the necessary dependencies using the package manager:
+   ```bash
+   sudo apt update
+   sudo apt install openjdk-17-jdk maven nodejs npm docker.io docker-compose
+   ```
+
+2. Clone the repository and navigate to the backend folder:
+   ```bash
+   git clone <repository-url>
+   cd emprestimo-livros
+   ```
+
+3. Build the backend project:
+   ```bash
+   mvn clean package
+   ```
+
+4. Start the containers:
+   ```bash
+   sudo docker-compose build
+   sudo docker-compose up -d
+   ```
+
+5. Repeat the frontend setup instructions from the [Frontend Setup](#frontend-setup) section.
+
+### Mac
+
+1. Install the necessary tools:
+   - Use **Homebrew** to install dependencies:
+     ```bash
+     brew install openjdk@17 maven node docker docker-compose
+     ```
+
+2. Clone the repository and navigate to the backend folder:
+   ```bash
+   git clone <repository-url>
+   cd emprestimo-livros
+   ```
+
+3. Build the backend project:
+   ```bash
+   mvn clean package
+   ```
+
+4. Start the containers:
+   ```bash
+   docker-compose build
+   docker-compose up -d
+   ```
+
+5. Repeat the frontend setup instructions from the [Frontend Setup](#frontend-setup) section.
 
 ## Database Configuration
 
@@ -139,7 +218,7 @@ The API includes the following primary resources:
 - [How to Install JDK 17 - Windows](https://www.youtube.com/watch?v=QekeJBShCy4)
 - [How to Use Docker Compose](https://docs.docker.com/compose/)
 - [How to Install Maven - Linux](https://www.youtube.com/watch?v=ieYdISjVy5w)
-- [How to install Maven - Windows](https://www.youtube.com/watch?v=-ucX5w8Zm8s)
+- [How to Install Maven - Windows](https://www.youtube.com/watch?v=-ucX5w8Zm8s)
 
 Feel free to explore and customize the API as needed!
 
