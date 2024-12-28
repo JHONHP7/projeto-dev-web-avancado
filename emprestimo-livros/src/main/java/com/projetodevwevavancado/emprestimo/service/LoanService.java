@@ -1,5 +1,6 @@
 package com.projetodevwevavancado.emprestimo.service;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -9,6 +10,9 @@ import org.springframework.stereotype.Service;
 
 import com.projetodevwevavancado.emprestimo.api.dto.request.LoanSaveRequestDTO;
 import com.projetodevwevavancado.emprestimo.api.dto.response.LoanDTO;
+import com.projetodevwevavancado.emprestimo.api.resource.handler.exceptions.ResourceNotFoundException;
+import com.projetodevwevavancado.emprestimo.api.resource.handler.exceptions.UserSuspendedException;
+import com.projetodevwevavancado.emprestimo.commons.util.SuspendedUtil;
 import com.projetodevwevavancado.emprestimo.entity.BookEntity;
 import com.projetodevwevavancado.emprestimo.entity.LoanEntity;
 import com.projetodevwevavancado.emprestimo.entity.UserEntity;
@@ -42,7 +46,15 @@ public class LoanService {
 	@Transactional
 	public LoanEntity createLoan(LoanSaveRequestDTO loanRequestDTO) {
 	    UserEntity user = userRepository.findById(loanRequestDTO.idUser())
-	        .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado"));
+	        .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
+
+	    SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+	    String formattedSuspendedUntil = sdf.format(user.getSuspendedUntil());
+	    System.out.println("A data e: " + formattedSuspendedUntil);
+
+	    if (SuspendedUtil.isSuspended(user.getSuspendedUntil())) {
+	        throw new UserSuspendedException("Usuário está suspenso.", formattedSuspendedUntil);
+	    }
 
 	    long activeLoans = loanRepository.countByUsuarioIdAndStatus(loanRequestDTO.idUser(), "Emprestado");
 	    if (activeLoans >= 2) {
@@ -50,16 +62,15 @@ public class LoanService {
 	    }
 
 	    BookEntity book = bookRepository.findById(loanRequestDTO.idBook())
-	        .orElseThrow(() -> new IllegalArgumentException("Livro não encontrado"));
-	    
-	    if(Boolean.FALSE.equals(book.getDisponivel())) {
-	    	throw new IllegalArgumentException("Livro não está disponível no momento.");
+	        .orElseThrow(() -> new ResourceNotFoundException("Livro não encontrado"));
+
+	    if (Boolean.FALSE.equals(book.getDisponivel())) {
+	        throw new IllegalStateException("Livro não está disponível no momento.");
 	    }
 
 	    if (!book.temExemplaresDisponiveis() && book.getDisponivel()) {
-	        throw new IllegalArgumentException("Não há exemplares disponíveis para empréstimo.");
+	        throw new IllegalStateException("Não há exemplares disponíveis para empréstimo.");
 	    }
-
 
 	    book.ajustarQuantidadeExemplares(-1);
 
@@ -81,21 +92,40 @@ public class LoanService {
 
 	@Transactional
 	public LoanEntity markAsReturned(Long loanId) {
-		LoanEntity loan = findById(loanId);
+	    LoanEntity loan = findById(loanId);
 
-		if ("Devolvido".equalsIgnoreCase(loan.getStatus())) {
-			throw new IllegalStateException("Empréstimo já devolvido.");
-		}
+	    if ("Devolvido".equalsIgnoreCase(loan.getStatus())) {
+	        throw new IllegalStateException("Empréstimo já devolvido.");
+	    }
 
-		loan.setStatus("Devolvido");
-		loan.setDataDevolucao(new Date());
+	    // Verifica se houve atraso
+	    if (loan.getDataDevolucao() != null && loan.getDataDevolucao().after(loan.getDataEmprestimo())) {
+	        long atrasoDias = calcularDiasAtraso(loan.getDataDevolucao(), loan.getDataEmprestimo());
+	        if (atrasoDias > 0) {
+	            UserEntity usuario = loan.getUsuario();
+	            Date novaSuspensao = SuspendedUtil.suspendForDays((int) atrasoDias);
+	            usuario.setSuspendedUntil(novaSuspensao);
+	            userRepository.save(usuario);
+	        }
+	    }
 
-		BookEntity book = loan.getLivro();
-		book.ajustarQuantidadeExemplares(1);
-		bookRepository.save(book);
+	    loan.setStatus("Devolvido");
+	    loan.setDataDevolucao(new Date());
 
-		return loanRepository.save(loan);
+	    BookEntity book = loan.getLivro();
+	    book.ajustarQuantidadeExemplares(1);
+	    bookRepository.save(book);
+
+	    return loanRepository.save(loan);
 	}
+
+
+	// Calcula o número de dias de atraso
+	private long calcularDiasAtraso(Date dataDevolucao, Date dataEmprestimo) {
+	    long diffMillis = dataDevolucao.getTime() - dataEmprestimo.getTime();
+	    return diffMillis / (1000 * 60 * 60 * 24);
+	}
+
 
 	public LoanEntity updateLoan(LoanEntity loanEntity) {
 

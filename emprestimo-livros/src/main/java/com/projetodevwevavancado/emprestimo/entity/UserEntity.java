@@ -2,6 +2,7 @@ package com.projetodevwevavancado.emprestimo.entity;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.security.core.GrantedAuthority;
@@ -43,13 +44,16 @@ public class UserEntity implements Serializable, UserDetails {
 
 	@JsonProperty("nome")
 	private String nome;
-	
+
 	@JsonProperty("email")
 	private String email;
-	
+
 	@JsonProperty("senha")
 	private String senha;
-	
+
+	@Column(name = "blocked_until")
+	private Date suspendedUntil;
+
 	@Enumerated(EnumType.STRING)
 	@JsonProperty("role")
 	private UserRole role;
@@ -62,7 +66,6 @@ public class UserEntity implements Serializable, UserDetails {
 		this.senha = senha;
 		this.role = role;
 	}
-	
 
 	public UserEntity(Long id) {
 		super();
@@ -71,13 +74,13 @@ public class UserEntity implements Serializable, UserDetails {
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		
-		if(this.role == UserRole.ADMIN) {
+
+		if (this.role == UserRole.ADMIN) {
 			return List.of(new SimpleGrantedAuthority("ROLE_ADMIN"), new SimpleGrantedAuthority("ROLE_USER"));
-		}else {
+		} else {
 			return List.of(new SimpleGrantedAuthority("ROLE_USER"));
 		}
-		
+
 	}
 
 	@Override
@@ -88,10 +91,9 @@ public class UserEntity implements Serializable, UserDetails {
 
 	@Override
 	public String getUsername() {
-		
+
 		return email;
 	}
-
 
 	public UserEntity(String nome, String email, String senha, UserRole role) {
 		super();
@@ -99,6 +101,25 @@ public class UserEntity implements Serializable, UserDetails {
 		this.email = email;
 		this.senha = senha;
 		this.role = role;
-	}	
+	}
+
+	public UserEntity(Long id, String nome, String email, String senha, Date suspendedUntil, UserRole role) {
+		super();
+		this.id = id;
+		this.nome = nome;
+		this.email = email;
+		this.senha = senha;
+		this.suspendedUntil = suspendedUntil;
+		this.role = role;
+	}
+
+	public UserEntity(String nome, String email, String senha, Date suspendedUntil, UserRole role) {
+		super();
+		this.nome = nome;
+		this.email = email;
+		this.senha = senha;
+		this.suspendedUntil = suspendedUntil;
+		this.role = role;
+	}
 
 }
