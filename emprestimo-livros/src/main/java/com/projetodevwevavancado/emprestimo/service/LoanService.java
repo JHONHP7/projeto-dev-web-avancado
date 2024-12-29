@@ -1,10 +1,12 @@
 package com.projetodevwevavancado.emprestimo.service;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.stereotype.Service;
 
@@ -44,63 +46,24 @@ public class LoanService {
 	}
 
 	@Transactional
-	public LoanEntity createLoan(LoanSaveRequestDTO loanRequestDTO) {
-	    UserEntity user = userRepository.findById(loanRequestDTO.idUser())
-	        .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
-
-	    SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
-	    String formattedSuspendedUntil = sdf.format(user.getSuspendedUntil());
-	    System.out.println("A data e: " + formattedSuspendedUntil);
-
-	    if (SuspendedUtil.isSuspended(user.getSuspendedUntil())) {
-	        throw new UserSuspendedException("Usuário está suspenso.", formattedSuspendedUntil);
-	    }
-
-	    long activeLoans = loanRepository.countByUsuarioIdAndStatus(loanRequestDTO.idUser(), "Emprestado");
-	    if (activeLoans >= 2) {
-	        throw new IllegalStateException("Usuário já possui o limite de dois empréstimos ativos.");
-	    }
-
-	    BookEntity book = bookRepository.findById(loanRequestDTO.idBook())
-	        .orElseThrow(() -> new ResourceNotFoundException("Livro não encontrado"));
-
-	    if (Boolean.FALSE.equals(book.getDisponivel())) {
-	        throw new IllegalStateException("Livro não está disponível no momento.");
-	    }
-
-	    if (!book.temExemplaresDisponiveis() && book.getDisponivel()) {
-	        throw new IllegalStateException("Não há exemplares disponíveis para empréstimo.");
-	    }
-
-	    book.ajustarQuantidadeExemplares(-1);
-
-	    if (book.getQuantidadeExemplares() == 0) {
-	        book.setDisponivel(false);
-	    }
-	    bookRepository.save(book);
-
-	    LoanEntity loanEntity = new LoanEntity();
-	    loanEntity.setLivro(book);
-	    loanEntity.setUsuario(user);
-	    loanEntity.setDataEmprestimo(new Date());
-	    loanEntity.setStatus("Emprestado");
-
-	    return loanRepository.save(loanEntity);
-	}
-
-
-
-	@Transactional
-	public LoanEntity markAsReturned(Long loanId) {
+	public LoanEntity markAsReturned(Long loanId) throws ParseException {
 	    LoanEntity loan = findById(loanId);
 
 	    if ("Devolvido".equalsIgnoreCase(loan.getStatus())) {
 	        throw new IllegalStateException("Empréstimo já devolvido.");
 	    }
 
-	    // Verifica se houve atraso
-	    if (loan.getDataDevolucao() != null && loan.getDataDevolucao().after(loan.getDataEmprestimo())) {
-	        long atrasoDias = calcularDiasAtraso(loan.getDataDevolucao(), loan.getDataEmprestimo());
+	    Date today = new Date();
+
+	    // Atualiza a data de devolução do empréstimo para hoje
+	    //loan.setDataDevolucao(today);
+
+	    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+	    Date dataAtualFormatada = sdf.parse(sdf.format(today));
+	    Date dataDevolucaoEsperadaFormatada = sdf.parse(sdf.format(loan.getDataDevolucao()));
+
+	    if (dataAtualFormatada.after(loan.getDataDevolucao())) {
+	        long atrasoDias = calcularDiasAtraso(dataAtualFormatada, loan.getDataDevolucao());
 	        if (atrasoDias > 0) {
 	            UserEntity usuario = loan.getUsuario();
 	            Date novaSuspensao = SuspendedUtil.suspendForDays((int) atrasoDias);
@@ -110,7 +73,6 @@ public class LoanService {
 	    }
 
 	    loan.setStatus("Devolvido");
-	    loan.setDataDevolucao(new Date());
 
 	    BookEntity book = loan.getLivro();
 	    book.ajustarQuantidadeExemplares(1);
@@ -119,11 +81,9 @@ public class LoanService {
 	    return loanRepository.save(loan);
 	}
 
-
-	// Calcula o número de dias de atraso
-	private long calcularDiasAtraso(Date dataDevolucao, Date dataEmprestimo) {
-	    long diffMillis = dataDevolucao.getTime() - dataEmprestimo.getTime();
-	    return diffMillis / (1000 * 60 * 60 * 24);
+	private long calcularDiasAtraso(Date dataAtual, Date dataDevolucaoEsperada) {
+	    long diff = dataAtual.getTime() - dataDevolucaoEsperada.getTime();
+	    return TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
 	}
 
 
@@ -169,7 +129,6 @@ public class LoanService {
             throw new IllegalStateException("Limite de renovações atingido");
         }
         if ("Devolvido".equals(loan.getStatus())) {
-        	System.out.println("O status  eh: " + loan.getStatus());
             throw new IllegalStateException("Empréstimo já foi devolvido, não pode ser renovado!");
         }
 
@@ -199,4 +158,78 @@ public class LoanService {
 	    );
 	}
 
+	/**
+	 * Create Loan particionado com seu métodos auxiliares
+	 */
+	@Transactional
+	public LoanEntity createLoan(LoanSaveRequestDTO loanRequestDTO) {
+		UserEntity user = userRepository.findById(loanRequestDTO.idUser())
+				.orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
+
+		checkUserSuspension(user);
+
+		checkActiveLoans(loanRequestDTO.idUser()); 
+
+		BookEntity book = checkBookAvailability(loanRequestDTO.idBook()); 
+
+		adjustBookExemplars(book);
+
+		LoanEntity loanEntity = createLoanEntity(book, user);
+
+		return loanRepository.save(loanEntity);
+	}
+
+	private void checkUserSuspension(UserEntity user) {
+		if (user.getSuspendedUntil() != null) {
+			SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+			String formattedSuspendedUntil = sdf.format(user.getSuspendedUntil());
+			System.out.println("A data de suspensão é: " + formattedSuspendedUntil);
+
+			if (SuspendedUtil.isSuspended(user.getSuspendedUntil())) {
+				throw new UserSuspendedException("Usuário está suspenso.", formattedSuspendedUntil);
+			}
+		}
+	}
+
+	private void checkActiveLoans(Long userId) {
+		long activeLoans = loanRepository.countByUsuarioIdAndStatus(userId, "Emprestado");
+		if (activeLoans >= 2) {
+			throw new IllegalStateException("Usuário já possui o limite de dois empréstimos ativos.");
+		}
+	}
+
+	private BookEntity checkBookAvailability(Long bookId) {
+		BookEntity book = bookRepository.findById(bookId)
+				.orElseThrow(() -> new ResourceNotFoundException("Livro não encontrado"));
+
+		if (Boolean.FALSE.equals(book.getDisponivel())) {
+			throw new IllegalStateException("Livro não está disponível no momento.");
+		}
+
+		if (!book.temExemplaresDisponiveis() && book.getDisponivel()) {
+			throw new IllegalStateException("Não há exemplares disponíveis para empréstimo.");
+		}
+
+		return book;
+	}
+
+	private void adjustBookExemplars(BookEntity book) {
+		book.ajustarQuantidadeExemplares(-1);
+		if (book.getQuantidadeExemplares() == 0) {
+			book.setDisponivel(false);
+		}
+		bookRepository.save(book);
+	}
+
+	private LoanEntity createLoanEntity(BookEntity book, UserEntity user) {
+		LoanEntity loanEntity = new LoanEntity();
+		loanEntity.setLivro(book);
+		loanEntity.setUsuario(user);
+		loanEntity.setDataEmprestimo(new Date());
+		loanEntity.setStatus("Emprestado");
+		return loanEntity;
+	}
+
+
 }
+
