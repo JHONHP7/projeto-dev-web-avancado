@@ -26,36 +26,41 @@ public class BookResource implements BookResourceApi {
 
 	@PostMapping("/save")
     public ResponseEntity<BookUpdateDTO> save(@Valid @RequestBody BookEntity bookEntity) {
-        BookUpdateDTO responseDTO = bookService.saveOrUpdateBook(bookEntity);
-        return ResponseEntity.ok(responseDTO); // Retorna diretamente o DTO
+        
+		BookUpdateDTO responseDTO = bookService.saveOrUpdateBook(bookEntity);
+        return ResponseEntity.ok(responseDTO);
     }
 
 	@PutMapping("/update")
 	public ResponseEntity<BookUpdateDTO> update(@Valid @RequestBody BookEntity bookEntity) {
-	    // Chama o método saveOrUpdate do serviço, que agora retorna um BookUpdateDTO
-	    BookUpdateDTO updatedBookDTO = bookService.saveOrUpdateBook(bookEntity);
-	    return ResponseEntity.ok(updatedBookDTO); // Retorna diretamente o BookUpdateDTO
+
+		BookUpdateDTO updatedBookDTO = bookService.saveOrUpdateBook(bookEntity);
+	    return ResponseEntity.ok(updatedBookDTO);
 	}
 
 	@GetMapping
 	public ResponseEntity<List<BookResponseDTO>> findAll() {
+		
 		List<BookResponseDTO> books = bookService.getAllBooks();
 		return ResponseEntity.ok(books);
 	}
 
 	@DeleteMapping("/delete")
 	public ResponseEntity<Void> delete(@RequestBody BookEntity entity) {
+		
 		return ResponseEntity.ok(bookService.delete(entity));
 	}
 
 	@GetMapping("/{id}")
 	public ResponseEntity<BookUpdateDTO> findById(@PathVariable Long id) {
+		
 		return ResponseEntity.ok(bookService.findByBookById(id));
 	}
 
 	@PostMapping("/title")
 	public ResponseEntity<List<BookDTO>> findBooksByTitle(@RequestBody BookRequestByTitleDTO title) {
-	    List<BookDTO> books = bookService.findBookAllBookById(title);
+	    
+		List<BookDTO> books = bookService.findBookAllBookById(title);
 	    if (books.isEmpty()) {
 	        return ResponseEntity.noContent().build();
 	    }

@@ -1,5 +1,18 @@
 package com.projetodevwevavancado.emprestimo.service;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.TimeZone;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.projetodevwevavancado.emprestimo.api.dto.request.BookRequestByTitleDTO;
 import com.projetodevwevavancado.emprestimo.api.dto.response.BookDTO;
 import com.projetodevwevavancado.emprestimo.api.dto.response.BookResponseDTO;
@@ -7,22 +20,15 @@ import com.projetodevwevavancado.emprestimo.api.dto.response.BookUpdateDTO;
 import com.projetodevwevavancado.emprestimo.api.resource.handler.exceptions.NegativeQuantityException;
 import com.projetodevwevavancado.emprestimo.entity.BookEntity;
 import com.projetodevwevavancado.emprestimo.repository.BookRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.BeanWrapperImpl;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.TimeZone;
-import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class BookService {
+	
+	private static final String GTIN = "978";
+    private static final Random RANDOM = new Random();
 	
 	@Autowired
 	private final BookRepository bookRepository;
@@ -192,15 +198,34 @@ public class BookService {
 	 * @return o DTO de atualização do livro correspondente
 	 */
 	public BookUpdateDTO saveOrUpdateBook(BookEntity bookEntity) {
-	    BookEntity savedBook;
-	    if (bookEntity.getId() != null) {
-	        savedBook = updateBook(bookEntity);
-	    } else {
-	        savedBook = saveBook(bookEntity);
+
+		if (bookEntity.getIsbn() == null || bookEntity.getIsbn().isBlank()) {
+            String generatedIsbn;
+            do {
+                generatedIsbn = IsbnGenerator.generateIsbn();
+            } while (bookRepository.existsByIsbn(generatedIsbn)); // Gera até encontrar um ISBN único
+            bookEntity.setIsbn(generatedIsbn);
+        } else if (bookRepository.existsByIsbn(bookEntity.getIsbn())) {
+            throw new IllegalArgumentException("ISBN já existe no banco de dados: " + bookEntity.getIsbn());
+        }
+
+        BookEntity savedBook = bookRepository.save(bookEntity);
+
+	        return bookEntityToBookUpdateDTO(savedBook);
 	    }
-	    
-	    return mapToDTO(savedBook);
-	}
+
+	 private BookUpdateDTO bookEntityToBookUpdateDTO(BookEntity savedBook) {
+
+		return BookUpdateDTO.builder()
+		    .bookId(savedBook.getId())
+		    .bookTitle(savedBook.getTitulo())
+		    .bookAuthor(savedBook.getAutor())
+		    .bookIsbn(savedBook.getIsbn())
+		    .bookAvailable(savedBook.getDisponivel())
+		    .bookQuantity(savedBook.getQuantidadeExemplares())
+		    .publicationDate(savedBook.getDataPublicacao().toString())
+		    .build();
+	 }
 
 	/**
 	 * Obtém os nomes das propriedades nulas de uma entidade.
@@ -251,5 +276,33 @@ public class BookService {
 				.bookQuantity(entity.getQuantidadeExemplares())
 				.bookTitle(entity.getTitulo())
 				.build();
+	}
+	
+	/**
+	 * Gerarando ISBN
+	 */
+	
+	public class IsbnGenerator {
+
+	    public static String generateIsbn() {
+	        String group = "0";
+	        String publisher = String.format("%3d", RANDOM.nextInt(1000)).replace(' ', '0'); 
+	        String title = String.format("%5d", RANDOM.nextInt(100000)).replace(' ', '0'); 
+	        String isbnWithoutCheckDigit = GTIN + group + publisher + title;
+
+	        String checkDigit = calculateCheckDigit(isbnWithoutCheckDigit);
+
+	        return String.format("%s-%s-%s-%s-%s", GTIN, group, publisher, title, checkDigit);
+	    }
+
+	    private static String calculateCheckDigit(String isbnWithoutCheckDigit) {
+	        int sum = 0;
+	        for (int i = 0; i < isbnWithoutCheckDigit.length(); i++) {
+	            int digit = Character.getNumericValue(isbnWithoutCheckDigit.charAt(i));
+	            sum += (i % 2 == 0) ? digit : digit * 3;
+	        }
+	        int mod = sum % 10;
+	        return (mod == 0) ? "0" : String.valueOf(10 - mod);
+	    }
 	}
 }
