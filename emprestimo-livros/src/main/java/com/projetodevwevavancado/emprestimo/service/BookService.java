@@ -63,6 +63,7 @@ public class BookService {
 	        .bookTitle(entity.getTitulo())
 	        .bookAuthor(entity.getAutor())
 	        .bookIsbn(entity.getIsbn())
+	        .bookGenero(entity.getGenero())
 	        .bookAvailable(entity.getDisponivel())
 	        .bookQuantity(entity.getQuantidadeExemplares())
 	        .publicationDate(entity.getDataPublicacao() != null 
@@ -160,9 +161,7 @@ public class BookService {
 	 * @throws NegativeQuantityException se a quantidade de exemplares for negativa
 	 */
 	public BookEntity saveBook(BookEntity bookEntity) {
-	    if (bookEntity.getQuantidadeExemplares() == null || bookEntity.getQuantidadeExemplares() < 0) {
-	        throw new NegativeQuantityException("A quantidade de exemplares não pode ser negativa.");
-	    }
+	    validateBookQuantity(bookEntity.getQuantidadeExemplares());
 
 	    if (bookEntity.getTitulo() == null || bookEntity.getAutor() == null || bookEntity.getIsbn() == null) {
 	        throw new IllegalArgumentException("Campos obrigatórios não podem ser nulos para inserção.");
@@ -179,9 +178,9 @@ public class BookService {
 	 * @throws NegativeQuantityException se a quantidade de exemplares for negativa
 	 */
 	public BookEntity updateBook(BookEntity bookEntity) {
-	    if (bookEntity.getQuantidadeExemplares() == null || bookEntity.getQuantidadeExemplares() < 0) {
-	        throw new NegativeQuantityException("A quantidade de exemplares não pode ser negativa.");
-	    }
+		
+	    validateBookQuantity(bookEntity.getQuantidadeExemplares());
+	   
 
 	    BookEntity existingBook = bookRepository.findById(bookEntity.getId())
 	            .orElseThrow(() -> new IllegalArgumentException("Livro não encontrado para o id: " + bookEntity.getId()));
@@ -199,37 +198,35 @@ public class BookService {
      * @return o DTO de resposta do livro correspondente
      */
     public BookResponseDTO saveOrUpdateBook(BookEntity bookEntity) {
-
-        // Gerar ou validar o ISBN antes de salvar
+    	
+    	validateBookQuantity(bookEntity.getQuantidadeExemplares());
         if (bookEntity.getIsbn() == null || bookEntity.getIsbn().isBlank()) {
             String generatedIsbn;
             do {
                 generatedIsbn = IsbnGenerator.generateIsbn();
-            } while (bookRepository.existsByIsbn(generatedIsbn)); // Gera até encontrar um ISBN único
+            } while (bookRepository.existsByIsbn(generatedIsbn));
             bookEntity.setIsbn(generatedIsbn);
         } else if (bookRepository.existsByIsbn(bookEntity.getIsbn())) {
             throw new IllegalArgumentException("ISBN já existe no banco de dados: " + bookEntity.getIsbn());
         }
 
-        // Salva ou atualiza o livro
         BookEntity savedBook = bookRepository.save(bookEntity);
 
-        // Converte a entidade salva em um DTO de resposta
         return new BookResponseDTO(savedBook);
     }
 
-	 private BookUpdateDTO bookEntityToBookUpdateDTO(BookEntity savedBook) {
-
-		return BookUpdateDTO.builder()
-		    .bookId(savedBook.getId())
-		    .bookTitle(savedBook.getTitulo())
-		    .bookAuthor(savedBook.getAutor())
-		    .bookIsbn(savedBook.getIsbn())
-		    .bookAvailable(savedBook.getDisponivel())
-		    .bookQuantity(savedBook.getQuantidadeExemplares())
-		    .publicationDate(savedBook.getDataPublicacao().toString())
-		    .build();
-	 }
+//	 private BookUpdateDTO bookEntityToBookUpdateDTO(BookEntity savedBook) {
+//
+//		return BookUpdateDTO.builder()
+//		    .bookId(savedBook.getId())
+//		    .bookTitle(savedBook.getTitulo())
+//		    .bookAuthor(savedBook.getAutor())
+//		    .bookIsbn(savedBook.getIsbn())
+//		    .bookAvailable(savedBook.getDisponivel())
+//		    .bookQuantity(savedBook.getQuantidadeExemplares())
+//		    .publicationDate(savedBook.getDataPublicacao().toString())
+//		    .build();
+//	 }
 
 	/**
 	 * Obtém os nomes das propriedades nulas de uma entidade.
@@ -307,6 +304,18 @@ public class BookService {
 	        }
 	        int mod = sum % 10;
 	        return (mod == 0) ? "0" : String.valueOf(10 - mod);
+	    }
+	}
+	
+	/**
+	 * Valida a quantidade de exemplares do livro.
+	 *
+	 * @param quantity a quantidade de exemplares a ser validada
+	 * @throws NegativeQuantityException se a quantidade de exemplares for negativa
+	 */
+	private void validateBookQuantity(Integer quantity) {
+	    if (quantity == null || quantity < 0) {
+	        throw new NegativeQuantityException("A quantidade de exemplares não pode ser negativa.");
 	    }
 	}
 }
