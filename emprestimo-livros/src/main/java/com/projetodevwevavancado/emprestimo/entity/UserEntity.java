@@ -1,5 +1,6 @@
 package com.projetodevwevavancado.emprestimo.entity;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
@@ -36,6 +37,7 @@ import lombok.Setter;
 @AttributeOverrides({ @AttributeOverride(name = "id", column = @Column(name = "SQ_USER")) })
 public class UserEntity implements Serializable, UserDetails {
 
+	@Serial
 	private static final long serialVersionUID = -391564656606632983L;
 
 	@Id
