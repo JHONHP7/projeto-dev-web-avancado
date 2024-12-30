@@ -1,13 +1,11 @@
 // src/components/BookTable.tsx
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { AiFillStar, AiOutlineStar } from "react-icons/ai";
-import { getFavoriteBooks, addFavoriteBook, removeFavoriteBook } from '../service/api/index';
-import { BookTableProps } from '../interfaces/interfaces';
+import { useNavigate } from "react-router-dom";
 import Swal from 'sweetalert2';
+import { BookTableProps } from '../interfaces/interfaces';
 import { deleteBookById } from '../service/api/books';
-import { genres } from '../constants/genres';
-import { Genre } from '../interfaces/interfaces';
+import { addFavoriteBook, getFavoriteBooks, removeFavoriteBook } from '../service/api/index';
 
 
 const BookTable: React.FC<BookTableProps> = ({ books, user }) => {
@@ -16,7 +14,7 @@ const BookTable: React.FC<BookTableProps> = ({ books, user }) => {
   const [showOnlyFavorites, setShowOnlyFavorites] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const booksPerPage = 10;
-  const [selectedGenre, setSelectedGenre] = useState<string | null>(null);
+  const [selectedGenre] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchFavorites = async () => {
@@ -110,19 +108,6 @@ const BookTable: React.FC<BookTableProps> = ({ books, user }) => {
             />
             <span>Favoritos</span>
           </label>
-          <select
-            value={selectedGenre || ""}
-            onChange={(e) => {
-              const value = e.target.value;
-              setSelectedGenre(value || null);
-            }}
-            className="ml-4 form-select"
-          >
-            <option value="">Todos os Gêneros</option>
-            {genres.map((genre: Genre) => (
-              <option key={genre.id} value={genre.name}>{genre.name}</option>
-            ))}
-          </select>
         </div>
       )}
 
