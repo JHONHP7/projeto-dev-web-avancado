@@ -160,14 +160,14 @@ public class BookService {
 	 * @throws NegativeQuantityException se a quantidade de exemplares for negativa
 	 */
 	public BookEntity saveBook(BookEntity bookEntity) {
-	    if (bookEntity.getQuantidadeExemplares() < 0) {
+	    if (bookEntity.getQuantidadeExemplares() == null || bookEntity.getQuantidadeExemplares() < 0) {
 	        throw new NegativeQuantityException("A quantidade de exemplares não pode ser negativa.");
 	    }
-	    
+
 	    if (bookEntity.getTitulo() == null || bookEntity.getAutor() == null || bookEntity.getIsbn() == null) {
 	        throw new IllegalArgumentException("Campos obrigatórios não podem ser nulos para inserção.");
 	    }
-	    
+
 	    return bookRepository.save(bookEntity);
 	}
 
@@ -179,7 +179,7 @@ public class BookService {
 	 * @throws NegativeQuantityException se a quantidade de exemplares for negativa
 	 */
 	public BookEntity updateBook(BookEntity bookEntity) {
-	    if (bookEntity.getQuantidadeExemplares() < 0) {
+	    if (bookEntity.getQuantidadeExemplares() == null || bookEntity.getQuantidadeExemplares() < 0) {
 	        throw new NegativeQuantityException("A quantidade de exemplares não pode ser negativa.");
 	    }
 
@@ -191,15 +191,17 @@ public class BookService {
 	    return bookRepository.save(existingBook);
 	}
 
-	/**
-	 * Salva ou atualiza um livro, dependendo se o ID está presente.
-	 *
-	 * @param bookEntity a entidade de livro a ser salva ou atualizada
-	 * @return o DTO de atualização do livro correspondente
-	 */
-	public BookUpdateDTO saveOrUpdateBook(BookEntity bookEntity) {
 
-		if (bookEntity.getIsbn() == null || bookEntity.getIsbn().isBlank()) {
+	 /**
+     * Salva ou atualiza um livro, dependendo se o ID está presente.
+     *
+     * @param bookEntity a entidade de livro a ser salva ou atualizada
+     * @return o DTO de resposta do livro correspondente
+     */
+    public BookResponseDTO saveOrUpdateBook(BookEntity bookEntity) {
+
+        // Gerar ou validar o ISBN antes de salvar
+        if (bookEntity.getIsbn() == null || bookEntity.getIsbn().isBlank()) {
             String generatedIsbn;
             do {
                 generatedIsbn = IsbnGenerator.generateIsbn();
@@ -209,10 +211,12 @@ public class BookService {
             throw new IllegalArgumentException("ISBN já existe no banco de dados: " + bookEntity.getIsbn());
         }
 
+        // Salva ou atualiza o livro
         BookEntity savedBook = bookRepository.save(bookEntity);
 
-	        return bookEntityToBookUpdateDTO(savedBook);
-	    }
+        // Converte a entidade salva em um DTO de resposta
+        return new BookResponseDTO(savedBook);
+    }
 
 	 private BookUpdateDTO bookEntityToBookUpdateDTO(BookEntity savedBook) {
 

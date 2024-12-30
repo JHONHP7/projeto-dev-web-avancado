@@ -15,7 +15,7 @@ import io.swagger.v3.oas.annotations.Operation;
 public interface BookResourceApi {
 
 	@Operation(summary = "Criar livro")
-	public ResponseEntity<BookUpdateDTO> save(BookEntity bookEntity);
+	public ResponseEntity<BookResponseDTO> save(BookEntity bookEntity);
 
 	@Operation(summary = "Buscar lista de livros")
 	public ResponseEntity<List<BookResponseDTO>> findAll();
@@ -24,7 +24,7 @@ public interface BookResourceApi {
 	public ResponseEntity<Void> delete(BookEntity bookEntity);
 
 	@Operation(summary = "Update livro")
-	public ResponseEntity<BookUpdateDTO> update(BookEntity bookEntity);
+	public ResponseEntity<BookResponseDTO> update(BookEntity bookEntity);
 
 	@Operation(summary = "Update livro")
 	public ResponseEntity<BookUpdateDTO> findById(Long id);

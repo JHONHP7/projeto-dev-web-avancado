@@ -24,19 +24,17 @@ public class BookResource implements BookResourceApi {
 
 	private final BookService bookService;
 
-	@PostMapping("/save")
-    public ResponseEntity<BookUpdateDTO> save(@Valid @RequestBody BookEntity bookEntity) {
-        
-		BookUpdateDTO responseDTO = bookService.saveOrUpdateBook(bookEntity);
-        return ResponseEntity.ok(responseDTO);
-    }
+	 @PostMapping("/save")
+	    public ResponseEntity<BookResponseDTO> save(@Valid @RequestBody BookEntity bookEntity) {
+	        BookResponseDTO responseDTO = bookService.saveOrUpdateBook(bookEntity);
+	        return ResponseEntity.ok(responseDTO);
+	    }
 
-	@PutMapping("/update")
-	public ResponseEntity<BookUpdateDTO> update(@Valid @RequestBody BookEntity bookEntity) {
-
-		BookUpdateDTO updatedBookDTO = bookService.saveOrUpdateBook(bookEntity);
-	    return ResponseEntity.ok(updatedBookDTO);
-	}
+	    @PutMapping("/update")
+	    public ResponseEntity<BookResponseDTO> update(@Valid @RequestBody BookEntity bookEntity) {
+	        BookResponseDTO updatedBookDTO = bookService.saveOrUpdateBook(bookEntity);
+	        return ResponseEntity.ok(updatedBookDTO);
+	    }
 
 	@GetMapping
 	public ResponseEntity<List<BookResponseDTO>> findAll() {

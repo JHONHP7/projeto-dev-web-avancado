@@ -47,7 +47,7 @@ public class BookEntity implements Serializable {
 
     @Min(0)
     @JsonProperty("quantidadeExemplares")
-    private Integer quantidadeExemplares;
+    private Integer quantidadeExemplares = 0;
 
     @Convert(converter = GeneroConverter.class)
     @JsonProperty("genero")
@@ -72,11 +72,13 @@ public class BookEntity implements Serializable {
      * @param ajuste
      */
     public void ajustarQuantidadeExemplares(int ajuste) {
-        if (this.quantidadeExemplares != null) {
-            this.quantidadeExemplares += ajuste;
-            this.disponivel = this.quantidadeExemplares > 0;
+        if (this.quantidadeExemplares == null) {
+            this.quantidadeExemplares = 0;
         }
+        this.quantidadeExemplares += ajuste;
+        this.disponivel = this.quantidadeExemplares > 0;
     }
+
 
     /*
      * Getter personalizado para serialização no JSON
