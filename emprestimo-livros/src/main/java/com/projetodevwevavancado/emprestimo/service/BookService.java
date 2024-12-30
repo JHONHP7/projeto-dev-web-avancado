@@ -1,25 +1,24 @@
 package com.projetodevwevavancado.emprestimo.service;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.TimeZone;
-import java.util.stream.Collectors;
-
+import com.projetodevwevavancado.emprestimo.api.dto.request.BookRequestByTitleDTO;
+import com.projetodevwevavancado.emprestimo.api.dto.response.BookDTO;
+import com.projetodevwevavancado.emprestimo.api.dto.response.BookResponseDTO;
+import com.projetodevwevavancado.emprestimo.api.dto.response.BookUpdateDTO;
+import com.projetodevwevavancado.emprestimo.api.resource.handler.exceptions.NegativeQuantityException;
+import com.projetodevwevavancado.emprestimo.entity.BookEntity;
+import com.projetodevwevavancado.emprestimo.repository.BookRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.projetodevwevavancado.emprestimo.api.dto.request.BookRequestByTitleDTO;
-import com.projetodevwevavancado.emprestimo.api.dto.response.BookDTO;
-import com.projetodevwevavancado.emprestimo.api.dto.response.BookUpdateDTO;
-import com.projetodevwevavancado.emprestimo.api.resource.handler.exceptions.NegativeQuantityException;
-import com.projetodevwevavancado.emprestimo.entity.BookEntity;
-import com.projetodevwevavancado.emprestimo.repository.BookRepository;
-
-import lombok.RequiredArgsConstructor;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.TimeZone;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -73,6 +72,18 @@ public class BookService {
 	 */
 	public List<BookEntity> findAll() {
 		return bookRepository.findAll();
+	}
+
+	/**
+	 * Recupera todo os livros armazenados com gênero
+	 * Converte cada entidade para o DTO
+	 * @return
+	 */
+	public List<BookResponseDTO> getAllBooks() {
+		List<BookEntity> bookEntities = bookRepository.findAll();
+		return bookEntities.stream()
+				.map(BookResponseDTO::new)
+				.collect(Collectors.toList());
 	}
 
 	/**
