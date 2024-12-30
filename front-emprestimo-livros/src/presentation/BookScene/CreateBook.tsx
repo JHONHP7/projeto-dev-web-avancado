@@ -1,34 +1,42 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Swal from 'sweetalert2';
-import { BookCreate } from "../../interfaces/interfaces";
 import { createBook } from "../../service/api/books";
 
 const CreateBook = () => {
   const navigate = useNavigate();
   const [error, setError] = useState<string>('');
-  const [book, setBook] = useState<BookCreate>({
+  const [book, setBook] = useState({
     titulo: '',
     autor: '',
-    isbn: '',
     disponivel: true,
     quantidadeExemplares: 0,
-    dataPublicacao: ''
+    dataPublicacao: '',
+    genero: ''
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type, checked } = e.target;
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value, type } = e.target;
+    const updatedValue = type === 'checkbox' ? e.target.checked :
+                         type === 'number' ? Number(value) :
+                         value;
+
     setBook(prev => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked :
-        type === 'number' ? Number(value) :
-          value
+      [name]: updatedValue
     }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const updatedBook = { ...book };
+    const updatedBook = { 
+      titulo: book.titulo,
+      autor: book.autor,
+      disponivel: book.disponivel,
+      quantidadeExemplares: book.quantidadeExemplares,
+      dataPublicacao: book.dataPublicacao,
+      genero: book.genero
+    };
 
     try {
       await createBook(updatedBook);
@@ -97,17 +105,6 @@ const CreateBook = () => {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">ISBN</label>
-              <input
-                type="text"
-                name="isbn"
-                value={book.isbn}
-                onChange={handleChange}
-                className="w-full rounded-md border border-gray-300 p-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                required
-              />
-            </div>
-            <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Quantidade de Exemplares</label>
               <input
                 type="number"
@@ -143,6 +140,30 @@ const CreateBook = () => {
                 />
                 <span className="text-sm font-medium text-gray-700">Disponível</span>
               </label>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Gênero</label>
+              <select
+                name="genero"
+                value={book.genero}
+                onChange={handleChange}
+                className="w-full rounded-md border border-gray-300 p-2 bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                required
+              >
+                <option value="">Selecione um gênero</option>
+                <option value="FICCAO">Ficção</option>
+                <option value="NAO_FICCAO">Não Ficção</option>
+                <option value="ROMANCE">Romance</option>
+                <option value="FANTASIA">Fantasia</option>
+                <option value="TERROR">Terror</option>
+                <option value="SUSPENSE">Suspense</option>
+                <option value="BIOGRAFIA">Biografia</option>
+                <option value="HISTORIA">História</option>
+                <option value="POESIA">Poesia</option>
+              </select>
             </div>
           </div>
 

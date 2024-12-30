@@ -1,5 +1,5 @@
 import { API_CONFIG } from './config';
-import { BookResponse, Book, FavoriteResponse } from '../../interfaces/interfaces';
+import { BookResponse, Book, FavoriteResponse, BookUpdate } from '../../interfaces/interfaces';
 
 export const getBooks = async (): Promise<Book[]> => {
   try {
@@ -95,12 +95,12 @@ export const getBookById = async (id: number): Promise<Book> => {
   }
 };
 
-export const createBook = async (bookData: Omit<Book, 'id'>): Promise<Book> => {
+export const createBook = async (bookData: Omit<Book, 'id' | 'isbn'>): Promise<Book> => {
   try {
     // Reformatando a data para o formato dd-MM-yyyy
     const [year, month, day] = bookData.dataPublicacao.split("-");
     const formattedDate = `${day}-${month}-${year}`;
-    const updatedBook = { ...bookData, dataPublicacao: formattedDate };
+    const updatedBook = { ...bookData, dataPublicacao: formattedDate, isbn: '' }; // Adicionando o campo isbn como vazio
 
     const token = localStorage.getItem('token');
 
@@ -126,15 +126,20 @@ export const createBook = async (bookData: Omit<Book, 'id'>): Promise<Book> => {
   }
 }
 
-export const updateBook = async (bookData: Book): Promise<Book> => {
+export const updateBook = async (bookData: BookUpdate): Promise<BookUpdate> => {
   try {
     /** Convertendo a data do formato "YYYY-MM-DD" para "DD-MM-YYYY" */
     const [year, month, day] = bookData.dataPublicacao.split('-');
     const formattedDateForSubmit = `${day}-${month}-${year}`;
 
     const bookToSubmit = {
-      ...bookData,
-      dataPublicacao: formattedDateForSubmit
+      id: bookData.id,
+      titulo: bookData.titulo,
+      autor: bookData.autor,
+      disponivel: bookData.disponivel,
+      dataPublicacao: formattedDateForSubmit,
+      quantidadeExemplares: bookData.quantidadeExemplares,
+      genero: bookData.genero
     };
 
     const response = await fetch(`${API_CONFIG.BASE_URL}/books/update`, {
@@ -171,7 +176,7 @@ export const deleteBook = async (id: number): Promise<void> => {
   }
 };
 
-export const getBookByIdForUpdate = async (id: number): Promise<Book> => {
+export const getBookByIdForUpdate = async (id: number): Promise<BookUpdate> => {
   try {
     const response = await fetch(`${API_CONFIG.BASE_URL}/books/${id}`, {
       headers: API_CONFIG.getAuthHeader()
@@ -182,11 +187,6 @@ export const getBookByIdForUpdate = async (id: number): Promise<Book> => {
     }
 
     const data = await response.json();
-    /**
-     * Convertendo a data do formato "DD-MM-YYYY" para "YYYY-MM-DD"
-     */
-    const [day, month, year] = data.publicationDate.split('-');
-    const formattedDate = `${year}-${month}-${day}`;
 
     return {
       id: data.bookId,
@@ -195,7 +195,8 @@ export const getBookByIdForUpdate = async (id: number): Promise<Book> => {
       isbn: data.bookIsbn,
       disponivel: data.bookAvailable,
       quantidadeExemplares: data.bookQuantity,
-      dataPublicacao: formattedDate,
+      dataPublicacao: data.publicationDate.split('-').reverse().join('-'),
+      genero: data.bookGenero
     };
   } catch (error) {
     console.error('Erro ao buscar livro:', error);

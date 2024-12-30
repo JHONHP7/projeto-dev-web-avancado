@@ -1,22 +1,22 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getBookByIdForUpdate, updateBook } from "../../service/api";
-import { Book } from "../../interfaces/interfaces";
+import { BookUpdate } from "../../interfaces/interfaces";
 import Swal from 'sweetalert2';
-
 
 const UpdateBook = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [error, setError] = useState<string>('');
-  const [book, setBook] = useState<Book>({
+  const [book, setBook] = useState<BookUpdate>({
     id: 0,
     titulo: '',
     autor: '',
     isbn: '',
     disponivel: true,
     quantidadeExemplares: 0,
-    dataPublicacao: ''
+    dataPublicacao: '',
+    genero: ''
   });
   const [isLoading, setIsLoading] = useState(true);
 
@@ -24,7 +24,7 @@ const UpdateBook = () => {
     const fetchBook = async () => {
       try {
         const data = await getBookByIdForUpdate(Number(id));
-        setBook(data);
+        setBook(data as BookUpdate);
         setIsLoading(false);
       } catch (error) {
         setError('Erro ao carregar livro. Por favor, tente novamente.');
@@ -38,8 +38,9 @@ const UpdateBook = () => {
     }
   }, [id]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value, type, checked } = e.target;
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value, type } = e.target as HTMLInputElement | HTMLSelectElement;
+    const checked = type === 'checkbox' ? (e.target as HTMLInputElement).checked : undefined;
     setBook(prev => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : 
@@ -51,7 +52,10 @@ const UpdateBook = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await updateBook(book);
+      const updatedBookData: BookUpdate = {
+        ...book,
+      };
+      await updateBook(updatedBookData);
       await Swal.fire({
         title: 'Sucesso!',
         text: 'Livro atualizado com sucesso!',
@@ -60,13 +64,23 @@ const UpdateBook = () => {
       });
       navigate('/books');
     } catch (error) {
-      Swal.fire({
-        title: 'Erro!',
-        text: 'Erro ao atualizar livro. Por favor, tente novamente.',
-        icon: 'error',
-        confirmButtonText: 'OK'
-      });
-      setError('Erro ao atualizar livro. Por favor, tente novamente.');
+      if (error instanceof Response) {
+        const errorData = await error.json();
+        Swal.fire({
+          title: 'Erro!',
+          text: errorData.message || 'Erro ao atualizar livro. Por favor, tente novamente.',
+          icon: 'error',
+          confirmButtonText: 'OK'
+        });
+        setError(errorData.message); // Atualiza o estado de erro com a mensagem da resposta
+      } else {
+        Swal.fire({
+          title: 'Erro!',
+          text: 'Erro ao atualizar livro. Por favor, tente novamente.',
+          icon: 'error',
+          confirmButtonText: 'OK'
+        });
+      }
       console.error('Erro:', error);
     }
   };
@@ -124,17 +138,6 @@ const UpdateBook = () => {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">ISBN</label>
-              <input
-                type="text"
-                name="isbn"
-                value={book.isbn}
-                onChange={handleChange}
-                className="w-full rounded-md border border-gray-300 p-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                required
-              />
-            </div>
-            <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Quantidade de Exemplares</label>
               <input
                 type="number"
@@ -170,6 +173,30 @@ const UpdateBook = () => {
                 />
                 <span className="text-sm font-medium text-gray-700">Disponível</span>
               </label>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Gênero</label>
+              <select
+                name="genero"
+                value={book.genero}
+                onChange={handleChange}
+                className="w-full rounded-md border border-gray-300 p-2 bg-white focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                required
+              >
+                <option value="">Selecione um gênero</option>
+                <option value="FICCAO">Ficção</option>
+                <option value="NAO_FICCAO">Não Ficção</option>
+                <option value="ROMANCE">Romance</option>
+                <option value="FANTASIA">Fantasia</option>
+                <option value="TERROR">Terror</option>
+                <option value="SUSPENSE">Suspense</option>
+                <option value="BIOGRAFIA">Biografia</option>
+                <option value="HISTORIA">História</option>
+                <option value="POESIA">Poesia</option>
+              </select>
             </div>
           </div>
 

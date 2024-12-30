@@ -1,5 +1,18 @@
 package com.projetodevwevavancado.emprestimo.service;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.TimeZone;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.projetodevwevavancado.emprestimo.api.dto.request.BookRequestByTitleDTO;
 import com.projetodevwevavancado.emprestimo.api.dto.response.BookDTO;
 import com.projetodevwevavancado.emprestimo.api.dto.response.BookResponseDTO;
@@ -7,22 +20,15 @@ import com.projetodevwevavancado.emprestimo.api.dto.response.BookUpdateDTO;
 import com.projetodevwevavancado.emprestimo.api.resource.handler.exceptions.NegativeQuantityException;
 import com.projetodevwevavancado.emprestimo.entity.BookEntity;
 import com.projetodevwevavancado.emprestimo.repository.BookRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.BeanWrapperImpl;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.TimeZone;
-import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class BookService {
+	
+	private static final String GTIN = "978";
+    private static final Random RANDOM = new Random();
 	
 	@Autowired
 	private final BookRepository bookRepository;
@@ -57,6 +63,7 @@ public class BookService {
 	        .bookTitle(entity.getTitulo())
 	        .bookAuthor(entity.getAutor())
 	        .bookIsbn(entity.getIsbn())
+	        .bookGenero(entity.getGenero())
 	        .bookAvailable(entity.getDisponivel())
 	        .bookQuantity(entity.getQuantidadeExemplares())
 	        .publicationDate(entity.getDataPublicacao() != null 
@@ -154,14 +161,12 @@ public class BookService {
 	 * @throws NegativeQuantityException se a quantidade de exemplares for negativa
 	 */
 	public BookEntity saveBook(BookEntity bookEntity) {
-	    if (bookEntity.getQuantidadeExemplares() < 0) {
-	        throw new NegativeQuantityException("A quantidade de exemplares não pode ser negativa.");
-	    }
-	    
+	    validateBookQuantity(bookEntity.getQuantidadeExemplares());
+
 	    if (bookEntity.getTitulo() == null || bookEntity.getAutor() == null || bookEntity.getIsbn() == null) {
 	        throw new IllegalArgumentException("Campos obrigatórios não podem ser nulos para inserção.");
 	    }
-	    
+
 	    return bookRepository.save(bookEntity);
 	}
 
@@ -173,9 +178,9 @@ public class BookService {
 	 * @throws NegativeQuantityException se a quantidade de exemplares for negativa
 	 */
 	public BookEntity updateBook(BookEntity bookEntity) {
-	    if (bookEntity.getQuantidadeExemplares() < 0) {
-	        throw new NegativeQuantityException("A quantidade de exemplares não pode ser negativa.");
-	    }
+		
+	    validateBookQuantity(bookEntity.getQuantidadeExemplares());
+	   
 
 	    BookEntity existingBook = bookRepository.findById(bookEntity.getId())
 	            .orElseThrow(() -> new IllegalArgumentException("Livro não encontrado para o id: " + bookEntity.getId()));
@@ -185,22 +190,37 @@ public class BookService {
 	    return bookRepository.save(existingBook);
 	}
 
+
 	/**
 	 * Salva ou atualiza um livro, dependendo se o ID está presente.
 	 *
 	 * @param bookEntity a entidade de livro a ser salva ou atualizada
-	 * @return o DTO de atualização do livro correspondente
+	 * @return o DTO de resposta do livro correspondente
 	 */
-	public BookUpdateDTO saveOrUpdateBook(BookEntity bookEntity) {
-	    BookEntity savedBook;
-	    if (bookEntity.getId() != null) {
-	        savedBook = updateBook(bookEntity);
-	    } else {
-	        savedBook = saveBook(bookEntity);
+	public BookResponseDTO saveOrUpdateBook(BookEntity bookEntity) {
+	    validateBookQuantity(bookEntity.getQuantidadeExemplares());
+
+	    if (bookEntity.getId() == null) {
+	        if (bookEntity.getIsbn() == null || bookEntity.getIsbn().isBlank()) {
+	            String generatedIsbn;
+	            do {
+	                generatedIsbn = IsbnGenerator.generateIsbn();
+	            } while (bookRepository.existsByIsbn(generatedIsbn));
+	            bookEntity.setIsbn(generatedIsbn);
+	        } else if (bookRepository.existsByIsbn(bookEntity.getIsbn())) {
+	            throw new IllegalArgumentException("ISBN já existe no banco de dados: " + bookEntity.getIsbn());
+	        }
+	    } else { 
+	        BookEntity existingBook = bookRepository.findById(bookEntity.getId())
+	                .orElseThrow(() -> new IllegalArgumentException("Livro não encontrado para o ID: " + bookEntity.getId()));
+
+	        bookEntity.setIsbn(existingBook.getIsbn());
 	    }
-	    
-	    return mapToDTO(savedBook);
+
+	    BookEntity savedBook = bookRepository.save(bookEntity);
+	    return new BookResponseDTO(savedBook);
 	}
+
 
 	/**
 	 * Obtém os nomes das propriedades nulas de uma entidade.
@@ -251,5 +271,45 @@ public class BookService {
 				.bookQuantity(entity.getQuantidadeExemplares())
 				.bookTitle(entity.getTitulo())
 				.build();
+	}
+	
+	/**
+	 * Gerarando ISBN
+	 */
+	
+	public class IsbnGenerator {
+
+	    public static String generateIsbn() {
+	        String group = "0";
+	        String publisher = String.format("%3d", RANDOM.nextInt(1000)).replace(' ', '0'); 
+	        String title = String.format("%5d", RANDOM.nextInt(100000)).replace(' ', '0'); 
+	        String isbnWithoutCheckDigit = GTIN + group + publisher + title;
+
+	        String checkDigit = calculateCheckDigit(isbnWithoutCheckDigit);
+
+	        return String.format("%s-%s-%s-%s-%s", GTIN, group, publisher, title, checkDigit);
+	    }
+
+	    private static String calculateCheckDigit(String isbnWithoutCheckDigit) {
+	        int sum = 0;
+	        for (int i = 0; i < isbnWithoutCheckDigit.length(); i++) {
+	            int digit = Character.getNumericValue(isbnWithoutCheckDigit.charAt(i));
+	            sum += (i % 2 == 0) ? digit : digit * 3;
+	        }
+	        int mod = sum % 10;
+	        return (mod == 0) ? "0" : String.valueOf(10 - mod);
+	    }
+	}
+	
+	/**
+	 * Valida a quantidade de exemplares do livro.
+	 *
+	 * @param quantity a quantidade de exemplares a ser validada
+	 * @throws NegativeQuantityException se a quantidade de exemplares for negativa
+	 */
+	private void validateBookQuantity(Integer quantity) {
+	    if (quantity == null || quantity < 0) {
+	        throw new NegativeQuantityException("A quantidade de exemplares não pode ser negativa.");
+	    }
 	}
 }

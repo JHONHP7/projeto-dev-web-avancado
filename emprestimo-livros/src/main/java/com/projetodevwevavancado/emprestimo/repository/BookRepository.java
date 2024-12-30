@@ -12,6 +12,8 @@ import com.projetodevwevavancado.emprestimo.entity.BookEntity;
 
 @Repository
 public interface BookRepository extends JpaRepository<BookEntity, Long> {
+	
+	boolean existsByIsbn(String isbn);
 
 	static final String FIND_QUANTIDADE_BY_ID_BOOK = "SELECT tb.quantidade_exemplares" 
 													+ "	FROM emprestimo.tb_book tb"
