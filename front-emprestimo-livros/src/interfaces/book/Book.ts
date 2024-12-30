@@ -6,4 +6,5 @@ export interface Book {
     disponivel: boolean;
     quantidadeExemplares: number;
     dataPublicacao: string;
+    genero: string;
   }

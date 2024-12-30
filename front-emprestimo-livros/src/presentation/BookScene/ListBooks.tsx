@@ -1,9 +1,9 @@
-// src/presentation/BookScene/ListBooks.tsx
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import BookTable from "../../components/BookTable";
 import { getUserProfile, getBooks } from '../../service/api/index';
 import { Book, User } from "../../interfaces/interfaces";
+import { genres } from '../../constants/genres';
 
 const ListBooks = () => {
   const navigate = useNavigate();
@@ -20,6 +20,7 @@ const ListBooks = () => {
   });
   const [currentPage, setCurrentPage] = useState(1);
   const booksPerPage = 10;
+  const [selectedGenre, setSelectedGenre] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -51,6 +52,11 @@ const ListBooks = () => {
     
     const matchesTitulo = book.titulo.toLowerCase().includes(searchTerm.titulo.toLowerCase());
     const matchesAutor = book.autor.toLowerCase().includes(searchTerm.autor.toLowerCase());
+    
+    if (selectedGenre !== null) {
+      const genreName = genres.find(genre => genre.id === selectedGenre)?.name;
+      if (genreName && book.genero !== genreName) return false;
+    }
     
     return matchesTitulo && matchesAutor;
   });
@@ -100,6 +106,21 @@ const ListBooks = () => {
                 onChange={e => setSearchTerm(prev => ({...prev, autor: e.target.value}))}
                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
+            </div>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center w-full sm:w-1/2 gap-2">
+              <label className="w-20">Gênero:</label>
+              <select
+                value={selectedGenre || ''}
+                onChange={e => setSelectedGenre(Number(e.target.value))}
+                className="w-full px-4 py-2 border rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="">Todos</option>
+                {genres.map(genre => (
+                  <option key={genre.id} value={genre.id}>
+                    {genre.name}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
 
