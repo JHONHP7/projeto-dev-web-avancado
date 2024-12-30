@@ -191,42 +191,36 @@ public class BookService {
 	}
 
 
-	 /**
-     * Salva ou atualiza um livro, dependendo se o ID está presente.
-     *
-     * @param bookEntity a entidade de livro a ser salva ou atualizada
-     * @return o DTO de resposta do livro correspondente
-     */
-    public BookResponseDTO saveOrUpdateBook(BookEntity bookEntity) {
-    	
-    	validateBookQuantity(bookEntity.getQuantidadeExemplares());
-        if (bookEntity.getIsbn() == null || bookEntity.getIsbn().isBlank()) {
-            String generatedIsbn;
-            do {
-                generatedIsbn = IsbnGenerator.generateIsbn();
-            } while (bookRepository.existsByIsbn(generatedIsbn));
-            bookEntity.setIsbn(generatedIsbn);
-        } else if (bookRepository.existsByIsbn(bookEntity.getIsbn())) {
-            throw new IllegalArgumentException("ISBN já existe no banco de dados: " + bookEntity.getIsbn());
-        }
+	/**
+	 * Salva ou atualiza um livro, dependendo se o ID está presente.
+	 *
+	 * @param bookEntity a entidade de livro a ser salva ou atualizada
+	 * @return o DTO de resposta do livro correspondente
+	 */
+	public BookResponseDTO saveOrUpdateBook(BookEntity bookEntity) {
+	    validateBookQuantity(bookEntity.getQuantidadeExemplares());
 
-        BookEntity savedBook = bookRepository.save(bookEntity);
+	    if (bookEntity.getId() == null) {
+	        if (bookEntity.getIsbn() == null || bookEntity.getIsbn().isBlank()) {
+	            String generatedIsbn;
+	            do {
+	                generatedIsbn = IsbnGenerator.generateIsbn();
+	            } while (bookRepository.existsByIsbn(generatedIsbn));
+	            bookEntity.setIsbn(generatedIsbn);
+	        } else if (bookRepository.existsByIsbn(bookEntity.getIsbn())) {
+	            throw new IllegalArgumentException("ISBN já existe no banco de dados: " + bookEntity.getIsbn());
+	        }
+	    } else { 
+	        BookEntity existingBook = bookRepository.findById(bookEntity.getId())
+	                .orElseThrow(() -> new IllegalArgumentException("Livro não encontrado para o ID: " + bookEntity.getId()));
 
-        return new BookResponseDTO(savedBook);
-    }
+	        bookEntity.setIsbn(existingBook.getIsbn());
+	    }
 
-//	 private BookUpdateDTO bookEntityToBookUpdateDTO(BookEntity savedBook) {
-//
-//		return BookUpdateDTO.builder()
-//		    .bookId(savedBook.getId())
-//		    .bookTitle(savedBook.getTitulo())
-//		    .bookAuthor(savedBook.getAutor())
-//		    .bookIsbn(savedBook.getIsbn())
-//		    .bookAvailable(savedBook.getDisponivel())
-//		    .bookQuantity(savedBook.getQuantidadeExemplares())
-//		    .publicationDate(savedBook.getDataPublicacao().toString())
-//		    .build();
-//	 }
+	    BookEntity savedBook = bookRepository.save(bookEntity);
+	    return new BookResponseDTO(savedBook);
+	}
+
 
 	/**
 	 * Obtém os nomes das propriedades nulas de uma entidade.
