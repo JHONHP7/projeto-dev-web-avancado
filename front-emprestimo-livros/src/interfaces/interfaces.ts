@@ -5,6 +5,7 @@ export * from './book/BookCreate';
 export * from './book/BookTableProps';
 export * from './book/BookDetails';
 export * from './book/Genre';
+export * from './book/BookUpdate'
 
 // Favoritos
 export * from './favorite/FavoriteResponse';
