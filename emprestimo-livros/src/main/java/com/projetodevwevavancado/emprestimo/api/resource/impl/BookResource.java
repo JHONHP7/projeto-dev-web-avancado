@@ -1,28 +1,19 @@
 package com.projetodevwevavancado.emprestimo.api.resource.impl;
 
-import java.util.List;
-
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.projetodevwevavancado.emprestimo.api.dto.request.BookRequestByTitleDTO;
 import com.projetodevwevavancado.emprestimo.api.dto.response.BookDTO;
+import com.projetodevwevavancado.emprestimo.api.dto.response.BookResponseDTO;
 import com.projetodevwevavancado.emprestimo.api.dto.response.BookUpdateDTO;
 import com.projetodevwevavancado.emprestimo.api.resource.swagger.BookResourceApi;
 import com.projetodevwevavancado.emprestimo.entity.BookEntity;
 import com.projetodevwevavancado.emprestimo.service.BookService;
-
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/books")
@@ -46,10 +37,10 @@ public class BookResource implements BookResourceApi {
 	    return ResponseEntity.ok(updatedBookDTO); // Retorna diretamente o BookUpdateDTO
 	}
 
-
 	@GetMapping
-	public ResponseEntity<List<BookEntity>> findAll() {
-		return ResponseEntity.ok(bookService.findAll());
+	public ResponseEntity<List<BookResponseDTO>> findAll() {
+		List<BookResponseDTO> books = bookService.getAllBooks();
+		return ResponseEntity.ok(books);
 	}
 
 	@DeleteMapping("/delete")
@@ -70,6 +61,5 @@ public class BookResource implements BookResourceApi {
 	    }
 	    return ResponseEntity.ok(books);
 	}
-
 
 }

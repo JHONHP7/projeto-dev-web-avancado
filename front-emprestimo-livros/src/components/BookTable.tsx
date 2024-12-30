@@ -1,11 +1,11 @@
 // src/components/BookTable.tsx
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { AiFillStar, AiOutlineStar } from "react-icons/ai";
-import { getFavoriteBooks, addFavoriteBook, removeFavoriteBook } from '../service/api/index';
-import { BookTableProps } from '../interfaces/interfaces';
+import { useNavigate } from "react-router-dom";
 import Swal from 'sweetalert2';
+import { BookTableProps } from '../interfaces/interfaces';
 import { deleteBookById } from '../service/api/books';
+import { addFavoriteBook, getFavoriteBooks, removeFavoriteBook } from '../service/api/index';
 
 
 const BookTable: React.FC<BookTableProps> = ({ books, user }) => {
@@ -14,6 +14,7 @@ const BookTable: React.FC<BookTableProps> = ({ books, user }) => {
   const [showOnlyFavorites, setShowOnlyFavorites] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const booksPerPage = 10;
+  const [selectedGenre] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchFavorites = async () => {
@@ -49,7 +50,7 @@ const BookTable: React.FC<BookTableProps> = ({ books, user }) => {
 
   const filteredBooks = showOnlyFavorites && user?.role === 'USER'
     ? books.filter(book => favoriteBooks.includes(book.id))
-    : books;
+    : books.filter(book => !selectedGenre || book.genero === selectedGenre);
 
   const displayedBooks = showOnlyFavorites
     ? filteredBooks
@@ -79,7 +80,6 @@ const BookTable: React.FC<BookTableProps> = ({ books, user }) => {
           'O livro foi deletado com sucesso.',
           'success'
         );
-        // Aqui você precisará atualizar a lista de livros
         window.location.reload();
       }
     } catch (error) {
@@ -171,6 +171,7 @@ const BookTable: React.FC<BookTableProps> = ({ books, user }) => {
                   <th className="px-6 py-3 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                   <th className="px-6 py-3 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantidade</th>
                   <th className="px-6 py-3 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Data de Publicação</th>
+                  <th className="px-6 py-3 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Gênero</th>
                   {user?.role === 'USER' && (
                     <th className="px-6 py-3 border-b text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Favorito</th>
                   )}
@@ -192,6 +193,7 @@ const BookTable: React.FC<BookTableProps> = ({ books, user }) => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">{book.quantidadeExemplares}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{book.dataPublicacao}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{book.genero}</td>
                     {user?.role === 'USER' && (
                       <td className="px-6 py-4 whitespace-nowrap text-center">
                         <button

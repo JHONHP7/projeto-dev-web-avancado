@@ -1,20 +1,6 @@
 import { LoansTableProps } from '../interfaces/interfaces';
 
 const LoansTable: React.FC<LoansTableProps> = ({ loans, user, handleRenew, handleReturn }) => {
-  const formatDate = (dateString: string): string => {
-    const parts = dateString.split("-");
-    if (parts.length !== 3) {
-      return "";
-    }
-
-    const [day, month, year] = parts;
-    if (isNaN(Number(day)) || isNaN(Number(month)) || isNaN(Number(year))) {
-      return "";
-    }
-
-    return `${day}-${month}-${year}`;
-  };
-
   return (
     <div className="w-full">
       <div className="overflow-x-auto">
@@ -26,8 +12,8 @@ const LoansTable: React.FC<LoansTableProps> = ({ loans, user, handleRenew, handl
                   <div className="space-y-1 text-sm">
                     <h3 className="font-bold">Livro: {loan.bookName}</h3>
                     <p>Usuário: {loan.userName}</p>
-                    <p>Data de Empréstimo: {formatDate(loan.loanDate)}</p>
-                    <p>Data de Devolução: {formatDate(loan.returnDate)}</p>
+                    <p>Data de Empréstimo: {loan.loanDate}</p>
+                    <p>Data de Devolução: {loan.returnDate}</p>
                     <p>Status: {loan.status}</p>
                   </div>
                   {user?.role === 'ADMIN' && (
@@ -68,8 +54,8 @@ const LoansTable: React.FC<LoansTableProps> = ({ loans, user, handleRenew, handl
                   <tr key={loan.loanId}>
                     <td className="px-6 py-4 whitespace-nowrap">{loan.bookName}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{loan.userName}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{formatDate(loan.loanDate)}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{formatDate(loan.returnDate)}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{loan.loanDate}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{loan.returnDate}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{loan.status}</td>
                     {user?.role === 'ADMIN' && (
                       <td className="px-6 py-4 whitespace-nowrap text-center">

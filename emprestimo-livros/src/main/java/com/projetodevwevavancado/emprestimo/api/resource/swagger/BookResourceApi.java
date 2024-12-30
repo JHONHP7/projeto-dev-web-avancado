@@ -18,7 +18,7 @@ public interface BookResourceApi {
 	public ResponseEntity<BookUpdateDTO> save(BookEntity bookEntity);
 
 	@Operation(summary = "Buscar lista de livros")
-	public ResponseEntity<List<BookEntity>> findAll();
+	public ResponseEntity<List<BookResponseDTO>> findAll();
 
 	@Operation(summary = "Deletar livro")
 	public ResponseEntity<Void> delete(BookEntity bookEntity);
