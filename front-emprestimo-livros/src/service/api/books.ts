@@ -95,12 +95,12 @@ export const getBookById = async (id: number): Promise<Book> => {
   }
 };
 
-export const createBook = async (bookData: Omit<Book, 'id'>): Promise<Book> => {
+export const createBook = async (bookData: Omit<Book, 'id' | 'isbn'>): Promise<Book> => {
   try {
     // Reformatando a data para o formato dd-MM-yyyy
     const [year, month, day] = bookData.dataPublicacao.split("-");
     const formattedDate = `${day}-${month}-${year}`;
-    const updatedBook = { ...bookData, dataPublicacao: formattedDate };
+    const updatedBook = { ...bookData, dataPublicacao: formattedDate, isbn: '' }; // Adicionando o campo isbn como vazio
 
     const token = localStorage.getItem('token');
 
