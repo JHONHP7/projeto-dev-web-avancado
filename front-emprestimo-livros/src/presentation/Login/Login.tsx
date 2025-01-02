@@ -29,7 +29,7 @@ const Login = () => {
         localStorage.setItem('token', data.token);
         console.log('Login bem-sucedido, token salvo no localStorage.');
         setError('');
-        navigate('/books');
+        navigate('/');
       } else {
         setError('Erro na autenticação. Verifique suas credenciais e tente novamente.');
         console.error('Erro na autenticação:', response.statusText);
@@ -63,7 +63,7 @@ const Login = () => {
         .then((data) => {
           localStorage.setItem('token', data.token);
           console.log('Login bem-sucedido com Google!');
-          navigate('/books');
+          navigate('/');
         })
         .catch((error) => {
           console.error('Erro ao autenticar com Google:', error);
@@ -97,7 +97,7 @@ const Login = () => {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full p-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition flex items-center justify-center"
+            className="w-full p-3 bg-black text-white rounded-md hover:bg-gray-900 transition flex items-center justify-center"
           >
             {isLoading ? (
               <div className="flex items-center">
@@ -112,7 +112,7 @@ const Login = () => {
         {error && <div className="mt-4 text-red-500">{error}</div>}
         <a
           href="#"
-          className="mt-4 text-sm text-blue-600 hover:underline"
+          className="mt-4 text-sm text-black hover:underline"
         >
           Não tem conta? Faça seu cadastro aqui
         </a>

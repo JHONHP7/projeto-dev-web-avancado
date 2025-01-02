@@ -8,42 +8,47 @@ import Login from '../presentation/Login/Login';
 import LoanScene from '../presentation/LoanScene/LoanScene';
 import CreateLoan from '../presentation/LoanScene/CreateLoan';
 import UserProfile from '../presentation/UserScene/UserProfile';
+import Content from '../presentation/Content/ContentScene';
 
 export const router = createBrowserRouter([
   {
     path: "/",
     element: <Home />,
+  },
+  {
+    path: "/content",
+    element: <Content />,
     children: [
       {
         index: true,
         element: <Navigate to="login" replace />,
       },
       {
-        path: "advertises",
+        path: "/content/advertises",
         element: <ListAdvertise />,
       },
       {
-        path: "books",
+        path: "/content/books",
         element: <ListBooks />,
       },
       {
-        path: "books/create",
+        path: "/content/books/create",
         element: <CreateBook />,
       },
       {
-        path: "books/update/:id",
+        path: "/content/books/update/:id",
         element: <UpdateBook />,
       },
       {
-        path: "loans",
+        path: "/content/loans",
         element: <LoanScene />,
       },
       {
-        path: "loans/create",
+        path: "/content/loans/create",
         element: <CreateLoan />,
       },
       {
-        path: "profile",
+        path: "/content/profile",
         element: <UserProfile />,
       },
     ],

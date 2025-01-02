@@ -145,7 +145,7 @@ const BookTable: React.FC<BookTableProps> = ({ books, user }) => {
                   {user?.role === 'ADMIN' && (
                     <div className="mt-4 flex gap-2">
                       <button
-                        onClick={() => navigate(`/books/update/${book.id}`)}
+                        onClick={() => navigate(`/conent/books/update/${book.id}`)}
                         className="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md"
                       >
                         Editar
@@ -211,8 +211,8 @@ const BookTable: React.FC<BookTableProps> = ({ books, user }) => {
                       <td className="px-6 py-4 whitespace-nowrap text-center">
                         <div className="flex justify-center gap-2">
                           <button
-                            onClick={() => navigate(`/books/update/${book.id}`)}
-                            className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md"
+                            onClick={() => navigate(`/content/books/update/${book.id}`)}
+                            className="bg-black hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-md"
                           >
                             Editar
                           </button>

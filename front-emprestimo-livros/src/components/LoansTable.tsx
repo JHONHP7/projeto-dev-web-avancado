@@ -20,7 +20,7 @@ const LoansTable: React.FC<LoansTableProps> = ({ loans, user, handleRenew, handl
                     <div className="mt-4 space-x-2">
                       <button
                         onClick={() => handleRenew(loan.loanId, loan.status)}
-                        className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md"
+                        className="bg-black hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-md"
                       >
                         Renovar
                       </button>
@@ -61,7 +61,7 @@ const LoansTable: React.FC<LoansTableProps> = ({ loans, user, handleRenew, handl
                       <td className="px-6 py-4 whitespace-nowrap text-center">
                         <button
                           onClick={() => handleRenew(loan.loanId, loan.status)}
-                          className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md mr-2"
+                          className="bg-black hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-md mr-2"
                         >
                           Renovar
                         </button>

@@ -142,8 +142,8 @@ const LoanScene = () => {
           <h2 className="text-2xl font-bold">Empréstimos</h2>
           {user?.role === 'ADMIN' && (
             <button
-              onClick={() => navigate('/loans/create')}
-              className="w-full sm:w-auto bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
+              onClick={() => navigate('/content/loans/create')}
+              className="w-full sm:w-auto bg-black text-white px-4 py-2 rounded hover:bg-gray-700 transition-colors"
             >
               Novo Empréstimo
             </button>

@@ -48,7 +48,7 @@ const CreateBook = () => {
         confirmButtonText: 'Ok'
       });
 
-      navigate('/books');
+      navigate('/content/books');
     } catch (error) {
       setError('Erro ao salvar livro. Por favor, tente novamente.');
       console.error('Erro:', error);
@@ -65,18 +65,19 @@ const CreateBook = () => {
   return (
     <div className="min-h-screen w-full p-4 sm:p-6 lg:p-8">
       <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-md p-4 sm:p-6">
+        
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
           <h2 className="text-2xl font-bold">Cadastrar Novo Livro</h2>
           <button
-            onClick={() => navigate('/books')}
-            className="w-full sm:w-auto bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition-colors"
+            onClick={() => navigate('/content/books')}
+            className="w-full sm:w-auto bg-blue-900 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
           >
             Voltar
           </button>
         </div>
-
+  
         {error && <div className="text-red-500 mb-4 text-center">{error}</div>}
-
+  
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
@@ -102,7 +103,7 @@ const CreateBook = () => {
               />
             </div>
           </div>
-
+  
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Quantidade de Exemplares</label>
@@ -115,9 +116,6 @@ const CreateBook = () => {
                 required
               />
             </div>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Data de Publicação</label>
               <input
@@ -129,20 +127,8 @@ const CreateBook = () => {
                 required
               />
             </div>
-            <div className="flex items-center">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input
-                  type="checkbox"
-                  name="disponivel"
-                  checked={book.disponivel}
-                  onChange={handleChange}
-                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500 h-5 w-5"
-                />
-                <span className="text-sm font-medium text-gray-700">Disponível</span>
-              </label>
-            </div>
           </div>
-
+  
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Gênero</label>
@@ -165,19 +151,31 @@ const CreateBook = () => {
                 <option value="POESIA">Poesia</option>
               </select>
             </div>
+            <div className="flex items-center border rounded-md p-2 bg-gray-100">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  name="disponivel"
+                  checked={book.disponivel}
+                  onChange={handleChange}
+                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500 h-5 w-5"
+                />
+                <span className="text-sm font-medium text-gray-700">Disponível</span>
+              </label>
+            </div>
           </div>
-
+  
           <div className="flex flex-col sm:flex-row gap-4 pt-6">
             <button
               type="submit"
-              className="w-full sm:w-auto bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition-colors"
+              className="w-full sm:w-auto bg-black text-white px-6 py-2 rounded hover:bg-gray-700 transition-colors"
             >
               Salvar
             </button>
             <button
               type="button"
-              onClick={() => navigate('/books')}
-              className="w-full sm:w-auto bg-gray-500 text-white px-6 py-2 rounded hover:bg-gray-600 transition-colors"
+              onClick={() => navigate('/content/books')}
+              className="w-full sm:w-auto bg-blue-900 text-white px-6 py-2 rounded hover:bg-blue-600 transition-colors"
             >
               Cancelar
             </button>
@@ -185,7 +183,7 @@ const CreateBook = () => {
         </form>
       </div>
     </div>
-  );
+  );  
 };
 
 export default CreateBook;
