@@ -2,7 +2,7 @@ import { Link, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { useEffect } from 'react';
 
-const Content = () => {
+const ContentScene = () => {
   const navigate = useNavigate();
   const { user, logout, getCurrentUser } = useAuth();
 
@@ -56,4 +56,4 @@ const Content = () => {
   );
 };
 
-export default Content;
+export default ContentScene;

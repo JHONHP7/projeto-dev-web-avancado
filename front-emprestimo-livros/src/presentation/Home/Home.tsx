@@ -21,11 +21,11 @@ const Home = () => {
         <div className="container mx-auto flex justify-between items-center">
           <div className="flex space-x-4 items-center">
             <div className="rounded">
-                <img 
-                    src="/src/assets/books.png"
-                    alt="Foto de perfil"
-                    className="w-12 h-12 rounded-lg"
-                />
+              <img 
+                src="/src/assets/books.png"
+                alt="Foto de perfil"
+                className="w-12 h-12 rounded-lg"
+              />
             </div>
             <Link to="/content/books" className="text-white hover:text-gray-200">
               Livros
@@ -57,33 +57,53 @@ const Home = () => {
           Aqui você poderá procurar livros, fazer reservas e fazer devoluções.
         </p>
       </div>
-      <div className="container mx-auto mt-8 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
-        <Link to="/content/books">
-          <div className="bg-blue-200 hover:bg-blue-300 rounded-lg p-8 flex items-center justify-center text-blue-800 font-bold text-lg cursor-pointer shadow-md">
-            📚 Livros
+
+      {user && user.role !== 'ADMIN' ? (
+        <div className="container mx-auto mt-8 flex flex-col items-center gap-4 p-4">
+          <Link to="/content/books" className="w-full sm:w-1/2 md:w-1/3">
+            <div className="bg-blue-200 hover:bg-blue-300 rounded-lg p-8 flex items-center justify-center text-blue-800 font-bold text-lg cursor-pointer shadow-md">
+              📚 Livros
+            </div>
+          </Link>
+          <Link to="/content/profile" className="w-full sm:w-1/2 md:w-1/3">
+            <div className="bg-yellow-200 hover:bg-yellow-300 rounded-lg p-8 flex items-center justify-center text-yellow-800 font-bold text-lg cursor-pointer shadow-md">
+              👤 Meu Perfil
+            </div>
+          </Link>
+          <div
+            onClick={handleLogout}
+            className="w-full sm:w-1/2 md:w-1/3 bg-red-200 hover:bg-red-300 rounded-lg p-8 flex items-center justify-center text-red-800 font-bold text-lg cursor-pointer shadow-md"
+          >
+            🚪 Sair
           </div>
-        </Link>
-        {user && user.role === 'ADMIN' && (
+        </div>
+      ) : (
+        <div className="container mx-auto mt-8 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
+          <Link to="/content/books">
+            <div className="bg-blue-200 hover:bg-blue-300 rounded-lg p-8 flex items-center justify-center text-blue-800 font-bold text-lg cursor-pointer shadow-md">
+              📚 Livros
+            </div>
+          </Link>
           <Link to="/content/loans">
             <div className="bg-green-200 hover:bg-green-300 rounded-lg p-8 flex items-center justify-center text-green-800 font-bold text-lg cursor-pointer shadow-md">
               💼 Empréstimos
             </div>
           </Link>
-        )}
-        <Link to="/content/profile">
-          <div className="bg-yellow-200 hover:bg-yellow-300 rounded-lg p-8 flex items-center justify-center text-yellow-800 font-bold text-lg cursor-pointer shadow-md">
-            👤 Meu Perfil
+          <Link to="/content/profile">
+            <div className="bg-yellow-200 hover:bg-yellow-300 rounded-lg p-8 flex items-center justify-center text-yellow-800 font-bold text-lg cursor-pointer shadow-md">
+              👤 Meu Perfil
+            </div>
+          </Link>
+          <div
+            onClick={handleLogout}
+            className="bg-red-200 hover:bg-red-300 rounded-lg p-8 flex items-center justify-center text-red-800 font-bold text-lg cursor-pointer shadow-md"
+          >
+            🚪 Sair
           </div>
-        </Link>
-        <div
-          onClick={handleLogout}
-          className="bg-red-200 hover:bg-red-300 rounded-lg p-8 flex items-center justify-center text-red-800 font-bold text-lg cursor-pointer shadow-md"
-        >
-          🚪 Sair
         </div>
-      </div>
+      )}
     </div>
-  );
+  )
 };
 
 export default Home;

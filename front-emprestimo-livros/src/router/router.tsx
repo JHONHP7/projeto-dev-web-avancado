@@ -1,6 +1,5 @@
 import { Navigate, createBrowserRouter } from 'react-router-dom';
 import Home from '../presentation/Home/Home';
-import ListAdvertise from '../presentation/AdvertiseScene/ListAdvertise';
 import ListBooks from '../presentation/BookScene/ListBooks';
 import CreateBook from '../presentation/BookScene/CreateBook';
 import UpdateBook from '../presentation/BookScene/UpdateBook';
@@ -8,7 +7,8 @@ import Login from '../presentation/Login/Login';
 import LoanScene from '../presentation/LoanScene/LoanScene';
 import CreateLoan from '../presentation/LoanScene/CreateLoan';
 import UserProfile from '../presentation/UserScene/UserProfile';
-import Content from '../presentation/Content/ContentScene';
+import ContentScene from '../presentation/Content/ContentScene';
+import Register from '../presentation/Register/Register';
 
 export const router = createBrowserRouter([
   {
@@ -17,15 +17,11 @@ export const router = createBrowserRouter([
   },
   {
     path: "/content",
-    element: <Content />,
+    element: <ContentScene />,
     children: [
       {
         index: true,
         element: <Navigate to="login" replace />,
-      },
-      {
-        path: "/content/advertises",
-        element: <ListAdvertise />,
       },
       {
         path: "/content/books",
@@ -56,5 +52,9 @@ export const router = createBrowserRouter([
   {
     path: "/login",
     element: <Login />,
+  },
+  {
+    path: "/register",
+    element: <Register />,
   },
 ]);
