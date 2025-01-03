@@ -31,4 +31,20 @@ public interface LoanRepository extends JpaRepository<LoanEntity, Long> {
 	@Query("SELECT COUNT(l) FROM LoanEntity l WHERE l.usuario.id = :userId AND l.status = :status")
 	long countByUsuarioIdAndStatus(@Param("userId") Long userId, @Param("status") String status);
 
+	/**
+	 *  Verifica se existe um empréstimo ativo para um usuário e livro específicos
+	 * @param usuarioId
+	 * @param livroId
+	 * @param status
+	 * @return
+	 */
+    @Query("SELECT CASE WHEN COUNT(l) > 0 THEN true ELSE false END " +
+           "FROM LoanEntity l " +
+           "WHERE l.usuario.id = :usuarioId " +
+           "AND l.livro.id = :livroId " +
+           "AND l.status = :status")
+    boolean existsByUsuarioIdAndLivroIdAndStatus(@Param("usuarioId") Long usuarioId, 
+                                                 @Param("livroId") Long livroId, 
+                                                 @Param("status") String status);
+
 }

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.projetodevwevavancado.emprestimo.api.dto.request.LoanSaveRequestDTO;
 import com.projetodevwevavancado.emprestimo.api.dto.response.LoanDTO;
+import com.projetodevwevavancado.emprestimo.api.resource.handler.exceptions.DuplicateLoanException;
 import com.projetodevwevavancado.emprestimo.api.resource.handler.exceptions.ResourceNotFoundException;
 import com.projetodevwevavancado.emprestimo.api.resource.handler.exceptions.UserSuspendedException;
 import com.projetodevwevavancado.emprestimo.commons.util.SuspendedUtil;
@@ -32,6 +33,7 @@ public class LoanService {
 	private final UserRepository userRepository;
 	private final LoanRepository loanRepository;
 	private final BookRepository bookRepository;
+	private static final String EMPRESTADO_STATUS = "Emprestado";
 
 	public List<LoanDTO> findAll() {
 	    return loanRepository.findAll()
@@ -167,9 +169,9 @@ public class LoanService {
 				.orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
 
 		checkUserSuspension(user);
-
 		checkActiveLoans(loanRequestDTO.idUser()); 
-
+		checkDuplicateLoan(loanRequestDTO.idUser(), loanRequestDTO.idBook());
+		
 		BookEntity book = checkBookAvailability(loanRequestDTO.idBook()); 
 
 		adjustBookExemplars(book);
@@ -178,6 +180,13 @@ public class LoanService {
 
 		return loanRepository.save(loanEntity);
 	}
+	
+	private void checkDuplicateLoan(Long userId, Long bookId) {
+        boolean exists = loanRepository.existsByUsuarioIdAndLivroIdAndStatus(userId, bookId, EMPRESTADO_STATUS);
+        if (exists) {
+            throw new DuplicateLoanException("Usuário já possui um empréstimo ativo para este livro.");
+        }
+    }
 
 	private void checkUserSuspension(UserEntity user) {
 		if (user.getSuspendedUntil() != null) {
@@ -192,7 +201,7 @@ public class LoanService {
 	}
 
 	private void checkActiveLoans(Long userId) {
-		long activeLoans = loanRepository.countByUsuarioIdAndStatus(userId, "Emprestado");
+		long activeLoans = loanRepository.countByUsuarioIdAndStatus(userId, EMPRESTADO_STATUS);
 		if (activeLoans >= 2) {
 			throw new IllegalStateException("Usuário já possui o limite de dois empréstimos ativos.");
 		}
@@ -226,7 +235,7 @@ public class LoanService {
 		loanEntity.setLivro(book);
 		loanEntity.setUsuario(user);
 		loanEntity.setDataEmprestimo(new Date());
-		loanEntity.setStatus("Emprestado");
+		loanEntity.setStatus(EMPRESTADO_STATUS);
 		return loanEntity;
 	}
 
