@@ -62,7 +62,7 @@ const UpdateBook = () => {
         icon: 'success',
         confirmButtonText: 'OK'
       });
-      navigate('/books');
+      navigate('/content/books');
     } catch (error) {
       if (error instanceof Response) {
         const errorData = await error.json();
