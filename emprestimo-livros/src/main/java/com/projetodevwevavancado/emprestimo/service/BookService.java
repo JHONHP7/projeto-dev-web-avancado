@@ -56,8 +56,7 @@ public class BookService {
 	 * @return o DTO de atualização de livro correspondente
 	 */
 	public BookUpdateDTO mapToDTO(BookEntity entity) {
-	    SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
-	    sdf.setTimeZone(TimeZone.getTimeZone("GMT-3"));
+		
 	    return BookUpdateDTO.builder()
 	        .bookId(entity.getId())
 	        .bookTitle(entity.getTitulo())
@@ -66,9 +65,7 @@ public class BookService {
 	        .bookGenero(entity.getGenero())
 	        .bookAvailable(entity.getDisponivel())
 	        .bookQuantity(entity.getQuantidadeExemplares())
-	        .publicationDate(entity.getDataPublicacao() != null 
-	            ? sdf.format(entity.getDataPublicacao()) 
-	            : null)
+	        .publicationDate(entity.getDataPublicacao())
 	        .build();
 	}
 
