@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.projetodevwevavancado.emprestimo.api.resource.handler.exceptions.AuthenticationFailedException;
 import com.projetodevwevavancado.emprestimo.api.resource.handler.exceptions.DataNotFoundException;
+import com.projetodevwevavancado.emprestimo.api.resource.handler.exceptions.DuplicateLoanException;
 import com.projetodevwevavancado.emprestimo.api.resource.handler.exceptions.EmailAlreadyExistsException;
 import com.projetodevwevavancado.emprestimo.api.resource.handler.exceptions.FavoriteAlreadyExistsException;
 import com.projetodevwevavancado.emprestimo.api.resource.handler.exceptions.NegativeQuantityException;
@@ -72,6 +73,12 @@ public class ResourceExceptionHandler {
 
 		ApiResponse response = new ApiResponse(message, false);
 		return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+	}
+
+	@ExceptionHandler(DuplicateLoanException.class)
+	public ResponseEntity<ApiResponse> handleDuplicateLoanException(DuplicateLoanException ex) {
+		ApiResponse response = new ApiResponse(ex.getMessage(), false);
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 	}
 
 }
