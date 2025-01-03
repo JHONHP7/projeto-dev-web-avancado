@@ -24,7 +24,16 @@ const UpdateBook = () => {
     const fetchBook = async () => {
       try {
         const data = await getBookByIdForUpdate(Number(id));
-        setBook(data as BookUpdate);
+        setBook({
+          id: data.id,
+          titulo: data.titulo,
+          autor: data.autor,
+          isbn: data.isbn,
+          disponivel: data.disponivel,
+          quantidadeExemplares: data.quantidadeExemplares,
+          dataPublicacao: data.dataPublicacao.split('/').reverse().join('-'),
+          genero: data.genero
+        } as BookUpdate);
         setIsLoading(false);
       } catch (error) {
         setError('Erro ao carregar livro. Por favor, tente novamente.');
