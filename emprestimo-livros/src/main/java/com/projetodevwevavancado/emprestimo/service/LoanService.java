@@ -154,6 +154,7 @@ public class LoanService {
 	        loanEntity.getUsuario().getId(),
 	        loanEntity.getLivro().getTitulo(),
 	        loanEntity.getUsuario().getNome(),
+	        loanEntity.getUsuario().getEmail(),
 	        loanEntity.getDataEmprestimo(),
 	        loanEntity.getDataDevolucao(),
 	        loanEntity.getStatus()

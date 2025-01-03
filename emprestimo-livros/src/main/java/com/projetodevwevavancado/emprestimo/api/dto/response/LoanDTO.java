@@ -12,6 +12,7 @@ public record LoanDTO (Long loanId,
 	    Long userId,
 	    String bookName,
 	    String userName,
+	    String userEmail,
 		@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy", timezone = "GMT-3")
 	    Date loanDate,
 	    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy", timezone = "GMT-3")
