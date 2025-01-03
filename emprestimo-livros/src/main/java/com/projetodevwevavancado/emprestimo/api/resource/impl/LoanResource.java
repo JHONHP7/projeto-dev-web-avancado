@@ -33,6 +33,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Tag(name = "Empréstimos")
 public class LoanResource implements LoanResourceApi {
+	
+	private static final String ERROR = "Erro: ";
 
 	private final LoanService loanService;
 
@@ -44,18 +46,18 @@ public class LoanResource implements LoanResourceApi {
 	@PostMapping("/create")
 	public ResponseEntity<ApiResponse> createLoan(@RequestBody LoanSaveRequestDTO loanRequestDTO) {
 		try {
-			LoanEntity createdLoan = loanService.createLoan(loanRequestDTO);
+			loanService.createLoan(loanRequestDTO);
 			ApiResponse response = new ApiResponse("Empréstimo criado com sucesso!", true);
 			return ResponseEntity.ok(response);
 		} catch (UserSuspendedException e) {
 			ApiResponse response = new ApiResponse(
-					"Erro: " + e.getMessage() + " Suspenso até: " + e.getSuspendedUntil(), false);
+					ERROR + e.getMessage() + " Suspenso até: " + e.getSuspendedUntil(), false);
 			return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
 		} catch (ResourceNotFoundException e) {
-			ApiResponse response = new ApiResponse("Erro: " + e.getMessage(), false);
+			ApiResponse response = new ApiResponse(ERROR + e.getMessage(), false);
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
 		} catch (IllegalStateException e) {
-			ApiResponse response = new ApiResponse("Erro: " + e.getMessage(), false);
+			ApiResponse response = new ApiResponse(ERROR + e.getMessage(), false);
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 		}
 	}
@@ -63,14 +65,14 @@ public class LoanResource implements LoanResourceApi {
 	@PutMapping("/return/{loanId}")
 	public ResponseEntity<ApiResponse> markAsReturned(@PathVariable Long loanId) {
 		try {
-			LoanEntity returnedLoan = loanService.markAsReturned(loanId);
+			loanService.markAsReturned(loanId);
 			ApiResponse response = new ApiResponse("Empréstimo marcado como devolvido com sucesso!", true);
 			return ResponseEntity.ok(response);
 		} catch (ResourceNotFoundException e) {
-			ApiResponse response = new ApiResponse("Erro: " + e.getMessage(), false);
+			ApiResponse response = new ApiResponse(ERROR + e.getMessage(), false);
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
 		} catch (IllegalStateException e) {
-			ApiResponse response = new ApiResponse("Erro: " + e.getMessage(), false);
+			ApiResponse response = new ApiResponse(ERROR + e.getMessage(), false);
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 		} catch (ParseException e) {
 			ApiResponse response = new ApiResponse("Erro ao parsear datas: " + e.getMessage(), false);
@@ -81,7 +83,7 @@ public class LoanResource implements LoanResourceApi {
 	@PutMapping("/update")
 	public ResponseEntity<ApiResponse> updateLoan(@RequestBody LoanEntity loanEntity) {
 		try {
-			LoanEntity updatedLoan = loanService.updateLoan(loanEntity);
+			loanService.updateLoan(loanEntity);
 			ApiResponse response = new ApiResponse("Empréstimo atualizado com sucesso!", true);
 			return ResponseEntity.ok(response);
 		} catch (Exception e) {
@@ -105,7 +107,7 @@ public class LoanResource implements LoanResourceApi {
 	@PutMapping("/renew/{loanId}")
 	public ResponseEntity<ApiResponse> renovarEmprestimo(@PathVariable Long loanId) {
 		try {
-			LoanEntity loanRenovado = loanService.renovarEmprestimo(loanId);
+			loanService.renovarEmprestimo(loanId);
 			ApiResponse response = new ApiResponse("Empréstimo renovado com sucesso!", true);
 			return ResponseEntity.ok(response);
 		} catch (IllegalStateException e) {
