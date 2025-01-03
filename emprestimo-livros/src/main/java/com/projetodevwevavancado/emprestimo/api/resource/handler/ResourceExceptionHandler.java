@@ -1,5 +1,7 @@
 package com.projetodevwevavancado.emprestimo.api.resource.handler;
 
+import java.util.stream.Collectors;
+
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +16,7 @@ import com.projetodevwevavancado.emprestimo.api.resource.handler.exceptions.Favo
 import com.projetodevwevavancado.emprestimo.api.resource.handler.exceptions.NegativeQuantityException;
 import com.projetodevwevavancado.emprestimo.api.resource.handler.exceptions.ResourceNotFoundException;
 import com.projetodevwevavancado.emprestimo.api.resource.handler.exceptions.UserSuspendedException;
+import com.projetodevwevavancado.emprestimo.api.resource.handler.exceptions.ValidationException;
 import com.projetodevwevavancado.emprestimo.commons.util.ApiResponse;
 
 @ControllerAdvice
@@ -78,6 +81,13 @@ public class ResourceExceptionHandler {
 	@ExceptionHandler(DuplicateLoanException.class)
 	public ResponseEntity<ApiResponse> handleDuplicateLoanException(DuplicateLoanException ex) {
 		ApiResponse response = new ApiResponse(ex.getMessage(), false);
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+	}
+
+	@ExceptionHandler(ValidationException.class)
+	public ResponseEntity<ApiResponse> handleValidationException(ValidationException ex) {
+		String message = "Erro de validação: " + ex.getErrors().stream().collect(Collectors.joining(", "));
+		ApiResponse response = new ApiResponse(message, false);
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 	}
 

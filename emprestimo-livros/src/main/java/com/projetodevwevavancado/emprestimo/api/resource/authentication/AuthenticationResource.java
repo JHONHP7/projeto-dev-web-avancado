@@ -2,7 +2,9 @@ package com.projetodevwevavancado.emprestimo.api.resource.authentication;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +31,7 @@ import com.projetodevwevavancado.emprestimo.api.dto.request.authentication.Regis
 import com.projetodevwevavancado.emprestimo.api.dto.response.UserResponseDTO;
 import com.projetodevwevavancado.emprestimo.api.resource.handler.exceptions.AuthenticationFailedException;
 import com.projetodevwevavancado.emprestimo.api.resource.handler.exceptions.EmailAlreadyExistsException;
+import com.projetodevwevavancado.emprestimo.api.resource.handler.exceptions.ValidationException;
 import com.projetodevwevavancado.emprestimo.commons.enums.UserRole;
 import com.projetodevwevavancado.emprestimo.commons.util.ApiResponse;
 import com.projetodevwevavancado.emprestimo.configuration.security.TokenService;
@@ -79,23 +82,42 @@ public class AuthenticationResource {
 	@Operation(summary = "Criar novo usuário")
 	@PostMapping("/register")
 	public ResponseEntity<ApiResponse> register(@RequestBody @Valid RegisterDTO register) {
+	    if (repository.findByEmail(register.email()) != null) {
+	        throw new EmailAlreadyExistsException("E-mail já está em uso!");
+	    }
 
-		if (this.repository.findByEmail(register.email()) != null) {
-			throw new EmailAlreadyExistsException("E-mail já está em uso!");
-		}
+	    List<String> validationErrors = validateRegisterDTO(register);
+	    if (!validationErrors.isEmpty()) {
+	        throw new ValidationException(validationErrors);
+	    }
 
-		try {
-			String encryptedPassword = new BCryptPasswordEncoder().encode(register.senha());
-			UserEntity newUser = new UserEntity(register.nome(), register.email(), encryptedPassword, register.role());
-
-			this.repository.save(newUser);
-			ApiResponse response = new ApiResponse("Usuário cadastrado com sucesso", true);
-			return ResponseEntity.ok(response);
-		} catch (Exception e) {
-			ApiResponse response = new ApiResponse("Erro ao cadastrar o usuário. Tente novamente mais tarde.", false);
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-		}
+	    try {
+	        String encryptedPassword = new BCryptPasswordEncoder().encode(register.senha());
+	        UserEntity newUser = new UserEntity(register.nome(), register.email(), encryptedPassword, register.role());
+	        repository.save(newUser);
+	        ApiResponse response = new ApiResponse("Usuário cadastrado com sucesso", true);
+	        return ResponseEntity.ok(response);
+	    } catch (Exception e) {
+	        ApiResponse response = new ApiResponse("Erro ao cadastrar o usuário. Tente novamente mais tarde.", false);
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+	    }
 	}
+
+	private List<String> validateRegisterDTO(RegisterDTO register) {
+	    List<String> errors = new ArrayList<>();
+	    if (register.nome().length() < 10 || register.nome().length() > 30) {
+	        errors.add("Nome deve ter entre 10 e 30 caracteres.");
+	    }
+	    if (register.email().length() < 15 || register.email().length() > 50) {
+	        errors.add("Email deve ter entre 15 e 50 caracteres.");
+	    }
+	    if (register.senha().length() < 10 || register.senha().length() > 20) {
+	        errors.add("Senha deve ter entre 10 e 20 caracteres.");
+	    }
+	    return errors;
+	}
+
+
 
 	@PostMapping("/google-login")
 	public ResponseEntity<?> googleLogin(@RequestBody Map<String, String> request) {
