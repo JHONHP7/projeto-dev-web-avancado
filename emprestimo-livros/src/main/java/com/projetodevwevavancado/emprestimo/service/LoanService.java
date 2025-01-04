@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 import org.springframework.stereotype.Service;
 
 import com.projetodevwevavancado.emprestimo.api.dto.request.LoanSaveRequestDTO;
+import com.projetodevwevavancado.emprestimo.api.dto.response.LoanByUserResponseDTO;
 import com.projetodevwevavancado.emprestimo.api.dto.response.LoanDTO;
 import com.projetodevwevavancado.emprestimo.api.resource.handler.exceptions.DuplicateLoanException;
 import com.projetodevwevavancado.emprestimo.api.resource.handler.exceptions.ResourceNotFoundException;
@@ -161,6 +162,8 @@ public class LoanService {
 	    );
 	}
 
+
+
 	/**
 	 * Create Loan particionado com seu métodos auxiliares
 	 */
@@ -240,6 +243,21 @@ public class LoanService {
 		return loanEntity;
 	}
 
+
+	public List<LoanByUserResponseDTO> findByUserId(Long userId) {		
+			return loanRepository.findByUsuarioId(userId)
+				.stream()
+				.map(this::loanToLoanByUserResponseDTO)
+				.toList();
+	}
+
+	public LoanByUserResponseDTO loanToLoanByUserResponseDTO(LoanEntity loanEntity) {
+	    return LoanByUserResponseDTO.builder()
+	        .bookTitle(loanEntity.getLivro().getTitulo())
+	        .dtDevolucao(loanEntity.getDataDevolucao())
+	        .nrRenovacoes(loanEntity.getRenovacoes())
+	        .build();
+	}
 
 }
 

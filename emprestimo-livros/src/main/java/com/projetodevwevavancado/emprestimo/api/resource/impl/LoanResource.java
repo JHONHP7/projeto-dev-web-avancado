@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.projetodevwevavancado.emprestimo.api.dto.request.LoanSaveRequestDTO;
 import com.projetodevwevavancado.emprestimo.api.dto.request.LoanSearchRequestDTO;
+import com.projetodevwevavancado.emprestimo.api.dto.response.LoanByUserResponseDTO;
 import com.projetodevwevavancado.emprestimo.api.dto.response.LoanDTO;
 import com.projetodevwevavancado.emprestimo.api.resource.handler.exceptions.ResourceNotFoundException;
 import com.projetodevwevavancado.emprestimo.api.resource.handler.exceptions.UserSuspendedException;
@@ -117,5 +118,10 @@ public class LoanResource implements LoanResourceApi {
 			ApiResponse response = new ApiResponse("Empréstimo não encontrado.", false);
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
 		}
+	}
+
+	@GetMapping("/loan-by-user/{userId}")
+	public ResponseEntity<List<LoanByUserResponseDTO>> findByUserId(@PathVariable Long userId) {
+		return ResponseEntity.ok(loanService.findByUserId(userId));
 	}
 }

@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 
 import com.projetodevwevavancado.emprestimo.api.dto.request.LoanSaveRequestDTO;
 import com.projetodevwevavancado.emprestimo.api.dto.request.LoanSearchRequestDTO;
+import com.projetodevwevavancado.emprestimo.api.dto.response.LoanByUserResponseDTO;
 import com.projetodevwevavancado.emprestimo.api.dto.response.LoanDTO;
 import com.projetodevwevavancado.emprestimo.commons.util.ApiResponse;
 import com.projetodevwevavancado.emprestimo.entity.LoanEntity;
@@ -34,4 +35,7 @@ public interface LoanResourceApi {
 
 	@Operation(summary = "Renova empréstimos por 7 dias")
 	public ResponseEntity<ApiResponse> renovarEmprestimo(Long loanId);
+
+	@Operation(summary = "Buscar empréstimos por id do usuário")
+	public ResponseEntity<List<LoanByUserResponseDTO>> findByUserId(Long userId);
 }
