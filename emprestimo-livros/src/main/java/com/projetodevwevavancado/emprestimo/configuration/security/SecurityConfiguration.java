@@ -49,7 +49,7 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.POST, "/auth/google-login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
                         .requestMatchers(HttpMethod.GET, "/books/**").permitAll()
-                        .requestMatchers(HttpMethod.PUT, "/loans/renew/**").hasRole(ADMIN_ROLE)
+                        .requestMatchers(HttpMethod.PUT, "/loans/renew/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/users/email/**").hasRole(ADMIN_ROLE)
 
                         // Configs do Swagger

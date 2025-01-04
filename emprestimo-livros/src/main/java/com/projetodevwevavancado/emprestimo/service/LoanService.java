@@ -253,6 +253,7 @@ public class LoanService {
 
 	public LoanByUserResponseDTO loanToLoanByUserResponseDTO(LoanEntity loanEntity) {
 	    return LoanByUserResponseDTO.builder()
+			.loanId(loanEntity.getId())
 	        .bookTitle(loanEntity.getLivro().getTitulo())
 	        .dtDevolucao(loanEntity.getDataDevolucao())
 	        .nrRenovacoes(loanEntity.getRenovacoes())
