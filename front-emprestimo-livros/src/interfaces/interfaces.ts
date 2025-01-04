@@ -22,3 +22,6 @@ export * from './loan/LoanByUser';
 export * from './user/User';
 export * from './user/UserFavorites';
 export * from './user/AuthContextType';
+export * from './user/UserCreate';
+export * from './user/UserResponse';
+export * from './user/UsersGetAll';
