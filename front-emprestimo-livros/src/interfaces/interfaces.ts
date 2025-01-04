@@ -26,3 +26,5 @@ export * from './user/UserCreate';
 export * from './user/UserResponse';
 export * from './user/UsersGetAll';
 export * from './user/UserDeleteResponse';
+export * from './user/UserUpdateRequest';
+export * from './user/UserUpdateResponse';

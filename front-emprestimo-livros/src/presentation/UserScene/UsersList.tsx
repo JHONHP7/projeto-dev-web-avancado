@@ -40,7 +40,7 @@ const UsersList: React.FC = () => {
     const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
     const handleEdit = (id: number) => {
-        navigate(`/edit-user/${id}`);
+        navigate(`/content/users/edit-user/${id}`);
     };
 
     const handleDelete = async (id: number): Promise<{ message: string; success: boolean; }> => {
@@ -74,7 +74,7 @@ const UsersList: React.FC = () => {
     };
 
     const handleCreate = () => {
-        navigate('/create-user');
+        navigate('/content/users/create');
     };
 
     return (
@@ -90,13 +90,15 @@ const UsersList: React.FC = () => {
                     </button>
                 </div>
 
-                <div className="flex flex-col gap-4 mb-6">
+                <div className="flex flex-col gap-2 mb-6">
+                    <label htmlFor="search" className="text-lg font-medium text-left">Pesquisar por nome ou email:</label>
                     <input
+                        id="search"
                         type="text"
-                        placeholder="Pesquisar por nome ou email..."
+                        placeholder="Digite..."
                         value={searchTerm}
                         onChange={e => setSearchTerm(e.target.value)}
-                        className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="w-full sm:w-1/2 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                 </div>
 

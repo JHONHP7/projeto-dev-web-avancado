@@ -10,6 +10,8 @@ import Login from '../presentation/Login/Login';
 import Register from '../presentation/Register/Register';
 import UserProfile from '../presentation/UserScene/UserProfile';
 import UsersList from '../presentation/UserScene/UsersList';
+import UserUpdate from '../presentation/UserScene/UserUpdate';
+//import CreateUser from '../presentation/UserScene/CreateUser';
 
 export const router = createBrowserRouter([
   {
@@ -52,6 +54,14 @@ export const router = createBrowserRouter([
         path: "/content/users",
         element: <UsersList />,
       },
+      // {
+      //   path: "/content/users/create",
+      //   element: <CreateUser />, // Adicione a rota para criar usuário
+      // },
+      {
+        path: "/content/users/edit-user/:id",
+        element: <UserUpdate />,
+      }
     ],
   },
   {

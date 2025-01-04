@@ -44,8 +44,11 @@ export const getUserProfile = async (): Promise<User> => {
 export const updateUserProfile = async (userData: Partial<User>): Promise<User> => {
   try {
     const response = await fetch(`${API_CONFIG.BASE_URL}/users/update`, {
-      method: 'PUT',
-      headers: API_CONFIG.getAuthHeader(),
+      method: 'POST',
+      headers: {
+        ...API_CONFIG.getAuthHeader(),
+        'Content-Type': 'application/json'
+      },
       body: JSON.stringify(userData)
     });
 
@@ -117,6 +120,24 @@ export const getAllUsers = async (): Promise<UsersGetAllResponse> => {
     return data;
   } catch (error) {
     console.error('Erro ao listar usuários:', error);
+    throw error;
+  }
+};
+
+export const getUserById = async (id: number): Promise<User> => {
+  try {
+    const response = await fetch(`${API_CONFIG.BASE_URL}/users/${id}`, {
+      headers: API_CONFIG.getAuthHeader()
+    });
+
+    if (!response.ok) {
+      throw new Error('Erro ao buscar usuário por ID');
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Erro ao buscar usuário por ID:', error);
     throw error;
   }
 };
