@@ -16,6 +16,7 @@ export * from './loan/Loan';
 export * from './loan/CreateLoanRequest';
 export * from './loan/LoanResponse';
 export * from './loan/LoansTableProps';
+export * from './loan/LoanByUser';
 
 // Usuários
 export * from './user/User';
