@@ -5,7 +5,7 @@ import Swal from 'sweetalert2';
 interface UsersTableProps {
     users: UserResponse[];
     onEdit: (id: number) => void;
-    onDelete: (id: number) => void;
+    onDelete: (id: number) => Promise<{ message: string; success: boolean; }>;
 }
 
 const UsersTable: React.FC<UsersTableProps> = ({ users, onEdit, onDelete }) => {
@@ -25,12 +25,7 @@ const UsersTable: React.FC<UsersTableProps> = ({ users, onEdit, onDelete }) => {
             });
 
             if (result.isConfirmed) {
-                onDelete(id);
-                await Swal.fire(
-                    'Deletado!',
-                    'O usuário foi deletado com sucesso.',
-                    'success'
-                );
+                await onDelete(id);
             }
         } catch (error) {
             console.error('Erro ao deletar:', error);
@@ -51,7 +46,6 @@ const UsersTable: React.FC<UsersTableProps> = ({ users, onEdit, onDelete }) => {
             <div className="overflow-x-auto">
                 <div className="inline-block min-w-full">
                     <div className="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
-                        {/* Checkbox para filtrar administradores */}
                         <div className="p-4">
                             <label className="flex items-center">
                                 <input
@@ -60,7 +54,7 @@ const UsersTable: React.FC<UsersTableProps> = ({ users, onEdit, onDelete }) => {
                                     onChange={e => setFilterByAdmin(e.target.checked)}
                                     className="mr-2"
                                 />
-                                Administradores
+                                Mostrar apenas administradores
                             </label>
                         </div>
                         <table className="min-w-full">

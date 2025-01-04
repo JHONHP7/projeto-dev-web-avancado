@@ -25,3 +25,4 @@ export * from './user/AuthContextType';
 export * from './user/UserCreate';
 export * from './user/UserResponse';
 export * from './user/UsersGetAll';
+export * from './user/UserDeleteResponse';

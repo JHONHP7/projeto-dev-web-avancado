@@ -1,5 +1,5 @@
 import { API_CONFIG } from './config';
-import { User, UserCreate, UsersGetAllResponse } from '../../interfaces/interfaces';
+import { User, UserCreate, UserDeleteResponse, UsersGetAllResponse } from '../../interfaces/interfaces';
 
 export const searchUsersByEmail = async (email: string): Promise<User[]> => {
   try {
@@ -61,7 +61,7 @@ export const updateUserProfile = async (userData: Partial<User>): Promise<User> 
   }
 };
 
-export const deleteUserProfile = async (id: number): Promise<void> => {
+export const deleteUserProfile = async (id: number): Promise<UserDeleteResponse> => {
   try {
     const response = await fetch(`${API_CONFIG.BASE_URL}/users/${id}`, {
       method: 'DELETE',
@@ -71,6 +71,9 @@ export const deleteUserProfile = async (id: number): Promise<void> => {
     if (!response.ok) {
       throw new Error('Erro ao deletar usuário');
     }
+
+    const data = await response.json();
+    return data;
   } catch (error) {
     console.error('Erro ao deletar usuário:', error);
     throw error;

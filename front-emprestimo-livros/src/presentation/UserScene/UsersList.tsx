@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import UsersTable from '../../components/UsersTable';
 import { getAllUsers, deleteUserProfile } from '../../service/api/index';
 import { UsersGetAllResponse, UserResponse } from '../../interfaces/interfaces';
+import Swal from 'sweetalert2';
 
 const UsersList: React.FC = () => {
     const navigate = useNavigate();
@@ -42,12 +43,33 @@ const UsersList: React.FC = () => {
         navigate(`/edit-user/${id}`);
     };
 
-    const handleDelete = async (id: number) => {
+    const handleDelete = async (id: number): Promise<{ message: string; success: boolean; }> => {
         try {
-            await deleteUserProfile(id);
-            setUsers(users.filter(user => user.id !== id));
+            const response = await deleteUserProfile(id);
+            if (response.success) {
+                setUsers(users.filter(user => user.id !== id));
+                await Swal.fire(
+                    'Deletado!',
+                    'O usuário foi deletado com sucesso.',
+                    'success'
+                );
+            } else {
+                console.error('Erro ao deletar usuário:', response.message);
+                Swal.fire(
+                    'Erro!',
+                    response.message,
+                    'error'
+                );
+            }
+            return response;
         } catch (error) {
             console.error('Erro ao deletar usuário:', error);
+            Swal.fire(
+                'Erro!',
+                'Não foi possível deletar o usuário.',
+                'error'
+            );
+            throw error;
         }
     };
 
