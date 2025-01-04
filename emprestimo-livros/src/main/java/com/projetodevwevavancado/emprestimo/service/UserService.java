@@ -122,6 +122,18 @@ public class UserService {
 	            .toList();
 	}
 
+    public UserResponseDTO findUserById(Long id) {
+		UserEntity user = userRepository.findById(id)
+				.orElseThrow(() -> new ResourceNotFoundException("Nenhum usuário encontrado com o id fornecido: " + id));
+
+		return UserResponseDTO.builder()
+				.id(user.getId())
+				.nome(user.getNome())
+				.email(user.getEmail())
+				.role(user.getRole())
+				.build();
+	}
+
 
 	/**
 	 * Conversões DTO/ENTITY

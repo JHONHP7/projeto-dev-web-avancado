@@ -25,4 +25,7 @@ public interface UserResourceApi {
 	@Operation(summary = "Buscar usuário por e-mail")
 	public ResponseEntity<List<UserResponseDTO>> getAllByEmail(String email);
 
+	@Operation(summary = "Buscar usuário por ID")
+	public ResponseEntity<UserResponseDTO> getUserById(Long id);
+
 }
