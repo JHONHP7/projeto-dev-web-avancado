@@ -13,6 +13,7 @@ import com.projetodevwevavancado.emprestimo.api.resource.handler.exceptions.Data
 import com.projetodevwevavancado.emprestimo.api.resource.handler.exceptions.DuplicateLoanException;
 import com.projetodevwevavancado.emprestimo.api.resource.handler.exceptions.EmailAlreadyExistsException;
 import com.projetodevwevavancado.emprestimo.api.resource.handler.exceptions.FavoriteAlreadyExistsException;
+import com.projetodevwevavancado.emprestimo.api.resource.handler.exceptions.LoanLimitExceededException;
 import com.projetodevwevavancado.emprestimo.api.resource.handler.exceptions.NegativeQuantityException;
 import com.projetodevwevavancado.emprestimo.api.resource.handler.exceptions.ResourceNotFoundException;
 import com.projetodevwevavancado.emprestimo.api.resource.handler.exceptions.UserSuspendedException;
@@ -88,6 +89,12 @@ public class ResourceExceptionHandler {
 	public ResponseEntity<ApiResponse> handleValidationException(ValidationException ex) {
 		String message = "Erro de validação: " + ex.getErrors().stream().collect(Collectors.joining(", "));
 		ApiResponse response = new ApiResponse(message, false);
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+	}
+
+	@ExceptionHandler(LoanLimitExceededException.class)
+	public ResponseEntity<ApiResponse> handleLoanLimitExceededException(LoanLimitExceededException ex) {
+		ApiResponse response = new ApiResponse(ex.getMessage(), false);
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 	}
 

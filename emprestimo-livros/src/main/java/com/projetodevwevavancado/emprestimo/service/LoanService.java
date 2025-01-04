@@ -14,6 +14,7 @@ import com.projetodevwevavancado.emprestimo.api.dto.request.LoanSaveRequestDTO;
 import com.projetodevwevavancado.emprestimo.api.dto.response.LoanByUserResponseDTO;
 import com.projetodevwevavancado.emprestimo.api.dto.response.LoanDTO;
 import com.projetodevwevavancado.emprestimo.api.resource.handler.exceptions.DuplicateLoanException;
+import com.projetodevwevavancado.emprestimo.api.resource.handler.exceptions.LoanLimitExceededException;
 import com.projetodevwevavancado.emprestimo.api.resource.handler.exceptions.ResourceNotFoundException;
 import com.projetodevwevavancado.emprestimo.api.resource.handler.exceptions.UserSuspendedException;
 import com.projetodevwevavancado.emprestimo.commons.util.SuspendedUtil;
@@ -37,12 +38,11 @@ public class LoanService {
 	private static final String EMPRESTADO_STATUS = "Emprestado";
 
 	public List<LoanDTO> findAll() {
-	    return loanRepository.findAll()
-	        .stream()
-	        .map(this::toLoanPageDTO)
-	        .toList();
+		return loanRepository.findAll()
+				.stream()
+				.map(this::toLoanPageDTO)
+				.toList();
 	}
-
 
 	public LoanEntity findById(Long id) {
 		return loanRepository.findById(id).orElseThrow(() -> new RuntimeException("Empréstimo não encontrado"));
@@ -50,45 +50,44 @@ public class LoanService {
 
 	@Transactional
 	public LoanEntity markAsReturned(Long loanId) throws ParseException {
-	    LoanEntity loan = findById(loanId);
+		LoanEntity loan = findById(loanId);
 
-	    if ("Devolvido".equalsIgnoreCase(loan.getStatus())) {
-	        throw new IllegalStateException("Empréstimo já devolvido.");
-	    }
+		if ("Devolvido".equalsIgnoreCase(loan.getStatus())) {
+			throw new IllegalStateException("Empréstimo já devolvido.");
+		}
 
-	    Date today = new Date();
+		Date today = new Date();
 
-	    // Atualiza a data de devolução do empréstimo para hoje
-	    //loan.setDataDevolucao(today);
+		// Atualiza a data de devolução do empréstimo para hoje
+		// loan.setDataDevolucao(today);
 
-	    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-	    Date dataAtualFormatada = sdf.parse(sdf.format(today));
-	    Date dataDevolucaoEsperadaFormatada = sdf.parse(sdf.format(loan.getDataDevolucao()));
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		Date dataAtualFormatada = sdf.parse(sdf.format(today));
+		//Date dataDevolucaoEsperadaFormatada = sdf.parse(sdf.format(loan.getDataDevolucao()));
 
-	    if (dataAtualFormatada.after(loan.getDataDevolucao())) {
-	        long atrasoDias = calcularDiasAtraso(dataAtualFormatada, loan.getDataDevolucao());
-	        if (atrasoDias > 0) {
-	            UserEntity usuario = loan.getUsuario();
-	            Date novaSuspensao = SuspendedUtil.suspendForDays((int) atrasoDias);
-	            usuario.setSuspendedUntil(novaSuspensao);
-	            userRepository.save(usuario);
-	        }
-	    }
+		if (dataAtualFormatada.after(loan.getDataDevolucao())) {
+			long atrasoDias = calcularDiasAtraso(dataAtualFormatada, loan.getDataDevolucao());
+			if (atrasoDias > 0) {
+				UserEntity usuario = loan.getUsuario();
+				Date novaSuspensao = SuspendedUtil.suspendForDays((int) atrasoDias);
+				usuario.setSuspendedUntil(novaSuspensao);
+				userRepository.save(usuario);
+			}
+		}
 
-	    loan.setStatus("Devolvido");
+		loan.setStatus("Devolvido");
 
-	    BookEntity book = loan.getLivro();
-	    book.ajustarQuantidadeExemplares(1);
-	    bookRepository.save(book);
+		BookEntity book = loan.getLivro();
+		book.ajustarQuantidadeExemplares(1);
+		bookRepository.save(book);
 
-	    return loanRepository.save(loan);
+		return loanRepository.save(loan);
 	}
 
 	private long calcularDiasAtraso(Date dataAtual, Date dataDevolucaoEsperada) {
-	    long diff = dataAtual.getTime() - dataDevolucaoEsperada.getTime();
-	    return TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
+		long diff = dataAtual.getTime() - dataDevolucaoEsperada.getTime();
+		return TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
 	}
-
 
 	public LoanEntity updateLoan(LoanEntity loanEntity) {
 
@@ -117,52 +116,71 @@ public class LoanService {
 	public List<LoanEntity> findByUserName(String nomeUsuario) {
 		return loanRepository.findByUserName(nomeUsuario);
 	}
-	
+
 	/**
 	 * Renova o empréstimo por 7 dias, com limite de 2 renovações
+	 * 
 	 * @param loanId
 	 * @return
 	 */
-    public LoanEntity renovarEmprestimo(Long loanId) {
-    	
-        LoanEntity loan = loanRepository.findById(loanId)
-                .orElseThrow(() -> new IllegalArgumentException("Empréstimo não encontrado"));
+	public LoanEntity renovarEmprestimo(Long loanId) {
+		LoanEntity loan = loanRepository.findById(loanId)
+				.orElseThrow(() -> new IllegalArgumentException("Empréstimo não encontrado"));
 
-        if (loan.getRenovacoes() >= 2) {
-            throw new IllegalStateException("Limite de renovações atingido");
-        }
-        if ("Devolvido".equals(loan.getStatus())) {
-            throw new IllegalStateException("Empréstimo já foi devolvido, não pode ser renovado!");
-        }
+		if (loan.getRenovacoes() >= 2) {
+			throw new LoanLimitExceededException("Limite de renovações atingido.");
+		}
 
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(loan.getDataDevolucao());
-        calendar.add(Calendar.DAY_OF_MONTH, 7);
-        loan.setDataDevolucao(calendar.getTime());
+		if ("Devolvido".equals(loan.getStatus())) {
+			throw new IllegalStateException("Empréstimo já foi devolvido, não pode ser renovado!");
+		}
 
-        loan.setRenovacoes(loan.getRenovacoes() + 1);
+		// Verificar se pode renovar
+		verificarDataRenovacao(loan);
 
-        return loanRepository.save(loan);
-    }
-	
+		// Adicionar 7 dias à data de devolução
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(loan.getDataDevolucao());
+		calendar.add(Calendar.DAY_OF_MONTH, 7);
+		loan.setDataDevolucao(calendar.getTime());
+
+		loan.setRenovacoes(loan.getRenovacoes() + 1);
+
+		return loanRepository.save(loan);
+	}
+
+	/**
+	 * Verifica se a data de devolução é igual à data atual
+	 * 
+	 * @param loan
+	 */
+	private void verificarDataRenovacao(LoanEntity loan) {
+		Calendar hoje = Calendar.getInstance();
+		Calendar dataDevolucao = Calendar.getInstance();
+		dataDevolucao.setTime(loan.getDataDevolucao());
+
+		if (hoje.get(Calendar.DAY_OF_MONTH) != dataDevolucao.get(Calendar.DAY_OF_MONTH) ||
+				hoje.get(Calendar.MONTH) != dataDevolucao.get(Calendar.MONTH) ||
+				hoje.get(Calendar.YEAR) != dataDevolucao.get(Calendar.YEAR)) {
+			throw new LoanLimitExceededException("A renovação só pode ser feita no dia da devolução.");
+		}
+	}
+
 	/**
 	 * Converter DTOS
 	 */
 	public LoanDTO toLoanPageDTO(LoanEntity loanEntity) {
-	    return new LoanDTO(
-	        loanEntity.getId(),
-	        loanEntity.getLivro().getId(),
-	        loanEntity.getUsuario().getId(),
-	        loanEntity.getLivro().getTitulo(),
-	        loanEntity.getUsuario().getNome(),
-	        loanEntity.getUsuario().getEmail(),
-	        loanEntity.getDataEmprestimo(),
-	        loanEntity.getDataDevolucao(),
-	        loanEntity.getStatus()
-	    );
+		return new LoanDTO(
+				loanEntity.getId(),
+				loanEntity.getLivro().getId(),
+				loanEntity.getUsuario().getId(),
+				loanEntity.getLivro().getTitulo(),
+				loanEntity.getUsuario().getNome(),
+				loanEntity.getUsuario().getEmail(),
+				loanEntity.getDataEmprestimo(),
+				loanEntity.getDataDevolucao(),
+				loanEntity.getStatus());
 	}
-
-
 
 	/**
 	 * Create Loan particionado com seu métodos auxiliares
@@ -173,10 +191,10 @@ public class LoanService {
 				.orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
 
 		checkUserSuspension(user);
-		checkActiveLoans(loanRequestDTO.idUser()); 
+		checkActiveLoans(loanRequestDTO.idUser());
 		checkDuplicateLoan(loanRequestDTO.idUser(), loanRequestDTO.idBook());
-		
-		BookEntity book = checkBookAvailability(loanRequestDTO.idBook()); 
+
+		BookEntity book = checkBookAvailability(loanRequestDTO.idBook());
 
 		adjustBookExemplars(book);
 
@@ -184,13 +202,13 @@ public class LoanService {
 
 		return loanRepository.save(loanEntity);
 	}
-	
+
 	private void checkDuplicateLoan(Long userId, Long bookId) {
-        boolean exists = loanRepository.existsByUsuarioIdAndLivroIdAndStatus(userId, bookId, EMPRESTADO_STATUS);
-        if (exists) {
-            throw new DuplicateLoanException("Usuário já possui um empréstimo ativo para este livro.");
-        }
-    }
+		boolean exists = loanRepository.existsByUsuarioIdAndLivroIdAndStatus(userId, bookId, EMPRESTADO_STATUS);
+		if (exists) {
+			throw new DuplicateLoanException("Usuário já possui um empréstimo ativo para este livro.");
+		}
+	}
 
 	private void checkUserSuspension(UserEntity user) {
 		if (user.getSuspendedUntil() != null) {
@@ -243,23 +261,21 @@ public class LoanService {
 		return loanEntity;
 	}
 
-
-	public List<LoanByUserResponseDTO> findByUserId(Long userId) {		
-			return loanRepository.findByUsuarioId(userId)
+	public List<LoanByUserResponseDTO> findByUserId(Long userId) {
+		return loanRepository.findByUsuarioId(userId)
 				.stream()
 				.map(this::loanToLoanByUserResponseDTO)
 				.toList();
 	}
 
 	public LoanByUserResponseDTO loanToLoanByUserResponseDTO(LoanEntity loanEntity) {
-	    return LoanByUserResponseDTO.builder()
-			.loanId(loanEntity.getId())
-	        .bookTitle(loanEntity.getLivro().getTitulo())
-	        .dtDevolucao(loanEntity.getDataDevolucao())
-	        .nrRenovacoes(loanEntity.getRenovacoes())
-			.bookStatus(loanEntity.getStatus())
-	        .build();
+		return LoanByUserResponseDTO.builder()
+				.loanId(loanEntity.getId())
+				.bookTitle(loanEntity.getLivro().getTitulo())
+				.dtDevolucao(loanEntity.getDataDevolucao())
+				.nrRenovacoes(loanEntity.getRenovacoes())
+				.bookStatus(loanEntity.getStatus())
+				.build();
 	}
 
 }
-
