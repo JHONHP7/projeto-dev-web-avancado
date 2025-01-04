@@ -256,6 +256,7 @@ public class LoanService {
 	        .bookTitle(loanEntity.getLivro().getTitulo())
 	        .dtDevolucao(loanEntity.getDataDevolucao())
 	        .nrRenovacoes(loanEntity.getRenovacoes())
+			.bookStatus(loanEntity.getStatus())
 	        .build();
 	}
 
