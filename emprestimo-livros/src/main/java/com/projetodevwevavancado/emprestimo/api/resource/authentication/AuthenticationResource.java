@@ -118,7 +118,7 @@ public class AuthenticationResource {
 	}
 
 
-
+	@Operation(summary = "Fazer login com o google e receber token JWT")
 	@PostMapping("/google-login")
 	public ResponseEntity<?> googleLogin(@RequestBody Map<String, String> request) {
 		try {
@@ -160,6 +160,7 @@ public class AuthenticationResource {
 		}
 	}
 
+	@Operation(summary = "Retorna informações do usuário logado")
 	@GetMapping("/usuario/logado")
 	public ResponseEntity<UserResponseDTO> getAuthenticatedUserInfo() {
 		try {
