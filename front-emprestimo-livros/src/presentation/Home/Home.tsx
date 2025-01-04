@@ -1,6 +1,7 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { useEffect } from 'react';
+import Navbar from '../../components/Navbar';
 
 const Home = () => {
   const navigate = useNavigate();
@@ -17,38 +18,8 @@ const Home = () => {
 
   return (
     <div className="w-full min-h-screen">
-      <nav className="bg-black p-4">
-        <div className="container mx-auto flex justify-between items-center">
-          <div className="flex space-x-4 items-center">
-            <div className="rounded">
-              <img 
-                src="/src/assets/books.png"
-                alt="Foto de perfil"
-                className="w-12 h-12 rounded-lg"
-              />
-            </div>
-            <Link to="/content/books" className="text-white hover:text-gray-200">
-              Livros
-            </Link>
-            {user && user.role === 'ADMIN' && (
-              <Link to="/content/loans" className="text-white hover:text-gray-200">
-                Empréstimos
-              </Link>
-            )}
-          </div>
-          <div className="flex items-center space-x-4">
-            <Link to="/content/profile" className="text-white hover:text-gray-200">
-              Meu Perfil
-            </Link>
-            <button
-              onClick={handleLogout}
-              className="text-white hover:text-gray-200"
-            >
-              Sair
-            </button>
-          </div>
-        </div>
-      </nav>
+      {/* Substituindo a navegação original pelo novo componente Navbar */}
+      <Navbar />
 
       <div className="container mx-auto mt-8 gap-4 p-4 text-black">
         <h1 className="text-4xl font-bold mb-2">Bem-vindo(a) à nossa biblioteca!</h1>
@@ -94,6 +65,11 @@ const Home = () => {
               👤 Meu Perfil
             </div>
           </Link>
+          <Link to="/content/users">
+            <div className="bg-purple-200 hover:bg-purple-300 rounded-lg p-8 flex items-center justify-center text-purple-800 font-bold text-lg cursor-pointer shadow-md">
+              👥 Usuários
+            </div>
+          </Link>
           <div
             onClick={handleLogout}
             className="bg-red-200 hover:bg-red-300 rounded-lg p-8 flex items-center justify-center text-red-800 font-bold text-lg cursor-pointer shadow-md"
@@ -103,7 +79,7 @@ const Home = () => {
         </div>
       )}
     </div>
-  )
+  );
 };
 
 export default Home;
