@@ -1,5 +1,5 @@
 import { API_CONFIG } from './config';
-import { User } from '../../interfaces/interfaces';
+import { User, UserCreate, UsersGetAllResponse } from '../../interfaces/interfaces';
 
 export const searchUsersByEmail = async (email: string): Promise<User[]> => {
   try {
@@ -73,6 +73,47 @@ export const deleteUserProfile = async (id: number): Promise<void> => {
     }
   } catch (error) {
     console.error('Erro ao deletar usuário:', error);
+    throw error;
+  }
+};
+
+export const createUser = async (userData: UserCreate): Promise<{ message: string; success: boolean }> => {
+  try {
+    const response = await fetch(`${API_CONFIG.BASE_URL}/auth/register`, {
+      method: 'POST',
+      headers: {
+        ...API_CONFIG.getAuthHeader(),
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(userData)
+    });
+
+    if (!response.ok) {
+      throw new Error('Erro ao criar usuário');
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Erro ao criar usuário:', error);
+    throw error;
+  }
+};
+
+export const getAllUsers = async (): Promise<UsersGetAllResponse> => {
+  try {
+    const response = await fetch(`${API_CONFIG.BASE_URL}/users`, {
+      headers: API_CONFIG.getAuthHeader()
+    });
+
+    if (!response.ok) {
+      throw new Error('Erro ao listar usuários');
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Erro ao listar usuários:', error);
     throw error;
   }
 };
