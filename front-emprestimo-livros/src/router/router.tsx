@@ -1,14 +1,15 @@
 import { Navigate, createBrowserRouter } from 'react-router-dom';
-import Home from '../presentation/Home/Home';
-import ListBooks from '../presentation/BookScene/ListBooks';
+import MainLayout from '../components/MainLayout';
 import CreateBook from '../presentation/BookScene/CreateBook';
+import ListBooks from '../presentation/BookScene/ListBooks';
 import UpdateBook from '../presentation/BookScene/UpdateBook';
-import Login from '../presentation/Login/Login';
-import LoanScene from '../presentation/LoanScene/LoanScene';
+import Home from '../presentation/Home/Home';
 import CreateLoan from '../presentation/LoanScene/CreateLoan';
-import UserProfile from '../presentation/UserScene/UserProfile';
-import ContentScene from '../presentation/Content/ContentScene';
+import LoanScene from '../presentation/LoanScene/LoanScene';
+import Login from '../presentation/Login/Login';
 import Register from '../presentation/Register/Register';
+import UserProfile from '../presentation/UserScene/UserProfile';
+import UsersList from '../presentation/UserScene/UsersList';
 
 export const router = createBrowserRouter([
   {
@@ -17,7 +18,7 @@ export const router = createBrowserRouter([
   },
   {
     path: "/content",
-    element: <ContentScene />,
+    element: <MainLayout />,
     children: [
       {
         index: true,
@@ -46,6 +47,10 @@ export const router = createBrowserRouter([
       {
         path: "/content/profile",
         element: <UserProfile />,
+      },
+      {
+        path: "/content/users",
+        element: <UsersList />,
       },
     ],
   },
