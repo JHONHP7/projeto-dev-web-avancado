@@ -17,7 +17,8 @@ const LoanScene = () => {
   });
   const [searchTerm, setSearchTerm] = useState({
     userName: '',
-    bookName: ''
+    bookName: '',
+    userEmail: '',
   });
 
   const loansPerPage = 10;
@@ -124,8 +125,10 @@ const LoanScene = () => {
     
     const matchesUserName = loan.userName.toLowerCase().includes(searchTerm.userName.toLowerCase());
     const matchesBookName = loan.bookName.toLowerCase().includes(searchTerm.bookName.toLowerCase());
+    const matchesUserEmail = loan.userEmail.toLowerCase().includes(searchTerm.userEmail.toLowerCase());
+
     
-    return matchesUserName && matchesBookName;
+    return matchesUserName && matchesBookName && matchesUserEmail;
   });
 
   const indexOfLastLoan = currentPage * loansPerPage;
@@ -169,6 +172,16 @@ const LoanScene = () => {
                 placeholder="Pesquisar por livro..."
                 value={searchTerm.bookName}
                 onChange={e => setSearchTerm(prev => ({...prev, bookName: e.target.value}))}
+                className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+              <label className="w-20 whitespace-nowrap">Email:</label>
+              <input
+                type="text"
+                placeholder="Pesquisar por email..."
+                value={searchTerm.userEmail}
+                onChange={e => setSearchTerm(prev => ({...prev, userEmail: e.target.value}))}
                 className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>

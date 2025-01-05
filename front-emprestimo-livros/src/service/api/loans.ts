@@ -42,6 +42,8 @@ export const getLoans = async (): Promise<Loan[]> => {
     }
 
     const data = await response.json();
+
+    console.log(data);
     return data;
   } catch (error) {
     console.error("Erro ao buscar empréstimos:", error);

@@ -1,4 +1,5 @@
 export interface Loan {
+    userEmail: string;
     loanId: number;
     bookId: number;
     userId: number;

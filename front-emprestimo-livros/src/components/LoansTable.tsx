@@ -13,6 +13,7 @@ const LoansTable: React.FC<LoansTableProps> = ({ loans, user, handleRenew, handl
                   <div className="space-y-1 text-sm">
                     <h3 className="font-bold">Livro: {loan.bookName}</h3>
                     <p>Usuário: {loan.userName}</p>
+                    <p>Email: {loan.userEmail}</p>
                     <p>Data de Empréstimo: {loan.loanDate}</p>
                     <p>Data de Devolução: {loan.returnDate}</p>
                     <p>Status: {loan.status}</p>
@@ -42,6 +43,7 @@ const LoansTable: React.FC<LoansTableProps> = ({ loans, user, handleRenew, handl
                 <tr>
                   <th className="px-6 py-3 border-b text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Livro</th>
                   <th className="px-6 py-3 border-b text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Usuário</th>
+                  <th className="px-6 py-3 border-b text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
                   <th className="px-6 py-3 border-b text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Data de Empréstimo</th>
                   <th className="px-6 py-3 border-b text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Data de Devolução</th>
                   <th className="px-6 py-3 border-b text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
@@ -55,6 +57,7 @@ const LoansTable: React.FC<LoansTableProps> = ({ loans, user, handleRenew, handl
                   <tr key={loan.loanId}>
                     <td className="px-6 py-4 whitespace-nowrap">{loan.bookName}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{loan.userName}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{loan.userEmail}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{loan.loanDate}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{loan.returnDate}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{loan.status}</td>
