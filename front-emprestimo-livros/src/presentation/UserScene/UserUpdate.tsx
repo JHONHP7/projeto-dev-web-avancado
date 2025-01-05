@@ -69,12 +69,12 @@ const UserUpdate = () => {
 
             navigate('/content/users');
         } catch (error) {
-            setError('Erro ao atualizar usuário. Por favor, tente novamente.');
+            setError('Erro ao atualizar usuário. Verifique os dados inseridos e tente novamente');
             console.error('Erro:', error);
 
             Swal.fire({
                 title: 'Erro!',
-                text: 'Erro ao atualizar usuário. Por favor, tente novamente.',
+                text: 'Erro ao atualizar usuário. Verifique os dados inseridos e tente novamente',
                 icon: 'error',
                 confirmButtonText: 'Ok'
             });
