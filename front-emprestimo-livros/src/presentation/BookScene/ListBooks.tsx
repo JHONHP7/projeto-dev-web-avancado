@@ -77,8 +77,8 @@ const ListBooks = () => {
           <h2 className="text-xl sm:text-2xl font-bold">Lista de Livros</h2>
           {user?.role === 'ADMIN' && (
             <button
-              onClick={() => navigate('/books/create')}
-              className="w-full sm:w-auto bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+              onClick={() => navigate('/content/books/create')}
+              className="w-full sm:w-auto bg-black text-white px-4 py-2 rounded hover:bg-gray-800"
             >
               Novo Livro
             </button>

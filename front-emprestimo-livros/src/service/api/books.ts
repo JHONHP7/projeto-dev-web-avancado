@@ -97,9 +97,14 @@ export const getBookById = async (id: number): Promise<Book> => {
 
 export const createBook = async (bookData: Omit<Book, 'id' | 'isbn'>): Promise<Book> => {
   try {
-    // Reformatando a data para o formato dd-MM-yyyy
+    // Verificando se a dataPublicacao está definida
+    if (!bookData.dataPublicacao) {
+      throw new Error('dataPublicacao não pode ser indefinida');
+    }
+
+    // Reformatando a data para o formato dd/MM/yyyy
     const [year, month, day] = bookData.dataPublicacao.split("-");
-    const formattedDate = `${day}-${month}-${year}`;
+    const formattedDate = `${day}/${month}/${year}`;
     const updatedBook = { ...bookData, dataPublicacao: formattedDate, isbn: '' }; // Adicionando o campo isbn como vazio
 
     const token = localStorage.getItem('token');
@@ -121,16 +126,21 @@ export const createBook = async (bookData: Omit<Book, 'id' | 'isbn'>): Promise<B
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error('Erro ao salvar livro:', error);
+    console.error('Erro ao criar livro:', error);
     throw error;
   }
 }
 
 export const updateBook = async (bookData: BookUpdate): Promise<BookUpdate> => {
   try {
-    /** Convertendo a data do formato "YYYY-MM-DD" para "DD-MM-YYYY" */
+    // Verificando se a dataPublicacao está definida
+    if (!bookData.dataPublicacao || bookData.dataPublicacao === 'undefined/undefined/undefined') {
+      throw new Error('dataPublicacao não pode ser indefinida');
+    }
+
+    /** Convertendo a data do formato "YYYY-MM-DD" para "DD/MM/YYYY" */
     const [year, month, day] = bookData.dataPublicacao.split('-');
-    const formattedDateForSubmit = `${day}-${month}-${year}`;
+    const formattedDateForSubmit = `${day}/${month}/${year}`;
 
     const bookToSubmit = {
       id: bookData.id,
@@ -195,7 +205,7 @@ export const getBookByIdForUpdate = async (id: number): Promise<BookUpdate> => {
       isbn: data.bookIsbn,
       disponivel: data.bookAvailable,
       quantidadeExemplares: data.bookQuantity,
-      dataPublicacao: data.publicationDate.split('-').reverse().join('-'),
+      dataPublicacao: data.publicationDate.split('-').reverse().join('/'),
       genero: data.bookGenero
     };
   } catch (error) {

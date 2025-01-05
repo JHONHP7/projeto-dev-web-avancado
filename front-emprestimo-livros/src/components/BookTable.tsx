@@ -1,12 +1,11 @@
 // src/components/BookTable.tsx
 import { useEffect, useState } from "react";
-import { AiFillStar, AiOutlineStar } from "react-icons/ai";
+import { AiFillStar, AiOutlineDelete, AiOutlineEdit, AiOutlineStar } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
 import Swal from 'sweetalert2';
 import { BookTableProps } from '../interfaces/interfaces';
 import { deleteBookById } from '../service/api/books';
 import { addFavoriteBook, getFavoriteBooks, removeFavoriteBook } from '../service/api/index';
-
 
 const BookTable: React.FC<BookTableProps> = ({ books, user }) => {
   const navigate = useNavigate();
@@ -48,7 +47,7 @@ const BookTable: React.FC<BookTableProps> = ({ books, user }) => {
     }
   };
 
-  const filteredBooks = showOnlyFavorites && user?.role === 'USER'
+  const filteredBooks = showOnlyFavorites
     ? books.filter(book => favoriteBooks.includes(book.id))
     : books.filter(book => !selectedGenre || book.genero === selectedGenre);
 
@@ -94,22 +93,20 @@ const BookTable: React.FC<BookTableProps> = ({ books, user }) => {
 
   return (
     <div className="w-full">
-      {user?.role === 'USER' && (
-        <div className="mb-4 px-4">
-          <label className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              checked={showOnlyFavorites}
-              onChange={(e) => {
-                setShowOnlyFavorites(e.target.checked);
-                setCurrentPage(1);
-              }}
-              className="form-checkbox h-5 w-5 text-blue-600"
-            />
-            <span>Favoritos</span>
-          </label>
-        </div>
-      )}
+      <div className="mb-4 px-4">
+        <label className="flex items-center space-x-2">
+          <input
+            type="checkbox"
+            checked={showOnlyFavorites}
+            onChange={(e) => {
+              setShowOnlyFavorites(e.target.checked);
+              setCurrentPage(1);
+            }}
+            className="form-checkbox h-5 w-5 text-blue-600"
+          />
+          <span>Favoritos</span>
+        </label>
+      </div>
 
       <div className="overflow-x-auto">
         <div className="inline-block min-w-full">
@@ -122,17 +119,15 @@ const BookTable: React.FC<BookTableProps> = ({ books, user }) => {
                       <h3 className="font-bold">{book.titulo}</h3>
                       <p className="text-sm text-gray-600">Autor: {book.autor}</p>
                     </div>
-                    {user?.role === 'USER' && (
-                      <button
-                        onClick={() => toggleFavorite(book.id)}
-                        className="text-2xl"
-                      >
-                        {favoriteBooks.includes(book.id) ?
-                          <AiFillStar className="text-yellow-400" /> :
-                          <AiOutlineStar className="text-gray-400" />
-                        }
-                      </button>
-                    )}
+                    <button
+                      onClick={() => toggleFavorite(book.id)}
+                      className="text-2xl"
+                    >
+                      {favoriteBooks.includes(book.id) ?
+                        <AiFillStar className="text-yellow-400" /> :
+                        <AiOutlineStar className="text-gray-400" />
+                      }
+                    </button>
                   </div>
                   <div className="space-y-1 text-sm">
                     <p>ISBN: {book.isbn}</p>
@@ -145,8 +140,8 @@ const BookTable: React.FC<BookTableProps> = ({ books, user }) => {
                   {user?.role === 'ADMIN' && (
                     <div className="mt-4 flex gap-2">
                       <button
-                        onClick={() => navigate(`/books/update/${book.id}`)}
-                        className="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md"
+                        onClick={() => navigate(`/conent/books/update/${book.id}`)}
+                        className="flex-1 bg-black hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-md"
                       >
                         Editar
                       </button>
@@ -162,65 +157,65 @@ const BookTable: React.FC<BookTableProps> = ({ books, user }) => {
               ))}
             </div>
 
-            <table className="min-w-full hidden lg:table">
+            <table className="min-w-full hidden lg:table table-fixed">
               <thead className="bg-gray-100">
                 <tr>
-                  <th className="px-6 py-3 border-b text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Título</th>
-                  <th className="px-6 py-3 border-b text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Autor</th>
-                  <th className="px-6 py-3 border-b text-center text-xs font-medium text-gray-500 uppercase tracking-wider">ISBN</th>
-                  <th className="px-6 py-3 border-b text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                  <th className="px-6 py-3 border-b text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Quantidade</th>
-                  <th className="px-6 py-3 border-b text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Data de Publicação</th>
-                  <th className="px-6 py-3 border-b text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Gênero</th>
-                  {user?.role === 'USER' && (
-                    <th className="px-6 py-3 border-b text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Favorito</th>
-                  )}
+                  <th className="px-2 py-3 border-b text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Fav</th>
+                  <th className="px-2 py-3 border-b text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Título</th>
+                  <th className="px-2 py-3 border-b text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Autor</th>
+                  <th className="px-2 py-3 border-b text-center text-xs font-medium text-gray-500 uppercase tracking-wider">ISBN</th>
+                  <th className="px-2 py-3 border-b text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                  <th className="px-2 py-3 border-b text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Qtd</th>
+                  <th className="px-2 py-3 border-b text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Publicação</th>
+                  <th className="px-2 py-3 border-b text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Gênero</th>
+
                   {user?.role === 'ADMIN' && (
-                    <th className="px-6 py-3 border-b text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
+                    <th className="px-2 py-3 border-b text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
                   )}
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {displayedBooks.map((book) => (
                   <tr key={book.id}>
-                    <td className="px-6 py-4 whitespace-nowrap">{book.titulo}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{book.autor}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{book.isbn}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">
+                    <td className="px-2 py-4 whitespace-nowrap text-center">
+                      <button
+                        onClick={() => toggleFavorite(book.id)}
+                        className="text-2xl transition-transform duration-200 ease-in-out hover:scale-110"
+                      >
+                        {favoriteBooks.includes(book.id) ?
+                          <AiFillStar className="text-yellow-400" /> :
+                          <AiOutlineStar className="text-gray-400" />
+                        }
+                      </button>
+                    </td>
+                    <td className="px-2 py-4 whitespace-nowrap">{book.titulo}</td>
+                    <td className="px-2 py-4 whitespace-nowrap">{book.autor}</td>
+                    <td className="px-2 py-4 whitespace-nowrap">{book.isbn}</td>
+                    <td className="px-2 py-4 whitespace-nowrap">
                       <span className={book.disponivel ? "text-green-600" : "text-red-600"}>
                         {book.disponivel ? "Disponível" : "Indisponível"}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">{book.quantidadeExemplares}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{book.dataPublicacao}</td>
-                    <td className="px-6 py-4 whitespace-nowrap">{book.genero}</td>
-                    {user?.role === 'USER' && (
-                      <td className="px-6 py-4 whitespace-nowrap text-center">
-                        <button
-                          onClick={() => toggleFavorite(book.id)}
-                          className="text-2xl transition-transform duration-200 ease-in-out hover:scale-110"
-                        >
-                          {favoriteBooks.includes(book.id) ?
-                            <AiFillStar className="text-yellow-400" /> :
-                            <AiOutlineStar className="text-gray-400" />
-                          }
-                        </button>
-                      </td>
-                    )}
+                    <td className="px-2 py-4 whitespace-nowrap">{book.quantidadeExemplares}</td>
+                    <td className="px-2 py-4 whitespace-nowrap">{book.dataPublicacao}</td>
+                    <td className="px-2 py-4 whitespace-nowrap">{book.genero}</td>
                     {user?.role === 'ADMIN' && (
-                      <td className="px-6 py-4 whitespace-nowrap text-center">
+                      <td className="px-2 py-4 whitespace-nowrap text-center">
                         <div className="flex justify-center gap-2">
                           <button
-                            onClick={() => navigate(`/books/update/${book.id}`)}
-                            className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md"
+                            onClick={() => navigate(`/content/books/update/${book.id}`)}
+                            className="bg-black hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-md"
+                            title="Editar"
                           >
-                            Editar
+                            <AiOutlineEdit className="text-white" size={14} />
                           </button>
+
                           <button
                             onClick={() => handleDelete(book.id)}
                             className="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-md"
+                            title="Excluir"
                           >
-                            Excluir
+                            <AiOutlineDelete className="text-white" size={14} />
                           </button>
                         </div>
                       </td>

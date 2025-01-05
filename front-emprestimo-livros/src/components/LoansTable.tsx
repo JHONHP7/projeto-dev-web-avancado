@@ -1,3 +1,4 @@
+import { BiExit, BiRefresh } from 'react-icons/bi';
 import { LoansTableProps } from '../interfaces/interfaces';
 
 const LoansTable: React.FC<LoansTableProps> = ({ loans, user, handleRenew, handleReturn }) => {
@@ -12,6 +13,7 @@ const LoansTable: React.FC<LoansTableProps> = ({ loans, user, handleRenew, handl
                   <div className="space-y-1 text-sm">
                     <h3 className="font-bold">Livro: {loan.bookName}</h3>
                     <p>Usuário: {loan.userName}</p>
+                    <p>Email: {loan.userEmail}</p>
                     <p>Data de Empréstimo: {loan.loanDate}</p>
                     <p>Data de Devolução: {loan.returnDate}</p>
                     <p>Status: {loan.status}</p>
@@ -20,7 +22,7 @@ const LoansTable: React.FC<LoansTableProps> = ({ loans, user, handleRenew, handl
                     <div className="mt-4 space-x-2">
                       <button
                         onClick={() => handleRenew(loan.loanId, loan.status)}
-                        className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md"
+                        className="bg-black hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-md"
                       >
                         Renovar
                       </button>
@@ -41,6 +43,7 @@ const LoansTable: React.FC<LoansTableProps> = ({ loans, user, handleRenew, handl
                 <tr>
                   <th className="px-6 py-3 border-b text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Livro</th>
                   <th className="px-6 py-3 border-b text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Usuário</th>
+                  <th className="px-6 py-3 border-b text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
                   <th className="px-6 py-3 border-b text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Data de Empréstimo</th>
                   <th className="px-6 py-3 border-b text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Data de Devolução</th>
                   <th className="px-6 py-3 border-b text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
@@ -54,6 +57,7 @@ const LoansTable: React.FC<LoansTableProps> = ({ loans, user, handleRenew, handl
                   <tr key={loan.loanId}>
                     <td className="px-6 py-4 whitespace-nowrap">{loan.bookName}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{loan.userName}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">{loan.userEmail}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{loan.loanDate}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{loan.returnDate}</td>
                     <td className="px-6 py-4 whitespace-nowrap">{loan.status}</td>
@@ -61,15 +65,18 @@ const LoansTable: React.FC<LoansTableProps> = ({ loans, user, handleRenew, handl
                       <td className="px-6 py-4 whitespace-nowrap text-center">
                         <button
                           onClick={() => handleRenew(loan.loanId, loan.status)}
-                          className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md mr-2"
+                          className="bg-black hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-md mr-2"
+                          title="Renovar"
                         >
-                          Renovar
+                          <BiRefresh className="text-white" size={14} />
                         </button>
+
                         <button
                           onClick={() => handleReturn(loan.loanId)}
                           className="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-md"
+                          title="Devolver"
                         >
-                          Devolver
+                          <BiExit className="text-white" size={14} />
                         </button>
                       </td>
                     )}

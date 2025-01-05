@@ -22,4 +22,10 @@ public interface UserResourceApi {
 	@Operation(summary = "Atualizar usuário")
 	public ResponseEntity<ApiResponseUsers<UserResponseDTO>> updateUser(UserRequestDTO userRequest);
 
+	@Operation(summary = "Buscar usuário por e-mail")
+	public ResponseEntity<List<UserResponseDTO>> getAllByEmail(String email);
+
+	@Operation(summary = "Buscar usuário por ID")
+	public ResponseEntity<UserResponseDTO> getUserById(Long id);
+
 }

@@ -115,4 +115,16 @@ public class UserResource implements UserResourceApi {
 
 		return ResponseEntity.ok(usuarios);
 	}
+
+	@GetMapping("/{id}")
+	public ResponseEntity<UserResponseDTO> getUserById(@PathVariable Long id) {
+
+		UserResponseDTO user = userService.findUserById(id);
+
+		if (user == null) {
+			throw new ResourceNotFoundException("Nenhum usuário encontrado com o id fornecido: " + id);
+		}
+
+		return ResponseEntity.ok(user);
+	}
 }

@@ -1,5 +1,7 @@
 package com.projetodevwevavancado.emprestimo.api.resource.handler;
 
+import java.util.stream.Collectors;
+
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -8,11 +10,14 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.projetodevwevavancado.emprestimo.api.resource.handler.exceptions.AuthenticationFailedException;
 import com.projetodevwevavancado.emprestimo.api.resource.handler.exceptions.DataNotFoundException;
+import com.projetodevwevavancado.emprestimo.api.resource.handler.exceptions.DuplicateLoanException;
 import com.projetodevwevavancado.emprestimo.api.resource.handler.exceptions.EmailAlreadyExistsException;
 import com.projetodevwevavancado.emprestimo.api.resource.handler.exceptions.FavoriteAlreadyExistsException;
+import com.projetodevwevavancado.emprestimo.api.resource.handler.exceptions.LoanLimitExceededException;
 import com.projetodevwevavancado.emprestimo.api.resource.handler.exceptions.NegativeQuantityException;
 import com.projetodevwevavancado.emprestimo.api.resource.handler.exceptions.ResourceNotFoundException;
 import com.projetodevwevavancado.emprestimo.api.resource.handler.exceptions.UserSuspendedException;
+import com.projetodevwevavancado.emprestimo.api.resource.handler.exceptions.ValidationException;
 import com.projetodevwevavancado.emprestimo.commons.util.ApiResponse;
 
 @ControllerAdvice
@@ -72,6 +77,25 @@ public class ResourceExceptionHandler {
 
 		ApiResponse response = new ApiResponse(message, false);
 		return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+	}
+
+	@ExceptionHandler(DuplicateLoanException.class)
+	public ResponseEntity<ApiResponse> handleDuplicateLoanException(DuplicateLoanException ex) {
+		ApiResponse response = new ApiResponse(ex.getMessage(), false);
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+	}
+
+	@ExceptionHandler(ValidationException.class)
+	public ResponseEntity<ApiResponse> handleValidationException(ValidationException ex) {
+		String message = "Erro de validação: " + ex.getErrors().stream().collect(Collectors.joining(", "));
+		ApiResponse response = new ApiResponse(message, false);
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+	}
+
+	@ExceptionHandler(LoanLimitExceededException.class)
+	public ResponseEntity<ApiResponse> handleLoanLimitExceededException(LoanLimitExceededException ex) {
+		ApiResponse response = new ApiResponse(ex.getMessage(), false);
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 	}
 
 }

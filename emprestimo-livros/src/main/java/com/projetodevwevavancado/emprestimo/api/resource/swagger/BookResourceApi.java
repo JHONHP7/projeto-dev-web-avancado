@@ -26,9 +26,8 @@ public interface BookResourceApi {
 	@Operation(summary = "Update livro")
 	public ResponseEntity<BookResponseDTO> update(BookEntity bookEntity);
 
-	@Operation(summary = "Update livro")
+	@Operation(summary = "Buscar livro por id")
 	public ResponseEntity<BookUpdateDTO> findById(Long id);
-
 
 	@Operation(summary = "Buscar lista de livro por titulo")
 	public ResponseEntity<List<BookDTO>> findBooksByTitle(BookRequestByTitleDTO title);

@@ -2,8 +2,10 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { getUserProfile } from '../service/api/index';
 import { User } from '../interfaces/interfaces';
+import { useAuth } from '../hooks/useAuth';
 
 const Navbar = () => {
+  const { logout } = useAuth();
   const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
 
@@ -21,33 +23,49 @@ const Navbar = () => {
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    navigate('/login');
+    logout();
+    navigate('/');
   };
 
   return (
-    <nav className="bg-gray-800 text-white fixed top-0 left-0 h-full w-64 p-6 flex flex-col space-y-6">
-      <h1 className="text-2xl font-bold mb-6">Emprestimos de livros UFF</h1>
-      <Link to="/books" className="hover:bg-gray-700 px-4 py-3 rounded transition-colors">
-        Home
-      </Link>
-      <Link to="/books" className="hover:bg-gray-700 px-4 py-3 rounded transition-colors">
-        List Books
-      </Link>
-      {user?.role === 'ADMIN' && (
-        <Link to="/loans" className="hover:bg-gray-700 px-4 py-3 rounded transition-colors">
-          List Loans
-        </Link>
-      )}
-      <Link to="/profile" className="hover:bg-gray-700 px-4 py-3 rounded transition-colors">
-        Profile
-      </Link>
-      <button
-        onClick={handleLogout}
-        className="mt-auto bg-red-600 hover:bg-red-700 px-4 py-3 rounded transition-colors text-white"
-      >
-        Logout
-      </button>
+    <nav className="bg-black p-4">
+      <div className="container mx-auto flex justify-between items-center">
+        <div className="flex space-x-4 items-center">
+          <Link to='/content'>
+            <div className="rounded">
+              <img 
+                src="/src/assets/books.png"
+                alt="Foto de perfil"
+                className="w-12 h-12 rounded-lg"
+              />
+            </div>
+          </Link>
+          <Link to="/content/books" className="text-white hover:text-gray-200">
+            Livros
+          </Link>
+          {user && user.role === 'ADMIN' && (
+            <>
+              <Link to="/content/loans" className="text-white hover:text-gray-200">
+                Empréstimos
+              </Link>
+              <Link to="/content/users" className="text-white hover:text-gray-200">
+                Usuários
+              </Link>
+            </>
+          )}
+        </div>
+        <div className="flex items-center space-x-4">
+          <Link to="/content/profile" className="text-white hover:text-gray-200">
+            Meu Perfil
+          </Link>
+          <button
+            onClick={handleLogout}
+            className="text-white hover:text-gray-200"
+          >
+            Sair
+          </button>
+        </div>
+      </div>
     </nav>
   );
 };

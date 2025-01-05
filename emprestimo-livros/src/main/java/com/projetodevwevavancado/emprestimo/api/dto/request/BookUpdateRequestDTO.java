@@ -22,7 +22,7 @@ public class BookUpdateRequestDTO {
 	private String titulo;
 	private String autor;
 	private Boolean disponivel;
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy", timezone = "GMT-3")
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy", timezone = "America/Sao_Paulo")
 	@Temporal(TemporalType.DATE)
 	private Date dataPublicacao;
 	private int quantidadeExemplares;

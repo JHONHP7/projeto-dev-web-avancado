@@ -1,55 +1,75 @@
 import { Navigate, createBrowserRouter } from 'react-router-dom';
-import Home from '../presentation/Home/Home';
-import ListAdvertise from '../presentation/AdvertiseScene/ListAdvertise';
-import ListBooks from '../presentation/BookScene/ListBooks';
+import MainLayout from '../components/MainLayout';
 import CreateBook from '../presentation/BookScene/CreateBook';
+import ListBooks from '../presentation/BookScene/ListBooks';
 import UpdateBook from '../presentation/BookScene/UpdateBook';
-import Login from '../presentation/Login/Login';
-import LoanScene from '../presentation/LoanScene/LoanScene';
+import Home from '../presentation/Home/Home';
 import CreateLoan from '../presentation/LoanScene/CreateLoan';
+import LoanScene from '../presentation/LoanScene/LoanScene';
+import Login from '../presentation/Login/Login';
+import Register from '../presentation/Register/Register';
 import UserProfile from '../presentation/UserScene/UserProfile';
+import UsersList from '../presentation/UserScene/UsersList';
+import UserUpdate from '../presentation/UserScene/UserUpdate';
+import CreateUser from '../presentation/UserScene/CreateUser';
 
 export const router = createBrowserRouter([
   {
     path: "/",
     element: <Home />,
+  },
+  {
+    path: "/content",
+    element: <MainLayout />,
     children: [
       {
         index: true,
         element: <Navigate to="login" replace />,
       },
       {
-        path: "advertises",
-        element: <ListAdvertise />,
-      },
-      {
-        path: "books",
+        path: "/content/books",
         element: <ListBooks />,
       },
       {
-        path: "books/create",
+        path: "/content/books/create",
         element: <CreateBook />,
       },
       {
-        path: "books/update/:id",
+        path: "/content/books/update/:id",
         element: <UpdateBook />,
       },
       {
-        path: "loans",
+        path: "/content/loans",
         element: <LoanScene />,
       },
       {
-        path: "loans/create",
+        path: "/content/loans/create",
         element: <CreateLoan />,
       },
       {
-        path: "profile",
+        path: "/content/profile",
         element: <UserProfile />,
       },
+      {
+        path: "/content/users",
+        element: <UsersList />,
+      },
+      {
+        path: "/content/users/create",
+        element: <CreateUser />,
+      },
+      {
+        path: "/content/users/edit-user/:id",
+        element: <UserUpdate />,
+      }
     ],
   },
   {
     path: "/login",
     element: <Login />,
+  },
+  {
+    path: "/register",
+    element: <Register />,
   },
 ]);

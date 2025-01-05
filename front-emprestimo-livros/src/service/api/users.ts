@@ -1,5 +1,5 @@
 import { API_CONFIG } from './config';
-import { User } from '../../interfaces/interfaces';
+import { User, UserCreate, UserDeleteResponse, UsersGetAllResponse } from '../../interfaces/interfaces';
 
 export const searchUsersByEmail = async (email: string): Promise<User[]> => {
   try {
@@ -44,8 +44,11 @@ export const getUserProfile = async (): Promise<User> => {
 export const updateUserProfile = async (userData: Partial<User>): Promise<User> => {
   try {
     const response = await fetch(`${API_CONFIG.BASE_URL}/users/update`, {
-      method: 'PUT',
-      headers: API_CONFIG.getAuthHeader(),
+      method: 'POST',
+      headers: {
+        ...API_CONFIG.getAuthHeader(),
+        'Content-Type': 'application/json'
+      },
       body: JSON.stringify(userData)
     });
 
@@ -61,7 +64,7 @@ export const updateUserProfile = async (userData: Partial<User>): Promise<User> 
   }
 };
 
-export const deleteUserProfile = async (id: number): Promise<void> => {
+export const deleteUserProfile = async (id: number): Promise<UserDeleteResponse> => {
   try {
     const response = await fetch(`${API_CONFIG.BASE_URL}/users/${id}`, {
       method: 'DELETE',
@@ -71,8 +74,71 @@ export const deleteUserProfile = async (id: number): Promise<void> => {
     if (!response.ok) {
       throw new Error('Erro ao deletar usuário');
     }
+
+    const data = await response.json();
+    return data;
   } catch (error) {
     console.error('Erro ao deletar usuário:', error);
+    throw error;
+  }
+};
+
+export const createUser = async (userData: UserCreate): Promise<{ message: string; success: boolean }> => {
+  try {
+    const response = await fetch(`${API_CONFIG.BASE_URL}/auth/register`, {
+      method: 'POST',
+      headers: {
+        ...API_CONFIG.getAuthHeader(),
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(userData)
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || 'Erro ao criar usuário');
+    }
+
+    return data;
+  } catch (error) {
+    console.error('Erro ao criar usuário:', error);
+    throw error;
+  }
+};
+
+export const getAllUsers = async (): Promise<UsersGetAllResponse> => {
+  try {
+    const response = await fetch(`${API_CONFIG.BASE_URL}/users`, {
+      headers: API_CONFIG.getAuthHeader()
+    });
+
+    if (!response.ok) {
+      throw new Error('Erro ao listar usuários');
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Erro ao listar usuários:', error);
+    throw error;
+  }
+};
+
+export const getUserById = async (id: number): Promise<User> => {
+  try {
+    const response = await fetch(`${API_CONFIG.BASE_URL}/users/${id}`, {
+      headers: API_CONFIG.getAuthHeader()
+    });
+
+    if (!response.ok) {
+      throw new Error('Erro ao buscar usuário por ID');
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Erro ao buscar usuário por ID:', error);
     throw error;
   }
 };

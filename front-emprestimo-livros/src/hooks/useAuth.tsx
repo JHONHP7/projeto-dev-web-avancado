@@ -24,8 +24,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         const userData = await response.json();
         setUser(userData);
         localStorage.setItem('user', JSON.stringify(userData));
+        return userData;
       } else {
         logout();
+        return null;
       }
     } catch (error) {
       console.error('Erro ao buscar usuário logado:', error);

@@ -215,8 +215,8 @@ const CreateLoan = () => {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 md:mb-8 gap-4">
         <h1 className="text-2xl md:text-3xl font-bold">Criar Empréstimo</h1>
         <button
-          onClick={() => navigate('/loans')}
-          className="w-full md:w-auto bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+          onClick={() => navigate('/content/loans')}
+          className="w-full md:w-auto bg-blue-900 text-white px-4 py-2 rounded hover:bg-blue-700"
         >
           Voltar
         </button>
@@ -403,7 +403,7 @@ const CreateLoan = () => {
         disabled={!selectedBookId || !selectedUserId}
         className={`w-full py-3 md:py-4 rounded-lg text-base md:text-lg font-semibold transition-colors ${
           selectedBookId && selectedUserId
-            ? 'bg-green-500 hover:bg-green-600 text-white'
+            ? 'bg-blue-900 hover:bg-blue-700 text-white'
             : 'bg-gray-300 text-gray-500 cursor-not-allowed'
         }`}
       >

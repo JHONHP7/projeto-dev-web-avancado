@@ -1,22 +1,26 @@
+# application.yml
 spring:
+  jackson:
+    time-zone: America/Sao_Paulo
   datasource:
     url: jdbc:postgresql://localhost:5432/emprestimo_livros
     username: postgres
     password: 1996
     driver-class-name: org.postgresql.Driver
-
   jpa:
     hibernate:
       ddl-auto: none  # Não alterar o esquema automaticamente
       default_schema: emprestimo  # Define o schema "emprestimo" como padrão
     show-sql: true  # Exibe as queries no console
-
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: America/Sao_Paulo
   flyway:
     enabled: true
     baseline-on-migrate: true
     schemas: emprestimo
     locations: classpath:db/migration
-    
   security:
     oauth2:
       client:
@@ -40,14 +44,12 @@ server:
   port: 8080
   error:
     include-stacktrace: on-param
-    
 springdoc:
   api-docs:
     path: /v3/api-docs
   swagger-ui:
     path: /swagger-ui.html
-
 api:
   security:
     token:
-      secret: ${JWT_SECRET:my-secret-key}  # Define a chave secreta do token JWT
+      secret: "${JWT_SECRET:my-secret-key}"  # Define a chave secreta do token JWT
