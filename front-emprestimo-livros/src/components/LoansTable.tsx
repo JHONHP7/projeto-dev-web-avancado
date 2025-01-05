@@ -1,3 +1,4 @@
+import { BiExit, BiRefresh } from 'react-icons/bi';
 import { LoansTableProps } from '../interfaces/interfaces';
 
 const LoansTable: React.FC<LoansTableProps> = ({ loans, user, handleRenew, handleReturn }) => {
@@ -62,14 +63,17 @@ const LoansTable: React.FC<LoansTableProps> = ({ loans, user, handleRenew, handl
                         <button
                           onClick={() => handleRenew(loan.loanId, loan.status)}
                           className="bg-black hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-md mr-2"
+                          title="Renovar"
                         >
-                          Renovar
+                          <BiRefresh className="text-white" size={14} />
                         </button>
+
                         <button
                           onClick={() => handleReturn(loan.loanId)}
                           className="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-md"
+                          title="Devolver"
                         >
-                          Devolver
+                          <BiExit className="text-white" size={14} />
                         </button>
                       </td>
                     )}

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { UserResponse } from '../interfaces/interfaces';
 import Swal from 'sweetalert2';
+import { UserResponse } from '../interfaces/interfaces';
+import { AiOutlineDelete, AiOutlineEdit } from 'react-icons/ai';
 
 interface UsersTableProps {
     users: UserResponse[];
@@ -75,18 +76,21 @@ const UsersTable: React.FC<UsersTableProps> = ({ users, onEdit, onDelete }) => {
                                         <td className="px-6 py-4 whitespace-nowrap">{user.email}</td>
                                         <td className="px-6 py-4 whitespace-nowrap">{user.role}</td>
                                         <td className="px-6 py-4 whitespace-nowrap text-center">
-                                            <div className="flex justify-center gap-2">
+                                            <div className="flex justify-center gap-4">
                                                 <button
                                                     onClick={() => onEdit(user.id)}
-                                                    className="bg-black hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-md"
+                                                    className="flex flex-col items-center bg-black hover:bg-gray-700 text-white font-semibold py-2 px-3 rounded-md"
+                                                    title="Editar"
                                                 >
-                                                    Editar
+                                                    <AiOutlineEdit className="text-white" size={14} />
                                                 </button>
+
                                                 <button
                                                     onClick={() => handleDelete(user.id)}
-                                                    className="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-md"
+                                                    className="flex flex-col items-center bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-3 rounded-md"
+                                                    title="Excluir"
                                                 >
-                                                    Excluir
+                                                    <AiOutlineDelete className="text-white" size={14} />
                                                 </button>
                                             </div>
                                         </td>
