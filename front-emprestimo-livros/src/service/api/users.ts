@@ -94,11 +94,12 @@ export const createUser = async (userData: UserCreate): Promise<{ message: strin
       body: JSON.stringify(userData)
     });
 
+    const data = await response.json();
+
     if (!response.ok) {
-      throw new Error('Erro ao criar usuário');
+      throw new Error(data.message || 'Erro ao criar usuário');
     }
 
-    const data = await response.json();
     return data;
   } catch (error) {
     console.error('Erro ao criar usuário:', error);

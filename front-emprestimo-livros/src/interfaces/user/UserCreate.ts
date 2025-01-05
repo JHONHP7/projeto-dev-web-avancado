@@ -1,6 +1,6 @@
 export interface UserCreate{
     nome: string;
     email: string;
-    password: string;
+    senha: string;
     role: string;
 }
