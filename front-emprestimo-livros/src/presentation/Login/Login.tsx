@@ -30,7 +30,7 @@ const Login = () => {
         localStorage.setItem('token', data.token);
         console.log('Login bem-sucedido, token salvo no localStorage.');
         setError('');
-        navigate('/');
+        navigate('/content');
       } else {
         setError('Erro na autenticação. Verifique suas credenciais e tente novamente.');
         console.error('Erro na autenticação:', response.statusText);
@@ -64,7 +64,7 @@ const Login = () => {
         .then((data) => {
           localStorage.setItem('token', data.token);
           console.log('Login bem-sucedido com Google!');
-          navigate('/');
+          navigate('/content');
         })
         .catch((error) => {
           console.error('Erro ao autenticar com Google:', error);

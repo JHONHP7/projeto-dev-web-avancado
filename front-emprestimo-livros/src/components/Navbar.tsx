@@ -2,8 +2,10 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { getUserProfile } from '../service/api/index';
 import { User } from '../interfaces/interfaces';
+import { useAuth } from '../hooks/useAuth';
 
 const Navbar = () => {
+  const { logout } = useAuth();
   const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
 
@@ -21,21 +23,23 @@ const Navbar = () => {
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    navigate('/login');
+    logout();
+    navigate('/');
   };
 
   return (
     <nav className="bg-black p-4">
       <div className="container mx-auto flex justify-between items-center">
         <div className="flex space-x-4 items-center">
-          <div className="rounded">
-            <img 
-              src="/src/assets/books.png"
-              alt="Foto de perfil"
-              className="w-12 h-12 rounded-lg"
-            />
-          </div>
+          <Link to='/content'>
+            <div className="rounded">
+              <img 
+                src="/src/assets/books.png"
+                alt="Foto de perfil"
+                className="w-12 h-12 rounded-lg"
+              />
+            </div>
+          </Link>
           <Link to="/content/books" className="text-white hover:text-gray-200">
             Livros
           </Link>
