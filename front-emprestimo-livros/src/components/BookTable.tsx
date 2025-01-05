@@ -47,7 +47,7 @@ const BookTable: React.FC<BookTableProps> = ({ books, user }) => {
     }
   };
 
-  const filteredBooks = showOnlyFavorites && user?.role === 'USER'
+  const filteredBooks = showOnlyFavorites
     ? books.filter(book => favoriteBooks.includes(book.id))
     : books.filter(book => !selectedGenre || book.genero === selectedGenre);
 
@@ -93,22 +93,20 @@ const BookTable: React.FC<BookTableProps> = ({ books, user }) => {
 
   return (
     <div className="w-full">
-      {(user?.role === 'USER' || user?.role === 'ADMIN') && (
-        <div className="mb-4 px-4">
-          <label className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              checked={showOnlyFavorites}
-              onChange={(e) => {
-                setShowOnlyFavorites(e.target.checked);
-                setCurrentPage(1);
-              }}
-              className="form-checkbox h-5 w-5 text-blue-600"
-            />
-            <span>Favoritos</span>
-          </label>
-        </div>
-      )}
+      <div className="mb-4 px-4">
+        <label className="flex items-center space-x-2">
+          <input
+            type="checkbox"
+            checked={showOnlyFavorites}
+            onChange={(e) => {
+              setShowOnlyFavorites(e.target.checked);
+              setCurrentPage(1);
+            }}
+            className="form-checkbox h-5 w-5 text-blue-600"
+          />
+          <span>Favoritos</span>
+        </label>
+      </div>
 
       <div className="overflow-x-auto">
         <div className="inline-block min-w-full">
@@ -121,17 +119,15 @@ const BookTable: React.FC<BookTableProps> = ({ books, user }) => {
                       <h3 className="font-bold">{book.titulo}</h3>
                       <p className="text-sm text-gray-600">Autor: {book.autor}</p>
                     </div>
-                    {(user?.role === 'USER' || user?.role === 'ADMIN') && (
-                      <button
-                        onClick={() => toggleFavorite(book.id)}
-                        className="text-2xl"
-                      >
-                        {favoriteBooks.includes(book.id) ?
-                          <AiFillStar className="text-yellow-400" /> :
-                          <AiOutlineStar className="text-gray-400" />
-                        }
-                      </button>
-                    )}
+                    <button
+                      onClick={() => toggleFavorite(book.id)}
+                      className="text-2xl"
+                    >
+                      {favoriteBooks.includes(book.id) ?
+                        <AiFillStar className="text-yellow-400" /> :
+                        <AiOutlineStar className="text-gray-400" />
+                      }
+                    </button>
                   </div>
                   <div className="space-y-1 text-sm">
                     <p>ISBN: {book.isbn}</p>
@@ -164,9 +160,7 @@ const BookTable: React.FC<BookTableProps> = ({ books, user }) => {
             <table className="min-w-full hidden lg:table table-fixed">
               <thead className="bg-gray-100">
                 <tr>
-                  {(user?.role === 'USER' || user?.role === 'ADMIN') && (
-                    <th className="px-2 py-3 border-b text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Fav</th>
-                  )}
+                  <th className="px-2 py-3 border-b text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Fav</th>
                   <th className="px-2 py-3 border-b text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Título</th>
                   <th className="px-2 py-3 border-b text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Autor</th>
                   <th className="px-2 py-3 border-b text-center text-xs font-medium text-gray-500 uppercase tracking-wider">ISBN</th>
@@ -183,19 +177,17 @@ const BookTable: React.FC<BookTableProps> = ({ books, user }) => {
               <tbody className="bg-white divide-y divide-gray-200">
                 {displayedBooks.map((book) => (
                   <tr key={book.id}>
-                    {(user?.role === 'USER' || user?.role === 'ADMIN') && (
-                      <td className="px-2 py-4 whitespace-nowrap text-center">
-                        <button
-                          onClick={() => toggleFavorite(book.id)}
-                          className="text-2xl transition-transform duration-200 ease-in-out hover:scale-110"
-                        >
-                          {favoriteBooks.includes(book.id) ?
-                            <AiFillStar className="text-yellow-400" /> :
-                            <AiOutlineStar className="text-gray-400" />
-                          }
-                        </button>
-                      </td>
-                    )}
+                    <td className="px-2 py-4 whitespace-nowrap text-center">
+                      <button
+                        onClick={() => toggleFavorite(book.id)}
+                        className="text-2xl transition-transform duration-200 ease-in-out hover:scale-110"
+                      >
+                        {favoriteBooks.includes(book.id) ?
+                          <AiFillStar className="text-yellow-400" /> :
+                          <AiOutlineStar className="text-gray-400" />
+                        }
+                      </button>
+                    </td>
                     <td className="px-2 py-4 whitespace-nowrap">{book.titulo}</td>
                     <td className="px-2 py-4 whitespace-nowrap">{book.autor}</td>
                     <td className="px-2 py-4 whitespace-nowrap">{book.isbn}</td>
