@@ -1,6 +1,5 @@
 package com.projetodevwevavancado.emprestimo.service;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -44,50 +43,8 @@ public class LoanService {
 				.toList();
 	}
 
-	public LoanEntity findById(Long id) {
-		return loanRepository.findById(id).orElseThrow(() -> new RuntimeException("Empréstimo não encontrado"));
-	}
 
-	@Transactional
-	public LoanEntity markAsReturned(Long loanId) throws ParseException {
-		LoanEntity loan = findById(loanId);
 
-		if ("Devolvido".equalsIgnoreCase(loan.getStatus())) {
-			throw new IllegalStateException("Empréstimo já devolvido.");
-		}
-
-		Date today = new Date();
-
-		// Atualiza a data de devolução do empréstimo para hoje
-		// loan.setDataDevolucao(today);
-
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-		Date dataAtualFormatada = sdf.parse(sdf.format(today));
-		//Date dataDevolucaoEsperadaFormatada = sdf.parse(sdf.format(loan.getDataDevolucao()));
-
-		if (dataAtualFormatada.after(loan.getDataDevolucao())) {
-			long atrasoDias = calcularDiasAtraso(dataAtualFormatada, loan.getDataDevolucao());
-			if (atrasoDias > 0) {
-				UserEntity usuario = loan.getUsuario();
-				Date novaSuspensao = SuspendedUtil.suspendForDays((int) atrasoDias);
-				usuario.setSuspendedUntil(novaSuspensao);
-				userRepository.save(usuario);
-			}
-		}
-
-		loan.setStatus("Devolvido");
-
-		BookEntity book = loan.getLivro();
-		book.ajustarQuantidadeExemplares(1);
-		bookRepository.save(book);
-
-		return loanRepository.save(loan);
-	}
-
-	private long calcularDiasAtraso(Date dataAtual, Date dataDevolucaoEsperada) {
-		long diff = dataAtual.getTime() - dataDevolucaoEsperada.getTime();
-		return TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
-	}
 
 	public LoanEntity updateLoan(LoanEntity loanEntity) {
 
@@ -277,5 +234,59 @@ public class LoanService {
 				.bookStatus(loanEntity.getStatus())
 				.build();
 	}
+
+	@Transactional
+	public LoanEntity markAsReturned(Long loanId) {
+        LoanEntity loan = findById(loanId);
+
+        if (isAlreadyReturned(loan)) {
+            throw new IllegalStateException("Empréstimo já devolvido.");
+        }
+
+        updateLoanStatusToReturned(loan);
+        handleLateReturnSuspension(loan);
+
+        return loanRepository.save(loan);
+    }
+
+    private LoanEntity findById(Long loanId) {
+        return loanRepository.findById(loanId)
+                .orElseThrow(() -> new ResourceNotFoundException("Empréstimo não encontrado para o ID: " + loanId));
+    }
+
+    private boolean isAlreadyReturned(LoanEntity loan) {
+        return "Devolvido".equalsIgnoreCase(loan.getStatus());
+    }
+
+    private void updateLoanStatusToReturned(LoanEntity loan) {
+        loan.setStatus("Devolvido");
+
+        BookEntity book = loan.getLivro();
+        book.ajustarQuantidadeExemplares(1);
+
+        bookRepository.save(book);
+    }
+
+    private void handleLateReturnSuspension(LoanEntity loan) {
+        Date today = new Date();
+
+        if (today.after(loan.getDataDevolucao())) {
+            long delayDays = calculateDelayDays(today, loan.getDataDevolucao());
+            if (delayDays > 0) {
+                suspendUser(loan.getUsuario(), delayDays);
+            }
+        }
+    }
+
+    private long calculateDelayDays(Date currentDate, Date expectedReturnDate) {
+        long differenceInMillis = currentDate.getTime() - expectedReturnDate.getTime();
+        return TimeUnit.DAYS.convert(differenceInMillis, TimeUnit.MILLISECONDS);
+    }
+
+    private void suspendUser(UserEntity user, long delayDays) {
+        Date suspensionEndDate = SuspendedUtil.suspendForDays((int) delayDays);
+        user.setSuspendedUntil(suspensionEndDate);
+        userRepository.save(user);
+    }
 
 }

@@ -64,7 +64,7 @@ public class LoanResource implements LoanResourceApi {
 	}
 
 	@PutMapping("/return/{loanId}")
-	public ResponseEntity<ApiResponse> markAsReturned(@PathVariable Long loanId) {
+	public ResponseEntity<ApiResponse> markAsReturned(@PathVariable Long loanId) throws ParseException {
 		try {
 			loanService.markAsReturned(loanId);
 			ApiResponse response = new ApiResponse("Empréstimo marcado como devolvido com sucesso!", true);
@@ -75,9 +75,6 @@ public class LoanResource implements LoanResourceApi {
 		} catch (IllegalStateException e) {
 			ApiResponse response = new ApiResponse(ERROR + e.getMessage(), false);
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-		} catch (ParseException e) {
-			ApiResponse response = new ApiResponse("Erro ao parsear datas: " + e.getMessage(), false);
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 		}
 	}
 

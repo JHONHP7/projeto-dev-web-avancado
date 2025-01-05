@@ -1,5 +1,6 @@
 package com.projetodevwevavancado.emprestimo.api.resource.swagger;
 
+import java.text.ParseException;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
@@ -22,7 +23,7 @@ public interface LoanResourceApi {
 	public ResponseEntity<List<LoanDTO>> findAll();
 
 	@Operation(summary = "Marcar empréstimo como devolvido")
-	public ResponseEntity<ApiResponse> markAsReturned(Long loanId);
+	public ResponseEntity<ApiResponse> markAsReturned(Long loanId) throws ParseException;
 
 	@Operation(summary = "Atualizar empréstimo")
 	public ResponseEntity<ApiResponse> updateLoan(LoanEntity loanEntity);
