@@ -61,11 +61,23 @@ public class FavoriteService {
 
 		List<FavoriteEntity> favoritos = favoriteRepository.findByUsuario(usuario);
 		List<BookDTO> books = favoritos.stream()
-				.map(fav -> BookDTO.builder().bookId(fav.getLivro().getId()).bookTitle(fav.getLivro().getTitulo())
-						.bookAuthor(fav.getLivro().getAutor()).bookAvailable(fav.getLivro().getDisponivel())
-						.bookQuantity(fav.getLivro().getQuantidadeExemplares()).build())
+				.map(fav -> BookDTO.builder()
+						.bookId(fav.getLivro().getId())
+						.bookTitle(fav.getLivro().getTitulo())
+						.bookAuthor(fav.getLivro().getAutor())
+						.bookAvailable(fav.getLivro().getDisponivel())
+						.bookQuantity(fav.getLivro().getQuantidadeExemplares())
+						.build())
 				.toList();
-		return FavoriteResponseByUserDTO.builder().userId(usuario.getId()).userName(usuario.getNome()).books(books)
+
+		boolean isActive = usuario.getSuspendedUntil() == null;
+
+		return FavoriteResponseByUserDTO.builder()
+				.userId(usuario.getId())
+				.userName(usuario.getNome())
+				.active(isActive)
+				.suspendedUntil(usuario.getSuspendedUntil())
+				.books(books)
 				.build();
 	}
 
