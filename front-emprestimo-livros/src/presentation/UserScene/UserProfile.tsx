@@ -94,58 +94,54 @@ const UserProfile = () => {
             </div>
           </div>
 
-          {user.role === 'USER' && (
-            <>
-              <div className="flex space-x-4">
-                <button
-                  onClick={() => setView('favorites')}
-                  className={`px-4 py-2 rounded-lg ${view === 'favorites' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-800'}`}
-                >
-                  Favoritos
-                </button>
-                <button
-                  onClick={() => setView('loans')}
-                  className={`px-4 py-2 rounded-lg ${view === 'loans' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-800'}`}
-                >
-                  Empréstimos
-                </button>
-              </div>
-              {view === 'favorites' && (
-                <div className="bg-blue-50 p-4 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
-                  <h2 className="text-xl font-semibold mb-2 text-blue-600">Livros Favoritos</h2>
-                  <FavoriteTable favoritesList={favorites} />
-                </div>
-              )}
-              {view === 'loans' && (
-                <div className="bg-blue-50 p-4 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
-                  <h2 className="text-xl font-semibold mb-2 text-blue-600">Empréstimos</h2>
-                  <div className="flex space-x-4 mb-2">
-                    <label>
-                      <input
-                        type="checkbox"
-                        checked={filter === 'emprestado'}
-                        onChange={() => setFilter(filter === 'emprestado' ? 'all' : 'emprestado')}
-                      />
-                      <span className="ml-2">Emprestados</span>
-                    </label>
-                    <label>
-                      <input
-                        type="checkbox"
-                        checked={filter === 'devolvido'}
-                        onChange={() => setFilter(filter === 'devolvido' ? 'all' : 'devolvido')}
-                      />
-                      <span className="ml-2">Devolvidos</span>
-                    </label>
-                  </div>
-                  <LoanTableByUser
-                    loans={loans}
-                    userId={user.id}
-                    onLoansUpdate={handleLoansUpdate}
-                    filter={filter}
+          <div className="flex space-x-4">
+            <button
+              onClick={() => setView('favorites')}
+              className={`px-4 py-2 rounded-lg ${view === 'favorites' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-800'}`}
+            >
+              Favoritos
+            </button>
+            <button
+              onClick={() => setView('loans')}
+              className={`px-4 py-2 rounded-lg ${view === 'loans' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-800'}`}
+            >
+              Empréstimos
+            </button>
+          </div>
+          {view === 'favorites' && (
+            <div className="bg-blue-50 p-4 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
+              <h2 className="text-xl font-semibold mb-2 text-blue-600">Livros Favoritos</h2>
+              <FavoriteTable favoritesList={favorites} />
+            </div>
+          )}
+          {view === 'loans' && (
+            <div className="bg-blue-50 p-4 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
+              <h2 className="text-xl font-semibold mb-2 text-blue-600">Empréstimos</h2>
+              <div className="flex space-x-4 mb-2">
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={filter === 'emprestado'}
+                    onChange={() => setFilter(filter === 'emprestado' ? 'all' : 'emprestado')}
                   />
-                </div>
-              )}
-            </>
+                  <span className="ml-2">Emprestados</span>
+                </label>
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={filter === 'devolvido'}
+                    onChange={() => setFilter(filter === 'devolvido' ? 'all' : 'devolvido')}
+                  />
+                  <span className="ml-2">Devolvidos</span>
+                </label>
+              </div>
+              <LoanTableByUser
+                loans={loans}
+                userId={user.id}
+                onLoansUpdate={handleLoansUpdate}
+                filter={filter}
+              />
+            </div>
           )}
         </div>
       )}

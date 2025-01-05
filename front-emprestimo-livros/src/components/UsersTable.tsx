@@ -61,25 +61,25 @@ const UsersTable: React.FC<UsersTableProps> = ({ users, onEdit, onDelete }) => {
                         <table className="min-w-full">
                             <thead className="bg-gray-100">
                                 <tr>
-                                    <th className="px-6 py-3 border-b text-center text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-                                    <th className="px-6 py-3 border-b text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Nome</th>
-                                    <th className="px-6 py-3 border-b text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                                    <th className="px-6 py-3 border-b text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
-                                    <th className="px-6 py-3 border-b text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
+                                    <th className="px-4 py-2 border-b text-center text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                                    <th className="px-4 py-2 border-b text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Nome</th>
+                                    <th className="px-4 py-2 border-b text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                                    <th className="px-4 py-2 border-b text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
+                                    <th className="px-4 py-2 border-b text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
                                 </tr>
                             </thead>
                             <tbody className="bg-white divide-y divide-gray-200">
                                 {filteredUsers.map(user => (
                                     <tr key={user.id}>
-                                        <td className="px-6 py-4 whitespace-nowrap">{user.id}</td>
-                                        <td className="px-6 py-4 whitespace-nowrap">{user.nome}</td>
-                                        <td className="px-6 py-4 whitespace-nowrap">{user.email}</td>
-                                        <td className="px-6 py-4 whitespace-nowrap">{user.role}</td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-center">
-                                            <div className="flex justify-center gap-4">
+                                        <td className="px-4 py-2 whitespace-nowrap">{user.id}</td>
+                                        <td className="px-4 py-2 whitespace-nowrap">{user.nome}</td>
+                                        <td className="px-4 py-2 whitespace-nowrap">{user.email}</td>
+                                        <td className="px-4 py-2 whitespace-nowrap">{user.role}</td>
+                                        <td className="px-4 py-2 whitespace-nowrap text-center">
+                                            <div className="flex justify-center gap-2">
                                                 <button
                                                     onClick={() => onEdit(user.id)}
-                                                    className="flex flex-col items-center bg-black hover:bg-gray-700 text-white font-semibold py-2 px-3 rounded-md"
+                                                    className="flex flex-col items-center bg-black hover:bg-gray-700 text-white font-semibold py-1 px-2 rounded-md"
                                                     title="Editar"
                                                 >
                                                     <AiOutlineEdit className="text-white" size={14} />
@@ -87,7 +87,7 @@ const UsersTable: React.FC<UsersTableProps> = ({ users, onEdit, onDelete }) => {
 
                                                 <button
                                                     onClick={() => handleDelete(user.id)}
-                                                    className="flex flex-col items-center bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-3 rounded-md"
+                                                    className="flex flex-col items-center bg-red-500 hover:bg-red-600 text-white font-semibold py-1 px-2 rounded-md"
                                                     title="Excluir"
                                                 >
                                                     <AiOutlineDelete className="text-white" size={14} />
