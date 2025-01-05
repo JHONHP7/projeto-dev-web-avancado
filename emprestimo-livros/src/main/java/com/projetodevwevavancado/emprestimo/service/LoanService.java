@@ -148,6 +148,7 @@ public class LoanService {
 				.orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado"));
 
 		checkUserSuspension(user);
+		user.setSuspendedUntil(null);
 		checkActiveLoans(loanRequestDTO.idUser());
 		checkDuplicateLoan(loanRequestDTO.idUser(), loanRequestDTO.idBook());
 
