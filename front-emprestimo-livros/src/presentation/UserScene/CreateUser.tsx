@@ -7,6 +7,7 @@ import { UserCreate } from "../../interfaces/interfaces";
 const CreateUser = () => {
     const navigate = useNavigate();
     const [error, setError] = useState<string>('');
+    const [fieldErrors, setFieldErrors] = useState<{ nome?: string, email?: string, senha?: string }>({});
     const [user, setUser] = useState<UserCreate>({
         nome: '',
         email: '',
@@ -25,10 +26,23 @@ const CreateUser = () => {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!user.senha) {
-            setError('Senha não pode ser vazia.');
+        const errors: { nome?: string, email?: string, senha?: string } = {};
+
+        if (user.nome.length < 10 || user.nome.length > 30) {
+            errors.nome = 'Nome deve ter entre 10 e 30 caracteres.';
+        }
+        if (user.email.length < 15 || user.email.length > 50) {
+            errors.email = 'Email deve ter entre 15 e 50 caracteres.';
+        }
+        if (user.senha.length < 10 || user.senha.length > 20) {
+            errors.senha = 'Senha deve ter entre 10 e 20 caracteres.';
+        }
+
+        if (Object.keys(errors).length > 0) {
+            setFieldErrors(errors);
             return;
         }
+
         try {
             const response = await createUser(user);
 
@@ -91,6 +105,7 @@ const CreateUser = () => {
                                 className="w-full rounded-md border border-gray-300 p-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                 required
                             />
+                            {fieldErrors.nome && <div className="text-red-500 text-sm">{fieldErrors.nome}</div>}
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
@@ -102,6 +117,7 @@ const CreateUser = () => {
                                 className="w-full rounded-md border border-gray-300 p-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                 required
                             />
+                            {fieldErrors.email && <div className="text-red-500 text-sm">{fieldErrors.email}</div>}
                         </div>
                     </div>
     
@@ -125,6 +141,7 @@ const CreateUser = () => {
                                     {showsenha ? "Esconder" : "Mostrar"}
                                 </button>
                             </div>
+                            {fieldErrors.senha && <div className="text-red-500 text-sm">{fieldErrors.senha}</div>}
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>

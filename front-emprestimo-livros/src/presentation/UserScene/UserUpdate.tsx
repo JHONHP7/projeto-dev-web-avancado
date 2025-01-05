@@ -16,6 +16,11 @@ const UserUpdate = () => {
         password: '',
         role: 'USER'
     });
+    const [fieldErrors, setFieldErrors] = useState({
+        nome: '',
+        email: '',
+        password: ''
+    });
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -47,8 +52,35 @@ const UserUpdate = () => {
         }));
     };
 
+    const validateFields = () => {
+        let isValid = true;
+        const errors = { nome: '', email: '', password: '' };
+
+        if (user.nome.length < 10 || user.nome.length > 30) {
+            errors.nome = 'Nome deve ter entre 10 e 30 caracteres.';
+            isValid = false;
+        }
+
+        if (user.email.length < 15 || user.email.length > 50) {
+            errors.email = 'Email deve ter entre 15 e 50 caracteres.';
+            isValid = false;
+        }
+
+        if (showPasswordField && (user.password.length < 10 || user.password.length > 20)) {
+            errors.password = 'Senha deve ter entre 10 e 20 caracteres.';
+            isValid = false;
+        }
+
+        setFieldErrors(errors);
+        return isValid;
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        if (!validateFields()) {
+            return;
+        }
+
         const updatedUser: UserUpdateRequest = { 
             id: user.id,
             nome: user.nome,
@@ -109,6 +141,7 @@ const UserUpdate = () => {
                                 className="w-full rounded-md border border-gray-300 p-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                 required
                             />
+                            {fieldErrors.nome && <div className="text-red-500 text-sm">{fieldErrors.nome}</div>}
                         </div>
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
@@ -120,6 +153,7 @@ const UserUpdate = () => {
                                 className="w-full rounded-md border border-gray-300 p-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                 required
                             />
+                            {fieldErrors.email && <div className="text-red-500 text-sm">{fieldErrors.email}</div>}
                         </div>
                     </div>
     
@@ -149,6 +183,7 @@ const UserUpdate = () => {
                                     className="w-full rounded-md border border-gray-300 p-2 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                     required
                                 />
+                                {fieldErrors.password && <div className="text-red-500 text-sm">{fieldErrors.password}</div>}
                             </div>
                         )}
                     </div>
