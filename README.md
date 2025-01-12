@@ -22,13 +22,15 @@ The **Book Lending System** facilitates the management of book lending operation
 
 ## Technologies
 
-- **Backend**: Java 17 with Spring Boot
-- **Frontend**: React with Vite
+- **Backend**: Java 17 with Spring Boot 
+- **Frontend**: React with Vite 
 - **Build Tool**: Maven
-- **Database**: PostgreSQL
-- **Documentation**: Swagger
-- **Testing**: JUnit
+- **Database**: PostgreSQL 
+- **Documentation**: Swagger 
+- **Testing**: JUnit 
 - **Containerization**: Docker with Docker Compose
+
+![Spring](https://img.shields.io/badge/spring-%236DB33F.svg?style=for-the-badge&logo=spring&logoColor=white) ![Vite](https://img.shields.io/badge/vite-%23646CFF.svg?style=for-the-badge&logo=vite&logoColor=white) ![Apache Maven](https://img.shields.io/badge/Apache%20Maven-C71A36?style=for-the-badge&logo=Apache%20Maven&logoColor=white) ![Postgres](https://img.shields.io/badge/postgres-%23316192.svg?style=for-the-badge&logo=postgresql&logoColor=white) ![Swagger](https://img.shields.io/badge/-Swagger-%23Clojure?style=for-the-badge&logo=swagger&logoColor=white) ![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
 
 ## Prerequisites
 
