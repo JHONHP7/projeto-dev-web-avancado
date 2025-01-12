@@ -375,37 +375,37 @@ This will stop and remove all containers.
 The API includes the following primary resources:
 
 - **Books**: Endpoints to manage book records.
-    - Put: /books/update - Update Book.
-    - Post: /books/title - Search book by title.
-    - Post: /books/save - Create book.
-    - Get: /books - Get all books
-    - Get: /books/{id} - Get book by ID.
-    - Delete: /books/delete - Delete book.
+    - ![PUT](https://img.shields.io/badge/PUT-yellow): /books/update - Update Book.
+    - ![POST](https://img.shields.io/badge/POST-green): /books/title - Search book by title.
+    - ![POST](https://img.shields.io/badge/POST-green): /books/save - Create book.
+    - ![GET](https://img.shields.io/badge/GET-blue): /books - Get all books
+    - ![GET](https://img.shields.io/badge/GET-blue): /books/{id} - Get book by ID.
+    - ![DELETE](https://img.shields.io/badge/DELETE-red): /books/delete - Delete book.
 - **Users**: Endpoints for user management.
-    - Post: /users/update - Update user.
-    - Get: /users/ - Get all users.
-    - Get: /users/{id} - Get user by ID.
-    - Delete: /users/{id} - Delete user by ID.
-    - Get: /users/email/{email} - Get user by email.
+    - ![POST](https://img.shields.io/badge/POST-green): /users/update - Update user.
+    - ![GET](https://img.shields.io/badge/GET-blue): /users/ - Get all users.
+    - ![GET](https://img.shields.io/badge/GET-blue): /users/{id} - Get user by ID.
+    - ![DELETE](https://img.shields.io/badge/DELETE-red): /users/{id} - Delete user by ID.
+    - ![GET](https://img.shields.io/badge/GET-blue): /users/email/{email} - Get user by email.
 - **Loans**: Endpoints to manage book loans.
-    - Put: /loans/update - Update Loan.
-    - Put: /loans/return/{loanId} - Mark loan as returned.
-    - Put: /loans/renew/{loanI} - Renew loan for 7 more days.
-    - Post: /loans/search-by-user- Search loan by user.
-    - Post: /loans/search-by-book - Search loan by book.
-    - Post: /loans/create - Create a loan.
-    - Get: /loans - Get all loans.
-    - Get: /loans/loan-by-user/{userId} - Get loans by user ID.
+    - ![PUT](https://img.shields.io/badge/PUT-yellow): /loans/update - Update Loan.
+    - ![PUT](https://img.shields.io/badge/PUT-yellow): /loans/return/{loanId} - Mark loan as returned.
+    - ![PUT](https://img.shields.io/badge/PUT-yellow): /loans/renew/{loanI} - Renew loan for 7 more days.
+    - ![POST](https://img.shields.io/badge/POST-green): /loans/search-by-user- Search loan by user.
+    - ![POST](https://img.shields.io/badge/POST-green): /loans/search-by-book - Search loan by book.
+    - ![POST](https://img.shields.io/badge/POST-green): /loans/create - Create a loan.
+    - ![GET](https://img.shields.io/badge/GET-blue): /loans - Get all loans.
+    - ![GET](https://img.shields.io/badge/GET-blue): /loans/loan-by-user/{userId} - Get loans by user ID.
 - **Favorites**: Endpoints to manage user favorites.
-    - Post: /favorites/add - Create favorite.
-    - Get: /favorites/ - Get all favorites.
-    - Get: /favorites/usuario/{usuarioId} - Get favorite by ID.
-    - Delete: /favorites/delete/favorite/{idUsuario}/{idLivro} - Delete favorite.
+    - ![POST](https://img.shields.io/badge/POST-green): /favorites/add - Create favorite.
+    - ![GET](https://img.shields.io/badge/GET-blue): /favorites/ - Get all favorites.
+    - ![GET](https://img.shields.io/badge/GET-blue): /favorites/usuario/{usuarioId} - Get favorite by ID.
+    - ![DELETE](https://img.shields.io/badge/DELETE-red): /favorites/delete/favorite/{idUsuario}/{idLivro} - Delete favorite.
 - **Authentication**: Endpoints for user authentication.
-    - Post: /auth/register - Create user.
-    - Post: /auth/login - Log in and receive JWT token.
-    - Post: /auth/google-login - Log in with google and receive JWT token.
-    - Get: /auth/usuario/logado - Return information of the logged-in user.
+    - ![POST](https://img.shields.io/badge/POST-green): /auth/register - Create user.
+    - ![POST](https://img.shields.io/badge/POST-green): /auth/login - Log in and receive JWT token.
+    - ![POST](https://img.shields.io/badge/POST-green): /auth/google-login - Log in with google and receive JWT token.
+    - ![GET](https://img.shields.io/badge/GET-blue): /auth/usuario/logado - Return information of the logged-in user.
 
 > Note: Reservation functionality is not supported.
 > 
