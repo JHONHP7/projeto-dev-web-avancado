@@ -316,15 +316,15 @@ This will stop and remove all containers.
 
 ### Use Case Diagram
 
-![Diagrama de caso de uso (2).png](Diagrama_de_caso_de_uso_(2).png)
+![Diagrama de caso de uso (2)](/readme-files/Diagrama%20de%20caso%20de%20uso%20(2).png)
 
 ### Class Diagram
 
-![DiagramaDeClassesDevWebAvancado.drawio.png](DiagramaDeClassesDevWebAvancado.drawio.png)
+![DiagramaDeClassesDevWebAvancado.drawio.png](/readme-files/DiagramaDeClassesDevWebAvancado.drawio.png)
 
 ### Entity-Relationship Diagram
 
-![ERDevWeb.drawio (3).png](ERDevWeb.drawio_(3).png)
+![ERDevWeb.drawio (3)](/readme-files/ERDevWeb.drawio%20(3).png)
 
 ### Database Table Descriptions
 
